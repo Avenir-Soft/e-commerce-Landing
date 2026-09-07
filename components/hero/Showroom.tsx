@@ -4,7 +4,7 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { PerformanceMonitor, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
-import { RING_COUNT, attachDragSpin, damp, showroomState } from "./store";
+import { RING_COUNT, attachDragSpin, damp, markModelsReady, showroomState } from "./store";
 import { DeviceModel, type ModelSpec } from "./DeviceModel";
 import { BlobShadow, Dust, Studio, useRadialTexture } from "./Studio";
 
@@ -116,6 +116,30 @@ function LightPool() {
   );
 }
 
+/**
+ * Renders only once every model is parsed; then compiles every shader in one
+ * go (instead of on the first visible frame) and lifts the loading screen.
+ */
+function ReadySignal() {
+  useGLTF(
+    MODELS.map((m) => m.url),
+    false,
+    true
+  );
+  const get = useThree((s) => s.get);
+  useEffect(() => {
+    const { gl, scene, camera } = get();
+    const id = window.setTimeout(() => {
+      try {
+        gl.compile(scene, camera);
+      } catch {}
+      markModelsReady();
+    }, 50);
+    return () => window.clearTimeout(id);
+  }, [get]);
+  return null;
+}
+
 function CameraRig({ desktop }: { desktop: boolean }) {
   const placed = useRef<boolean | null>(null);
   useFrame((state, delta) => {
@@ -147,6 +171,9 @@ function Scene() {
   return (
     <>
       <CameraRig desktop={desktop} />
+      <Suspense fallback={null}>
+        <ReadySignal />
+      </Suspense>
       <Studio />
       <fog attach="fog" args={["#02101f", 8, 17]} />
       <Dust />
@@ -185,6 +212,10 @@ export function Showroom() {
       detach();
     };
   }, []);
+
+  useEffect(() => {
+    if (!webgl) markModelsReady();
+  }, [webgl]);
 
   if (!webgl) return null;
 

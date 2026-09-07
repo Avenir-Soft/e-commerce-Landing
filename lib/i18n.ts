@@ -15,6 +15,7 @@ export interface Dictionary {
     close: string;
     language: string;
   };
+  loader: { loading: string; skip: string };
   hero: {
     tagline: string;
     /** Headline lines, one string per line so every break is controlled. */
@@ -82,6 +83,7 @@ const uz: Dictionary = {
     close: "Yopish",
     language: "Til",
   },
+  loader: { loading: "Yuklanmoqda", skip: "O'tkazib yuborish" },
   hero: {
     tagline: "Toshkentdagi Apple do'koni",
     title: ["iPhone'dan MacBook'gacha.", "Hammasi bitta do'konda."],
@@ -265,6 +267,7 @@ const ru: Dictionary = {
     close: "Закрыть",
     language: "Язык",
   },
+  loader: { loading: "Загрузка", skip: "Пропустить" },
   hero: {
     tagline: "Магазин Apple в Ташкенте",
     title: ["От iPhone до MacBook.", "Всё в одном магазине."],
@@ -448,6 +451,7 @@ const en: Dictionary = {
     close: "Close",
     language: "Language",
   },
+  loader: { loading: "Loading", skip: "Skip" },
   hero: {
     tagline: "The Apple store in Tashkent",
     title: ["From iPhone to MacBook.", "All in one store."],

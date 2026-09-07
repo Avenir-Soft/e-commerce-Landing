@@ -11,7 +11,7 @@ import { categories, showroomItems } from "@/lib/catalog";
 import { storeLinks } from "@/lib/site";
 import { BagIcon } from "@/components/layout/Header";
 import { Price } from "@/components/ui/Price";
-import { RING_COUNT, showroomState } from "./store";
+import { INTRO_DONE_EVENT, RING_COUNT, showroomState } from "./store";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -35,10 +35,13 @@ export function Hero({ lang, t }: { lang: Lang; t: Dictionary["hero"] }) {
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       showroomState.reduced = reduce;
 
-      // ---- load choreography ----
-      el.removeAttribute("data-pending");
-      if (!reduce) {
-        gsap
+      // ---- load choreography, held back until the loading screen has left ----
+      let intro: gsap.core.Timeline | undefined;
+      const play = () => {
+        el.removeAttribute("data-pending");
+        ScrollTrigger.refresh();
+        if (reduce) return;
+        intro = gsap
           .timeline({ defaults: { ease: "expo.out" } })
           .from(el.querySelector("[data-load='tagline']"), { y: 16, opacity: 0, duration: 0.9 }, 0)
           .from(el.querySelectorAll(".hero__line > span"), { yPercent: 112, duration: 1.2, stagger: 0.12 }, 0.1)
@@ -46,7 +49,9 @@ export function Hero({ lang, t }: { lang: Lang; t: Dictionary["hero"] }) {
           .from(el.querySelectorAll("[data-load='cta'] > *"), { y: 22, opacity: 0, duration: 0.8, stagger: 0.08 }, 0.6)
           .from(el.querySelector("[data-load='label']"), { y: 30, opacity: 0, duration: 0.9 }, 0.85)
           .from(el.querySelector("[data-load='hint']"), { opacity: 0, duration: 0.8 }, 1.1);
-      }
+      };
+      if (showroomState.introDone) play();
+      else window.addEventListener(INTRO_DONE_EVENT, play, { once: true });
 
       // ---- scroll choreography: pin the hero, scrub progress into the carousel ----
       const mm = gsap.matchMedia();
@@ -97,8 +102,10 @@ export function Hero({ lang, t }: { lang: Lang; t: Dictionary["hero"] }) {
       io.observe(el);
 
       return () => {
+        window.removeEventListener(INTRO_DONE_EVENT, play);
         window.removeEventListener("pointermove", onMove);
         io.disconnect();
+        intro?.kill();
         mm.revert();
       };
     },

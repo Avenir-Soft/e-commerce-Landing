@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useRef, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { attachDragSpin, damp, spotState } from "./store";
 import { DeviceModel } from "./DeviceModel";
@@ -79,6 +79,21 @@ function CameraRig() {
   return null;
 }
 
+/** Compiles this canvas's shaders right after the models mount, so scrolling into the chapter does not hitch. */
+function Precompile() {
+  const get = useThree((s) => s.get);
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      const { gl, scene, camera } = get();
+      try {
+        gl.compile(scene, camera);
+      } catch {}
+    }, 300);
+    return () => window.clearTimeout(id);
+  }, [get]);
+  return null;
+}
+
 export function SpotlightStage({ active }: { active: number }) {
   const wrap = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -117,6 +132,9 @@ export function SpotlightStage({ active }: { active: number }) {
         <Studio />
         <Dust count={120} spread={10} />
         <Turntable active={active} />
+        <Suspense fallback={null}>
+          <Precompile />
+        </Suspense>
       </Canvas>
     </div>
   );

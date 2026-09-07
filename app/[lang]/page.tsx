@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { isLang } from "@/lib/languages";
 import { getDictionary } from "@/lib/i18n";
+import { Loader } from "@/components/hero/Loader";
 import { Hero } from "@/components/hero/Hero";
 import { Marquee } from "@/components/sections/Marquee";
 import { Lineup } from "@/components/sections/Lineup";
@@ -20,6 +21,7 @@ export default async function LandingPage({ params }: PageProps<"/[lang]">) {
 
   return (
     <main id="top">
+      <Loader t={t.loader} />
       <Hero lang={lang} t={t.hero} />
       <Marquee lang={lang} t={t.marquee} />
       <Lineup lang={lang} t={t.lineup} />

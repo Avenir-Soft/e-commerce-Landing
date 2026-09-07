@@ -15,6 +15,10 @@ export const showroomState = {
   /** Set false when the hero leaves the viewport to pause rendering. */
   visible: true,
   reduced: false,
+  /** True once every product model is parsed and its shaders compiled (or 3D is unavailable). */
+  modelsReady: false,
+  /** True once the loading screen has left (or was never shown). */
+  introDone: false,
 };
 
 /** Same idea for the showcase chapter: scroll progress and drag through the section. */
@@ -26,6 +30,20 @@ export const spotState = {
 };
 
 export const RING_COUNT = 5;
+export const MODELS_READY_EVENT = "avenir:models-ready";
+export const INTRO_DONE_EVENT = "avenir:intro-done";
+
+export function markModelsReady() {
+  if (showroomState.modelsReady) return;
+  showroomState.modelsReady = true;
+  window.dispatchEvent(new Event(MODELS_READY_EVENT));
+}
+
+export function finishIntro() {
+  if (showroomState.introDone) return;
+  showroomState.introDone = true;
+  window.dispatchEvent(new Event(INTRO_DONE_EVENT));
+}
 
 /**
  * Drag-to-rotate with momentum, shared by both stages. Horizontal drags turn
