@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import type { Dictionary } from "@/lib/i18n";
-import { site } from "@/lib/site";
+import { storeLinks } from "@/lib/site";
 import { BagIcon } from "@/components/layout/Header";
 
 export function FinalCta({ t }: { t: Dictionary["cta"] }) {
@@ -12,13 +12,15 @@ export function FinalCta({ t }: { t: Dictionary["cta"] }) {
           style={{ "--gx": "85%", "--gy": "50%" } as CSSProperties}
           data-reveal
         >
+          <span className="shine" aria-hidden="true" />
           <div className="cta__orb" aria-hidden="true" />
           <div className="relative max-w-3xl">
-            <h2 id="cta-title" className="t-display">
+            <p className="t-eyebrow">{t.eyebrow}</p>
+            <h2 id="cta-title" className="t-display mt-3" data-split>
               {t.heading}
             </h2>
             <p className="t-lead mt-6">{t.lead}</p>
-            <a href={site.storeUrl} target="_blank" rel="noopener" className="btn btn-solid mt-8">
+            <a href={storeLinks.home} target="_blank" rel="noopener" className="btn btn-solid mt-8">
               <BagIcon />
               {t.button}
             </a>

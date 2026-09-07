@@ -9,6 +9,11 @@ export const site = {
    * once it is set up; today the storefront still lives on fetch-group.uz.
    */
   storeUrl: "https://fetch-group.uz",
+  /**
+   * Prices are hidden on the landing by decision of the owner (2026-09-07).
+   * Flip this to true and every price shows again in its place.
+   */
+  showPrices: false,
   /** TODO: contact details are admin-configurable in E-COMMERCE and empty today. Leave null to hide. */
   contacts: {
     phone: null as string | null,
@@ -23,6 +28,20 @@ export const site = {
   returnDays: 3,
   payments: ["Click", "Payme", "Uzcard", "Humo"] as const,
   developer: { name: "Avenir Soft", url: "https://avenir.uz" },
+};
+
+/**
+ * Deep links into the storefront. The store filters `/products` by numeric
+ * category ids that only exist in its database, so the landing uses the
+ * store's own search instead (`/products?search=…`), which understands the
+ * product line names.
+ */
+export const storeLinks = {
+  home: site.storeUrl,
+  catalog: `${site.storeUrl}/products`,
+  search: (query: string) => `${site.storeUrl}/products?search=${encodeURIComponent(query)}`,
+  offer: `${site.storeUrl}/offer`,
+  privacy: `${site.storeUrl}/privacy`,
 };
 
 /** Attribution for the CC-BY 3D models in public/models (see public/models/CREDITS.txt). */

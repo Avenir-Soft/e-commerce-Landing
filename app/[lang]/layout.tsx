@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { preload } from "react-dom";
 import { notFound } from "next/navigation";
-import { Manrope, Unbounded } from "next/font/google";
+import { Cormorant_Garamond, Manrope, Unbounded } from "next/font/google";
 import { isLang, languages, type Lang } from "@/lib/languages";
 import { getDictionary } from "@/lib/i18n";
 import { site } from "@/lib/site";
@@ -19,6 +19,15 @@ const unbounded = Unbounded({
 const manrope = Manrope({
   subsets: ["latin", "cyrillic"],
   variable: "--font-manrope",
+  display: "swap",
+});
+
+/** Editorial accent: italic serif for eyebrows, taglines and pull-lines. */
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin", "cyrillic"],
+  weight: ["500", "600"],
+  style: ["italic"],
+  variable: "--font-cormorant",
   display: "swap",
 });
 
@@ -58,7 +67,7 @@ export default async function LangLayout({ children, params }: LayoutProps<"/[la
   preload("/models/macbook15.glb", { as: "fetch", crossOrigin: "anonymous" });
 
   return (
-    <html lang={lang} className={`${unbounded.variable} ${manrope.variable}`}>
+    <html lang={lang} className={`${unbounded.variable} ${manrope.variable} ${cormorant.variable}`}>
       <body>
         <SmoothScroll />
         <Header lang={lang} nav={t.nav} />

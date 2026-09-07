@@ -16,6 +16,7 @@ export interface Dictionary {
     language: string;
   };
   hero: {
+    tagline: string;
     /** Headline lines, one string per line so every break is controlled. */
     title: string[];
     lead: string;
@@ -27,10 +28,24 @@ export interface Dictionary {
     counter: string;
   };
   marquee: { prefix: string };
-  lineup: { heading: string; lead: string; open: string };
-  featured: { heading: string; lead: string; open: string; all: string };
-  trust: { heading: string; items: { title: string; text: string }[] };
+  lineup: { eyebrow: string; heading: string; lead: string; open: string; all: string; allLead: string };
+  spotlight: {
+    eyebrow: string;
+    heading: string;
+    beats: { title: string; text: string; points: string[]; note: string }[];
+  };
+  arrivals: { eyebrow: string; heading: string; lead: string; open: string; all: string };
+  why: {
+    eyebrow: string;
+    heading: string;
+    original: { title: string; text: string };
+    delivery: { figure: string; unit: string; title: string; text: string };
+    payments: { title: string; text: string };
+    returns: { figure: string; unit: string; title: string; text: string };
+    support: { title: string; text: string };
+  };
   search: {
+    eyebrow: string;
     heading: string;
     lead: string;
     placeholder: string;
@@ -40,13 +55,14 @@ export interface Dictionary {
     hint: string;
   };
   steps: {
+    eyebrow: string;
     heading: string;
     lead: string;
     items: { title: string; text: string }[];
     phone: { greeting: string; sub: string; button: string; search: string };
   };
-  faq: { heading: string; items: { q: string; a: string }[] };
-  cta: { heading: string; lead: string; button: string };
+  faq: { eyebrow: string; heading: string; hint: string; items: { q: string; a: string }[] };
+  cta: { eyebrow: string; heading: string; lead: string; button: string };
   footer: { tagline: string; offer: string; privacy: string; contacts: string; madeBy: string; credits: string };
 }
 
@@ -67,39 +83,85 @@ const uz: Dictionary = {
     language: "Til",
   },
   hero: {
+    tagline: "Toshkentdagi Apple do'koni",
     title: ["iPhone'dan MacBook'gacha.", "Hammasi bitta do'konda."],
-    lead: `Avenir Store — ${site.city}dagi Apple do'koni. Tanlang, Click yoki Payme bilan to'lang, ${site.delivery.expressDays} kunda qo'lingizda.`,
+    lead: `Tanlang, Click yoki Payme bilan to'lang, ${site.delivery.expressDays} kunda qo'lingizda. Original texnika, kafolat bilan.`,
     primary: "Do'konga o'tish",
-    secondary: "Narxlarni ko'rish",
+    secondary: "Katalogni ko'rish",
     scroll: "Aylantiring",
     look: "Ko'rish",
     counter: "{n} / {total}",
   },
   marquee: { prefix: "Hozir sotuvda" },
   lineup: {
+    eyebrow: "Katalog",
     heading: "Butun Apple qatori.",
-    lead: "Beshta yo'nalish, har birida yangi modellar va ularning narxi. Aniq narx va rang tanlovi do'konda.",
-    open: "Do'konda ochish",
+    lead: "Do'kondagi beshta bo'lim. Har birida yangi modellar, ranglar va xotira variantlari.",
+    open: "Ko'rish",
+    all: "Butun katalog",
+    allLead: "Do'konda barcha modellar, ranglar va to'plamlar.",
   },
-  featured: {
+  spotlight: {
+    eyebrow: "Vitrina",
+    heading: "Yaqindan qarang.",
+    beats: [
+      {
+        title: "iPhone 17 Pro",
+        text: "Eng kuchli iPhone. Uchta 48 MP kamera, A19 Pro chip va kun bo'yi yetadigan batareya.",
+        points: ["A19 Pro chip", "48 MP kameralar", "Kun bo'yi batareya"],
+        note: "Titan va alyuminiy ranglarida",
+      },
+      {
+        title: "MacBook Air M5",
+        text: "Yupqa, jim va tez. Bir zaryadda butun ish kuni, sumkada sezilmaydigan og'irlik.",
+        points: ["M5 chip", "18 soatgacha batareya", "Fansiz, jim"],
+        note: "13 va 15 dyuym",
+      },
+      {
+        title: "Apple Watch Ultra 3",
+        text: "Tog', suv va shahar uchun bitta soat. Titan korpus, eng yorug' ekran va ikki kunlik batareya.",
+        points: ["Titan korpus", "42 soatgacha batareya", "100 m suvga chidamli"],
+        note: "49 mm",
+      },
+    ],
+  },
+  arrivals: {
+    eyebrow: "Yangi kelganlar",
     heading: "Hozir ko'p so'raladiganlar.",
-    lead: "Bu haftaning eng ommabop oltita qurilmasi. Narxlar boshlang'ich konfiguratsiya uchun.",
+    lead: "Bu haftaning eng ommabop qurilmalari. Narx va to'liq tavsif do'konda.",
     open: "Ko'rish",
     all: "Butun katalogni ochish",
   },
-  trust: {
+  why: {
+    eyebrow: "Nega Avenir Store",
     heading: "Do'kon qanday ishlaydi.",
-    items: [
-      { title: "Faqat original Apple", text: "Har bir qurilma seriya raqami bilan, kafolat bilan sotiladi." },
-      {
-        title: `${site.city} bo'ylab ${site.delivery.expressDays} kun`,
-        text: `Ekspress ${site.delivery.expressDays} kun, viloyatlarga ${site.delivery.standardDays} kun. Kuryer eshikkacha olib keladi.`,
-      },
-      { title: "Click, Payme, Uzcard, Humo", text: "To'lov do'konda onlayn, karta ma'lumotlari bizda saqlanmaydi." },
-      { title: `${site.returnDays} ish kuni ichida qaytarish`, text: "Qurilma ishlatilmagan va to'plam to'liq bo'lsa, pulni qaytaramiz." },
-    ],
+    original: {
+      title: "Faqat original Apple",
+      text: "Har bir qurilma seriya raqami bilan keladi, uni Apple saytida tekshirishingiz mumkin. Kafolat bilan sotamiz.",
+    },
+    delivery: {
+      figure: site.delivery.expressDays,
+      unit: "kun",
+      title: `${site.city} bo'ylab yetkazamiz`,
+      text: `Ekspress ${site.delivery.expressDays} kun, viloyatlarga ${site.delivery.standardDays} kun. Kuryer eshikkacha olib keladi.`,
+    },
+    payments: {
+      title: "To'lov — o'zingizga qulay usulda",
+      text: "Do'konda onlayn to'laysiz. Karta ma'lumotlari bizda saqlanmaydi.",
+    },
+    returns: {
+      figure: String(site.returnDays),
+      unit: "ish kuni",
+      title: "Qaytarish uchun vaqt",
+      text: "Qurilma ishlatilmagan va to'plam to'liq bo'lsa, pulni qaytaramiz.",
+    },
+    support: {
+      title: "Yordam do'kon ichida",
+      text: "Buyurtma, kafolat yoki almashtirish bo'yicha savollarga do'konda javob beramiz.",
+    },
   },
   search: {
+    eyebrow: "Qidiruv",
     heading: "Qidiruv gapingizni tushunadi.",
     lead: "Model nomini bilish shart emas. «Yaxshi kamerali iPhone» yoki «talaba uchun yengil noutbuk» deb yozing — do'kon o'zi mos qurilmalarni topadi.",
     placeholder: "Nima kerak? Oddiy so'z bilan yozing",
@@ -116,6 +178,7 @@ const uz: Dictionary = {
     hint: "Bu shu qidiruvning kichik namunasi. Do'konda u butun katalog bo'ylab ishlaydi.",
   },
   steps: {
+    eyebrow: "Qanday ishlaydi",
     heading: "Uch qadam.",
     lead: "Ro'yxatdan o'tish uzun anketasiz, ilova o'rnatmasdan. Do'kon brauzerda ochiladi.",
     items: [
@@ -140,7 +203,9 @@ const uz: Dictionary = {
     },
   },
   faq: {
-    heading: "Savollar.",
+    eyebrow: "Savollar",
+    heading: "Ko'p so'raladigan savollar.",
+    hint: "Savol ustiga olib boring",
     items: [
       {
         q: "Texnika original va yangi ekaniga qanday ishonaman?",
@@ -169,8 +234,9 @@ const uz: Dictionary = {
     ],
   },
   cta: {
+    eyebrow: "Xush kelibsiz",
     heading: "Do'kon ochiq.",
-    lead: "Katalog, narxlar va to'lov — hammasi bir joyda. Kiring, tanlang, qolganini biz qilamiz.",
+    lead: "Katalog, ranglar va to'lov — hammasi bir joyda. Kiring, tanlang, qolganini biz qilamiz.",
     button: "Do'konga o'tish",
   },
   footer: {
@@ -200,39 +266,85 @@ const ru: Dictionary = {
     language: "Язык",
   },
   hero: {
+    tagline: "Магазин Apple в Ташкенте",
     title: ["От iPhone до MacBook.", "Всё в одном магазине."],
-    lead: `Avenir Store — магазин Apple в Ташкенте. Выбирайте, платите через Click или Payme, получайте за ${site.delivery.expressDays} дня.`,
+    lead: `Выбирайте, платите через Click или Payme, получайте за ${site.delivery.expressDays} дня. Оригинальная техника, с гарантией.`,
     primary: "Перейти в магазин",
-    secondary: "Смотреть цены",
+    secondary: "Смотреть каталог",
     scroll: "Листайте",
     look: "Смотреть",
     counter: "{n} / {total}",
   },
   marquee: { prefix: "Сейчас в продаже" },
   lineup: {
+    eyebrow: "Каталог",
     heading: "Вся линейка Apple.",
-    lead: "Пять направлений, в каждом — новые модели и цена входа. Точная цена и выбор цвета — в магазине.",
-    open: "Открыть в магазине",
+    lead: "Пять разделов магазина. В каждом — новые модели, цвета и варианты памяти.",
+    open: "Смотреть",
+    all: "Весь каталог",
+    allLead: "Все модели, цвета и комплекты — в магазине.",
   },
-  featured: {
+  spotlight: {
+    eyebrow: "Витрина",
+    heading: "Рассмотрите поближе.",
+    beats: [
+      {
+        title: "iPhone 17 Pro",
+        text: "Самый мощный iPhone. Три камеры по 48 МП, чип A19 Pro и батарея на весь день.",
+        points: ["Чип A19 Pro", "Камеры 48 МП", "Батарея на весь день"],
+        note: "В титановых и алюминиевых цветах",
+      },
+      {
+        title: "MacBook Air M5",
+        text: "Тонкий, тихий и быстрый. Полный рабочий день на одном заряде и вес, который не замечаешь в сумке.",
+        points: ["Чип M5", "До 18 часов батареи", "Без вентилятора"],
+        note: "13 и 15 дюймов",
+      },
+      {
+        title: "Apple Watch Ultra 3",
+        text: "Одни часы для гор, воды и города. Титановый корпус, самый яркий экран и батарея на два дня.",
+        points: ["Титановый корпус", "До 42 часов батареи", "Водостойкость 100 м"],
+        note: "49 мм",
+      },
+    ],
+  },
+  arrivals: {
+    eyebrow: "Новинки",
     heading: "Чаще всего спрашивают.",
-    lead: "Шесть самых популярных устройств этой недели. Цены указаны за стартовую конфигурацию.",
+    lead: "Самые популярные устройства этой недели. Цена и полное описание — в магазине.",
     open: "Смотреть",
     all: "Открыть весь каталог",
   },
-  trust: {
+  why: {
+    eyebrow: "Почему Avenir Store",
     heading: "Как работает магазин.",
-    items: [
-      { title: "Только оригинальный Apple", text: "Каждое устройство продаётся с серийным номером и гарантией." },
-      {
-        title: `По Ташкенту за ${site.delivery.expressDays} дня`,
-        text: `Экспресс ${site.delivery.expressDays} дня, в регионы ${site.delivery.standardDays} дней. Курьер привозит до двери.`,
-      },
-      { title: "Click, Payme, Uzcard, Humo", text: "Оплата онлайн в магазине, данные карты у нас не хранятся." },
-      { title: `Возврат в течение ${site.returnDays} рабочих дней`, text: "Если устройство не использовалось и комплект полный — вернём деньги." },
-    ],
+    original: {
+      title: "Только оригинальный Apple",
+      text: "Каждое устройство приходит с серийным номером, его можно проверить на сайте Apple. Продаём с гарантией.",
+    },
+    delivery: {
+      figure: site.delivery.expressDays,
+      unit: "дня",
+      title: "Доставка по Ташкенту",
+      text: `Экспресс ${site.delivery.expressDays} дня, в регионы ${site.delivery.standardDays} дней. Курьер привозит до двери.`,
+    },
+    payments: {
+      title: "Оплата — как вам удобно",
+      text: "Платите онлайн в магазине. Данные карты у нас не хранятся.",
+    },
+    returns: {
+      figure: String(site.returnDays),
+      unit: "рабочих дня",
+      title: "Время на возврат",
+      text: "Если устройство не использовалось и комплект полный — вернём деньги.",
+    },
+    support: {
+      title: "Поддержка внутри магазина",
+      text: "На вопросы о заказе, гарантии или обмене отвечаем в магазине.",
+    },
   },
   search: {
+    eyebrow: "Поиск",
     heading: "Поиск понимает обычные слова.",
     lead: "Не нужно знать название модели. Напишите «iPhone с хорошей камерой» или «лёгкий ноутбук для студента» — магазин сам подберёт устройства.",
     placeholder: "Что нужно? Напишите простыми словами",
@@ -249,6 +361,7 @@ const ru: Dictionary = {
     hint: "Это маленький образец того же поиска. В магазине он работает по всему каталогу.",
   },
   steps: {
+    eyebrow: "Как это работает",
     heading: "Три шага.",
     lead: "Без длинных анкет и установки приложений. Магазин открывается в браузере.",
     items: [
@@ -273,7 +386,9 @@ const ru: Dictionary = {
     },
   },
   faq: {
-    heading: "Вопросы.",
+    eyebrow: "Вопросы",
+    heading: "Частые вопросы.",
+    hint: "Наведите на вопрос",
     items: [
       {
         q: "Как убедиться, что техника оригинальная и новая?",
@@ -302,8 +417,9 @@ const ru: Dictionary = {
     ],
   },
   cta: {
+    eyebrow: "Добро пожаловать",
     heading: "Магазин открыт.",
-    lead: "Каталог, цены и оплата — в одном месте. Заходите, выбирайте, остальное сделаем мы.",
+    lead: "Каталог, цвета и оплата — в одном месте. Заходите, выбирайте, остальное сделаем мы.",
     button: "Перейти в магазин",
   },
   footer: {
@@ -333,39 +449,85 @@ const en: Dictionary = {
     language: "Language",
   },
   hero: {
+    tagline: "The Apple store in Tashkent",
     title: ["From iPhone to MacBook.", "All in one store."],
-    lead: `Avenir Store is an Apple store in Tashkent. Choose, pay with Click or Payme, and have it in ${site.delivery.expressDays} days.`,
+    lead: `Choose, pay with Click or Payme, and have it in ${site.delivery.expressDays} days. Genuine devices, with a warranty.`,
     primary: "Go to the store",
-    secondary: "See prices",
+    secondary: "Browse the catalog",
     scroll: "Scroll",
     look: "View",
     counter: "{n} of {total}",
   },
   marquee: { prefix: "In stock now" },
   lineup: {
+    eyebrow: "Catalog",
     heading: "The whole Apple lineup.",
-    lead: "Five lines, each with the new models and its starting price. Exact prices and colours are in the store.",
-    open: "Open in the store",
+    lead: "The store's five sections. Each with the new models, colours and storage options.",
+    open: "View",
+    all: "Full catalog",
+    allLead: "Every model, colour and bundle is in the store.",
   },
-  featured: {
+  spotlight: {
+    eyebrow: "Showcase",
+    heading: "Take a closer look.",
+    beats: [
+      {
+        title: "iPhone 17 Pro",
+        text: "The most capable iPhone. Three 48 MP cameras, the A19 Pro chip and a battery that lasts the day.",
+        points: ["A19 Pro chip", "48 MP cameras", "All-day battery"],
+        note: "In titanium and aluminium colours",
+      },
+      {
+        title: "MacBook Air M5",
+        text: "Thin, silent and fast. A full working day on one charge and a weight you forget in the bag.",
+        points: ["M5 chip", "Up to 18 hours of battery", "Fanless, silent"],
+        note: "13 and 15 inch",
+      },
+      {
+        title: "Apple Watch Ultra 3",
+        text: "One watch for mountains, water and the city. Titanium case, the brightest display and a two-day battery.",
+        points: ["Titanium case", "Up to 42 hours of battery", "Water resistant to 100 m"],
+        note: "49 mm",
+      },
+    ],
+  },
+  arrivals: {
+    eyebrow: "New arrivals",
     heading: "Most asked for right now.",
-    lead: "The six most popular devices this week. Prices are for the base configuration.",
+    lead: "The most popular devices this week. Prices and full details are in the store.",
     open: "View",
     all: "Open the full catalog",
   },
-  trust: {
+  why: {
+    eyebrow: "Why Avenir Store",
     heading: "How the store works.",
-    items: [
-      { title: "Only genuine Apple", text: "Every device is sold with its serial number and a warranty." },
-      {
-        title: `Across Tashkent in ${site.delivery.expressDays} days`,
-        text: `Express in ${site.delivery.expressDays} days, regions in ${site.delivery.standardDays}. The courier brings it to your door.`,
-      },
-      { title: "Click, Payme, Uzcard, Humo", text: "You pay online in the store; we never store card details." },
-      { title: `Returns within ${site.returnDays} business days`, text: "If the device is unused and the box is complete, you get a refund." },
-    ],
+    original: {
+      title: "Only genuine Apple",
+      text: "Every device comes with its serial number, which you can check on Apple's site. Sold with a warranty.",
+    },
+    delivery: {
+      figure: site.delivery.expressDays,
+      unit: "days",
+      title: "Delivery across Tashkent",
+      text: `Express in ${site.delivery.expressDays} days, regions in ${site.delivery.standardDays}. The courier brings it to your door.`,
+    },
+    payments: {
+      title: "Pay the way you like",
+      text: "You pay online in the store. We never store card details.",
+    },
+    returns: {
+      figure: String(site.returnDays),
+      unit: "business days",
+      title: "Time to return",
+      text: "If the device is unused and the box is complete, you get a refund.",
+    },
+    support: {
+      title: "Help inside the store",
+      text: "Questions about an order, the warranty or an exchange are answered in the store.",
+    },
   },
   search: {
+    eyebrow: "Search",
     heading: "Search understands plain words.",
     lead: "No need to know the model name. Type “iPhone with a great camera” or “light laptop for a student” and the store finds the matching devices.",
     placeholder: "What do you need? Say it in plain words",
@@ -382,6 +544,7 @@ const en: Dictionary = {
     hint: "This is a small sample of the same search. In the store it runs over the whole catalog.",
   },
   steps: {
+    eyebrow: "How it works",
     heading: "Three steps.",
     lead: "No long sign-up forms, no app to install. The store opens in your browser.",
     items: [
@@ -406,7 +569,9 @@ const en: Dictionary = {
     },
   },
   faq: {
-    heading: "Questions.",
+    eyebrow: "Questions",
+    heading: "Frequently asked.",
+    hint: "Hover over a question",
     items: [
       {
         q: "How do I know the device is genuine and new?",
@@ -435,8 +600,9 @@ const en: Dictionary = {
     ],
   },
   cta: {
+    eyebrow: "Welcome",
     heading: "The store is open.",
-    lead: "Catalog, prices and payment in one place. Come in, choose, and we handle the rest.",
+    lead: "Catalog, colours and payment in one place. Come in, choose, and we handle the rest.",
     button: "Go to the store",
   },
   footer: {

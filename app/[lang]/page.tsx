@@ -4,8 +4,9 @@ import { getDictionary } from "@/lib/i18n";
 import { Hero } from "@/components/hero/Hero";
 import { Marquee } from "@/components/sections/Marquee";
 import { Lineup } from "@/components/sections/Lineup";
-import { Featured } from "@/components/sections/Featured";
-import { Trust } from "@/components/sections/Trust";
+import { Spotlight } from "@/components/sections/Spotlight";
+import { Arrivals } from "@/components/sections/Arrivals";
+import { WhyUs } from "@/components/sections/WhyUs";
 import { SearchDemo } from "@/components/sections/SearchDemo";
 import { Steps } from "@/components/sections/Steps";
 import { Faq } from "@/components/sections/Faq";
@@ -22,8 +23,9 @@ export default async function LandingPage({ params }: PageProps<"/[lang]">) {
       <Hero lang={lang} t={t.hero} />
       <Marquee lang={lang} t={t.marquee} />
       <Lineup lang={lang} t={t.lineup} />
-      <Featured lang={lang} t={t.featured} />
-      <Trust t={t.trust} />
+      <Spotlight t={t.spotlight} look={t.hero.look} />
+      <Arrivals lang={lang} t={t.arrivals} />
+      <WhyUs t={t.why} />
       <SearchDemo lang={lang} t={t.search} />
       <Steps lang={lang} t={t.steps} />
       <Faq t={t.faq} />

@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 /* ---------- Design tokens ----------------------------------------------
-   Palette: the Avenir family palette (deep navy + one electric blue) with a
-   single "daylight" room for the how-it-works section.
+   Palette: the Avenir family palette (deep navy + one electric blue), a warm
+   "sand" for the serif accents, and a light room that matches the storefront.
 ------------------------------------------------------------------------ */
 @theme {
   --color-night: #02101f;
@@ -15,6 +15,8 @@
   --color-line: rgb(243 246 251 / 0.1);
   --color-mark: #2563eb;
   --color-mark-2: #60a5fa;
+  --color-sand: #e8d5b0;
+  --color-sand-2: #c9a96e;
   --color-day: #f4f6fa;
   --color-day-2: #e6ebf3;
   --color-day-ink: #0b1c33;
@@ -22,6 +24,7 @@
 
   --font-display: var(--font-unbounded), "Unbounded", "Manrope", system-ui, sans-serif;
   --font-sans: var(--font-manrope), "Manrope", "Segoe UI", system-ui, sans-serif;
+  --font-serif: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
@@ -103,7 +106,13 @@
   [data-reveal] {
     opacity: 0;
   }
-
+  /* headings stay invisible until SplitText has measured them */
+  [data-split] {
+    visibility: hidden;
+  }
+  [data-split].is-split {
+    visibility: visible;
+  }
 
   @media (prefers-reduced-motion: reduce) {
     *,
@@ -116,6 +125,9 @@
     [data-reveal] {
       opacity: 1;
     }
+    [data-split] {
+      visibility: visible;
+    }
   }
 }
 
@@ -127,7 +139,7 @@
   }
 
   /* Type scale. Display: Unbounded, wide geometric, tight tracking.
-     Body: Manrope, generous leading. */
+     Body: Manrope, generous leading. Accent: Cormorant Garamond italic. */
   .t-display {
     font-family: var(--font-display);
     font-weight: 600;
@@ -166,6 +178,55 @@
     font-variant-numeric: tabular-nums;
     font-feature-settings: "tnum" 1;
     letter-spacing: -0.01em;
+  }
+  .t-eyebrow {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(1.2rem, 1rem + 0.5vw, 1.5rem);
+    line-height: 1.2;
+    letter-spacing: 0.01em;
+    color: var(--color-sand);
+  }
+  .t-eyebrow-day {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 1.2rem;
+    line-height: 1.2;
+    color: var(--color-mark);
+  }
+  .t-figure {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(4rem, 3rem + 3vw, 6.5rem);
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    color: var(--color-sand);
+    font-variant-numeric: lining-nums;
+  }
+  .t-figure__unit {
+    display: block;
+    margin-top: 0.5rem;
+    font-family: var(--font-sans);
+    font-style: normal;
+    font-weight: 500;
+    font-size: 0.95rem;
+    letter-spacing: 0;
+    color: var(--color-ink-2);
+  }
+  .t-figure-sm {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 600;
+    font-size: 1.75rem;
+    line-height: 1;
+    color: var(--color-mark);
+  }
+  .split-line {
+    padding-bottom: 0.08em;
+    margin-bottom: -0.08em;
   }
 
   /* Buttons: solid (the one action) and quiet (everything else). */
@@ -219,6 +280,41 @@
     background: #14294a;
   }
 
+  /* Chips and payment rails */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    border-radius: var(--radius-pill);
+    padding: 0.4rem 0.85rem;
+    font-size: 0.85rem;
+    color: var(--color-ink-2);
+    background: rgb(243 246 251 / 0.05);
+    box-shadow: inset 0 0 0 1px rgb(243 246 251 / 0.1);
+  }
+  .chip--button {
+    transition:
+      background-color 0.3s var(--ease-out-quart),
+      color 0.3s var(--ease-out-quart);
+  }
+  .chip--button:hover {
+    background: rgb(243 246 251 / 0.11);
+    color: var(--color-ink);
+  }
+  .pay {
+    display: inline-flex;
+    align-items: center;
+    height: 2.4rem;
+    padding-inline: 1rem;
+    border-radius: 0.7rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: -0.01em;
+    color: var(--color-ink);
+    background: linear-gradient(180deg, rgb(243 246 251 / 0.1), rgb(243 246 251 / 0.04));
+    box-shadow: inset 0 0 0 1px rgb(243 246 251 / 0.12);
+  }
+
   /* Glow tiles: 1px gradient border via mask-composite that lights up on
      hover. --gx/--gy set the glow origin; JS moves it under the pointer. */
   .tile {
@@ -263,6 +359,133 @@
   }
   .tile:hover::before {
     opacity: 1;
+  }
+
+  /* Light tiles (catalog and arrivals chapters) */
+  .tile-day {
+    --gx: 50%;
+    --gy: 0%;
+    position: relative;
+    isolation: isolate;
+    border-radius: var(--radius-tile);
+    background:
+      radial-gradient(70% 60% at var(--gx) var(--gy), rgb(37 99 235 / 0.1), transparent 70%),
+      #ffffff;
+    box-shadow:
+      inset 0 0 0 1px rgb(11 28 51 / 0.07),
+      0 30px 60px -45px rgb(11 28 51 / 0.35);
+    transform-style: preserve-3d;
+    transition: box-shadow 0.7s var(--ease-out-expo);
+  }
+  .tile-day:hover {
+    box-shadow:
+      inset 0 0 0 1px rgb(37 99 235 / 0.25),
+      0 40px 80px -40px rgb(37 99 235 / 0.35);
+  }
+  .tile-day__render {
+    transition: transform 0.9s var(--ease-out-expo);
+    will-change: transform;
+  }
+  .tile-day:hover .tile-day__render {
+    transform: translate3d(-2%, -2%, 0) scale(1.04);
+  }
+  .link-day {
+    position: relative;
+    font-weight: 600;
+    color: var(--color-mark);
+  }
+  .link-day::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -0.2em;
+    height: 1.5px;
+    width: 100%;
+    background: currentColor;
+    transform: scaleX(0.35);
+    transform-origin: left;
+    transition: transform 0.5s var(--ease-out-expo);
+  }
+  .group:hover .link-day::after {
+    transform: scaleX(1);
+  }
+  .tile-cta {
+    border-radius: var(--radius-tile);
+    background:
+      radial-gradient(80% 70% at 100% 100%, rgb(37 99 235 / 0.35), transparent 70%),
+      linear-gradient(160deg, #0a2f52, #061a31);
+    color: var(--color-ink);
+    box-shadow: 0 40px 80px -40px rgb(11 28 51 / 0.6);
+  }
+
+  /* Shine border (adapted from Magic UI's shine-border) */
+  .shine {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background-image: radial-gradient(
+      transparent,
+      transparent,
+      var(--color-mark-2),
+      var(--color-sand),
+      transparent,
+      transparent
+    );
+    background-size: 300% 300%;
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    animation: shine 14s linear infinite;
+    opacity: 0.9;
+  }
+  @keyframes shine {
+    0% {
+      background-position: 0% 0%;
+    }
+    50% {
+      background-position: 100% 100%;
+    }
+    100% {
+      background-position: 0% 0%;
+    }
+  }
+
+  /* Border beam (adapted from Magic UI's border-beam): a light runs around the edge */
+  .beam::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    background: conic-gradient(
+      from var(--beam-angle, 0deg),
+      transparent 0 70%,
+      var(--color-mark-2) 85%,
+      var(--color-sand) 92%,
+      transparent 100%
+    );
+    pointer-events: none;
+    animation: beam 7s linear infinite;
+  }
+  @keyframes beam {
+    to {
+      --beam-angle: 360deg;
+    }
   }
 
   .rule-top {
@@ -392,6 +615,54 @@
     }
   }
 
+  /* ---------- Language menu -------------------------------------------- */
+  .lang-menu {
+    transform-origin: top right;
+    animation: menu-in 0.35s var(--ease-out-expo);
+  }
+  @keyframes menu-in {
+    from {
+      opacity: 0;
+      transform: translateY(-6px) scale(0.98);
+    }
+  }
+
+  /* ---------- Spotlight chapter ---------------------------------------- */
+  .spot {
+    background:
+      radial-gradient(50% 40% at 25% 40%, rgb(37 99 235 / 0.16), transparent 70%),
+      var(--color-night);
+  }
+  .spot__glow {
+    position: absolute;
+    left: 5%;
+    top: 30%;
+    width: 40%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgb(96 165 250 / 0.22), rgb(37 99 235 / 0.08) 45%, transparent 70%);
+    pointer-events: none;
+  }
+  .spot__render {
+    opacity: 0;
+    transform: scale(0.94) translateY(2%);
+    transition:
+      opacity 0.9s var(--ease-out-expo),
+      transform 1.1s var(--ease-out-expo);
+    filter: drop-shadow(0 40px 60px rgb(0 0 0 / 0.5));
+  }
+  .spot__render.is-active {
+    opacity: 1;
+    transform: none;
+  }
+  .spot__beat {
+    transition: opacity 0.6s var(--ease-out-quart);
+  }
+  @media (min-width: 64rem) {
+    .spot__beat:not(.is-active) {
+      opacity: 0.35;
+    }
+  }
 
   /* ---------- Final CTA orb -------------------------------------------- */
   .cta__orb {
@@ -415,18 +686,7 @@
     }
   }
 
-  .lang-menu {
-    transform-origin: top right;
-    animation: menu-in 0.35s var(--ease-out-expo);
-  }
-  @keyframes menu-in {
-    from {
-      opacity: 0;
-      transform: translateY(-6px) scale(0.98);
-    }
-  }
-
-  /* Day room (light section) */
+  /* ---------- Day room (light chapters) ------------------------------- */
   .day {
     background: var(--color-day);
     color: var(--color-day-ink);
@@ -436,8 +696,14 @@
     background: var(--color-day-ink);
     color: #fff;
   }
+  .day .t-lead {
+    color: var(--color-day-ink-2);
+  }
+  .day .t-eyebrow {
+    color: var(--color-mark);
+  }
 
-  /* Phone mock */
+  /* ---------- Phone mock ----------------------------------------------- */
   .phone {
     width: min(100%, 19rem);
     aspect-ratio: 9 / 18.5;
@@ -461,7 +727,7 @@
     flex-direction: column;
   }
 
-  /* FAQ */
+  /* ---------- FAQ -------------------------------------------------------- */
   details.faq > summary {
     list-style: none;
     cursor: pointer;
@@ -470,10 +736,19 @@
     display: none;
   }
   details.faq .faq__icon {
-    transition: transform 0.5s var(--ease-out-expo);
+    transition:
+      transform 0.5s var(--ease-out-expo),
+      background-color 0.4s var(--ease-out-quart);
   }
   details.faq[open] .faq__icon {
     transform: rotate(45deg);
+    background: var(--color-mark);
+  }
+  details.faq > summary .t-h3 {
+    transition: color 0.4s var(--ease-out-quart);
+  }
+  details.faq[open] > summary .t-h3 {
+    color: var(--color-sand);
   }
   .faq__content {
     overflow: hidden;
@@ -485,8 +760,17 @@
     }
     .hero__aurora,
     .cta__orb,
-    .marquee__track {
+    .marquee__track,
+    .shine,
+    .beam::after {
       animation: none;
     }
   }
+}
+
+/* Registered so the beam angle can animate (must live outside @layer). */
+@property --beam-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
 }

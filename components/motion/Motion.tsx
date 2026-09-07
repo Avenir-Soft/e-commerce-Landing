@@ -3,21 +3,24 @@
 import { useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { SplitText } from "gsap/SplitText";
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, SplitText);
 
 /**
- * Page-wide motion: scroll reveals, magnetic buttons, tilting tiles and
- * animated FAQ panels. Everything is disabled under reduced motion; pointer
- * effects only run for fine pointers.
+ * Page-wide motion: masked line reveals for headings, scroll reveals, magnetic
+ * buttons, tilting tiles and hover-opened FAQ panels. Everything is disabled
+ * under reduced motion; pointer effects only run for fine pointers.
  */
 export function Motion() {
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const fine = window.matchMedia("(pointer: fine)").matches;
     const cleanups: (() => void)[] = [];
+    let cancelled = false;
 
-    // ---- scroll reveals ----
+    // ---- headings: each line rises out of a mask once the fonts are in ----
+    const splits: SplitText[] = [];
     const ctx = gsap.context(() => {
       const items = gsap.utils.toArray<HTMLElement>("[data-reveal]");
       if (reduce) {
@@ -34,35 +37,76 @@ export function Motion() {
     });
     cleanups.push(() => ctx.revert());
 
-    // ---- FAQ panels ----
+    document.fonts.ready.then(() => {
+      if (cancelled) return;
+      const heads = gsap.utils.toArray<HTMLElement>("[data-split]");
+      if (reduce) {
+        heads.forEach((h) => h.classList.add("is-split"));
+        return;
+      }
+      ctx.add(() => {
+        heads.forEach((h) => {
+          const split = SplitText.create(h, { type: "lines", mask: "lines", linesClass: "split-line" });
+          splits.push(split);
+          h.classList.add("is-split");
+          gsap.from(split.lines, {
+            yPercent: 110,
+            duration: 1.1,
+            ease: "expo.out",
+            stagger: 0.09,
+            scrollTrigger: { trigger: h, start: "top 88%", once: true },
+          });
+        });
+      });
+    });
+    cleanups.push(() => {
+      cancelled = true;
+      splits.forEach((s) => s.revert());
+    });
+
+    // ---- FAQ panels: hover opens on fine pointers, tap toggles everywhere ----
     document.querySelectorAll<HTMLDetailsElement>("details.faq").forEach((details) => {
       const summary = details.querySelector("summary");
       const content = details.querySelector<HTMLElement>(".faq__content");
       if (!summary || !content) return;
-      const onClick = (e: Event) => {
-        e.preventDefault();
+      const open = () => {
+        if (details.open) return;
+        details.open = true;
+        if (!reduce) gsap.from(content, { height: 0, opacity: 0, duration: 0.6, ease: "expo.out", clearProps: "all", overwrite: true });
+      };
+      const close = () => {
+        if (!details.open) return;
         if (reduce) {
-          details.open = !details.open;
+          details.open = false;
           return;
         }
-        if (details.open) {
-          gsap.to(content, {
-            height: 0,
-            opacity: 0,
-            duration: 0.45,
-            ease: "expo.out",
-            onComplete: () => {
-              details.open = false;
-              gsap.set(content, { clearProps: "all" });
-            },
-          });
-        } else {
-          details.open = true;
-          gsap.from(content, { height: 0, opacity: 0, duration: 0.65, ease: "expo.out", clearProps: "all" });
-        }
+        gsap.to(content, {
+          height: 0,
+          opacity: 0,
+          duration: 0.4,
+          ease: "expo.out",
+          overwrite: true,
+          onComplete: () => {
+            details.open = false;
+            gsap.set(content, { clearProps: "all" });
+          },
+        });
+      };
+      const onClick = (e: Event) => {
+        e.preventDefault();
+        if (details.open) close();
+        else open();
       };
       summary.addEventListener("click", onClick);
       cleanups.push(() => summary.removeEventListener("click", onClick));
+      if (fine) {
+        details.addEventListener("pointerenter", open);
+        details.addEventListener("pointerleave", close);
+        cleanups.push(() => {
+          details.removeEventListener("pointerenter", open);
+          details.removeEventListener("pointerleave", close);
+        });
+      }
     });
 
     if (!fine || reduce) return () => cleanups.forEach((fn) => fn());
@@ -93,8 +137,8 @@ export function Motion() {
         tile.style.setProperty("--gx", `${(px * 100).toFixed(1)}%`);
         tile.style.setProperty("--gy", `${(py * 100).toFixed(1)}%`);
         gsap.to(tile, {
-          rotateY: (px - 0.5) * 8,
-          rotateX: (0.5 - py) * 8,
+          rotateY: (px - 0.5) * 7,
+          rotateX: (0.5 - py) * 7,
           transformPerspective: 1100,
           duration: 0.6,
           ease: "expo.out",

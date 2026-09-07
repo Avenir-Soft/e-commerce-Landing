@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Dictionary } from "@/lib/i18n";
 import type { CategoryId } from "@/lib/catalog";
+import { storeLinks } from "@/lib/site";
 
 export interface SearchItem {
   id: string;
@@ -10,7 +11,8 @@ export interface SearchItem {
   category: CategoryId;
   categoryName: string;
   spec: string;
-  price: string;
+  /** Null when prices are hidden on the landing. */
+  price: string | null;
   tags: string[];
 }
 
@@ -40,7 +42,6 @@ function score(item: SearchItem, query: string): number {
   const name = item.name.toLowerCase();
   if (tokens.some((w) => name.includes(w))) s += 2;
   if (aliases[item.category].some((a) => q.includes(a))) s += 2;
-  // "cheap"/"best" style words push the extremes
   return s;
 }
 
@@ -94,15 +95,22 @@ export function SearchDemoClient({ t, items }: { t: Dictionary["search"]; items:
   return (
     <section id="search" className="py-24 md:py-32" aria-labelledby="search-title">
       <div className="shell grid items-center gap-12 lg:grid-cols-[5fr_6fr] lg:gap-20">
-        <div data-reveal>
-          <h2 id="search-title" className="t-h2">
+        <div>
+          <p className="t-eyebrow" data-reveal>
+            {t.eyebrow}
+          </p>
+          <h2 id="search-title" className="t-h2 mt-3" data-split>
             {t.heading}
           </h2>
-          <p className="t-lead mt-5">{t.lead}</p>
-          <p className="mt-6 text-ink-3 t-small">{t.hint}</p>
+          <p className="t-lead mt-5" data-reveal>
+            {t.lead}
+          </p>
+          <p className="mt-6 text-ink-3 t-small" data-reveal>
+            {t.hint}
+          </p>
         </div>
 
-        <div className="tile min-w-0 p-3 sm:p-4" style={{ "--gx": "80%", "--gy": "0%" } as React.CSSProperties} data-reveal>
+        <div className="tile beam min-w-0 p-3 sm:p-4" style={{ "--gx": "80%", "--gy": "0%" } as React.CSSProperties} data-reveal>
           <label className="flex items-center gap-3 rounded-2xl bg-night/70 px-4 py-3.5 ring-1 ring-line focus-within:ring-mark-2">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="shrink-0 text-ink-3">
               <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
@@ -136,7 +144,7 @@ export function SearchDemoClient({ t, items }: { t: Dictionary["search"]; items:
                   setQuery(ex);
                   inputRef.current?.focus();
                 }}
-                className="rounded-full bg-white/[0.05] px-3 py-1.5 text-[0.85rem] text-ink-2 transition-colors hover:bg-white/[0.1] hover:text-ink"
+                className="chip chip--button"
               >
                 {ex}
               </button>
@@ -148,17 +156,26 @@ export function SearchDemoClient({ t, items }: { t: Dictionary["search"]; items:
               <li className="px-3 py-4 text-ink-2">{t.empty}</li>
             )}
             {results.map((r, i) => (
-              <li
-                key={r.id}
-                className="flex items-center justify-between gap-4 rounded-xl bg-white/[0.04] px-4 py-3 transition-[background-color] duration-300 hover:bg-white/[0.07]"
-                style={{ animation: `result-in 0.6s var(--ease-out-expo) both`, animationDelay: `${i * 60}ms` }}
-              >
-                <div className="min-w-0">
-                  <p className="text-ink-3 t-small">{r.categoryName}</p>
-                  <p className="truncate font-semibold">{r.name}</p>
-                  <p className="text-ink-2 t-small">{r.spec}</p>
-                </div>
-                <span className="t-num shrink-0 font-semibold">{r.price}</span>
+              <li key={r.id} style={{ animation: `result-in 0.6s var(--ease-out-expo) both`, animationDelay: `${i * 60}ms` }}>
+                <a
+                  href={storeLinks.search(r.name)}
+                  target="_blank"
+                  rel="noopener"
+                  className="flex items-center justify-between gap-4 rounded-xl bg-white/[0.04] px-4 py-3 transition-[background-color] duration-300 hover:bg-white/[0.07]"
+                >
+                  <div className="min-w-0">
+                    <p className="text-ink-3 t-small">{r.categoryName}</p>
+                    <p className="truncate font-semibold">{r.name}</p>
+                    <p className="text-ink-2 t-small">{r.spec}</p>
+                  </div>
+                  {r.price ? (
+                    <span className="t-num shrink-0 font-semibold">{r.price}</span>
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="shrink-0 text-ink-3">
+                      <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                </a>
               </li>
             ))}
           </ul>

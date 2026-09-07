@@ -1,17 +1,25 @@
 import type { Lang } from "./languages";
 
-// Names and "from" prices reflect the Tashkent market on 2026-09-07 (source: the
-// Shopify JSON feed of macbro.uz, the same feed E-COMMERCE/backend/scripts/seed_macbro.py
-// imports from). Prices are in UZS. Replace with the store's own catalog before launch.
+// Names reflect the Tashkent market on 2026-09-07 (source: the Shopify JSON feed of
+// macbro.uz, the same feed E-COMMERCE/backend/scripts/seed_macbro.py imports from).
+// Prices are in UZS and only rendered when `site.showPrices` is true.
+// Replace with the store's own catalog before launch.
 
 export type CategoryId = "iphone" | "mac" | "ipad" | "watch" | "airpods";
 
 export interface Category {
   id: CategoryId;
+  /** The Apple line, used as the tile title. */
   name: string;
+  /** The store's own category name (E-COMMERCE categories: phones, laptops, tablets, wearables, accessories). */
+  storeName: Record<Lang, string>;
   models: Record<Lang, string>;
+  /** Query for the store's search, which understands product-line names. */
+  query: string;
+  /** Transparent still rendered from the 3D model (public/renders). */
+  render: string;
   from: number;
-  /** Position on the showroom ring and in the lineup section. */
+  /** Position on the showroom and in the catalog grid. */
   order: number;
 }
 
@@ -30,55 +38,70 @@ export const categories: Category[] = [
   {
     id: "iphone",
     name: "iPhone",
+    storeName: { uz: "Telefonlar", ru: "Телефоны", en: "Phones" },
     models: {
       uz: "iPhone 17, Air, 17 Pro, 17 Pro Max va 16-seriya",
       ru: "iPhone 17, Air, 17 Pro, 17 Pro Max и серия 16",
       en: "iPhone 17, Air, 17 Pro, 17 Pro Max and the 16 series",
     },
+    query: "iPhone",
+    render: "/renders/iphone.webp",
     from: 10_734_000,
     order: 0,
   },
   {
     id: "mac",
     name: "MacBook",
+    storeName: { uz: "Noutbuklar", ru: "Ноутбуки", en: "Laptops" },
     models: {
       uz: "Air M5, Pro 14 va 16 (M5, M5 Pro, M5 Max)",
       ru: "Air M5, Pro 14 и 16 (M5, M5 Pro, M5 Max)",
       en: "Air M5, Pro 14 and 16 (M5, M5 Pro, M5 Max)",
     },
+    query: "MacBook",
+    render: "/renders/macbook.webp",
     from: 9_792_000,
     order: 1,
   },
   {
     id: "ipad",
     name: "iPad",
+    storeName: { uz: "Planshetlar", ru: "Планшеты", en: "Tablets" },
     models: {
       uz: "iPad A16, Air M4, Pro M5",
       ru: "iPad A16, Air M4, Pro M5",
       en: "iPad A16, Air M4, Pro M5",
     },
+    query: "iPad",
+    render: "/renders/ipad.webp",
     from: 6_296_000,
     order: 2,
   },
   {
     id: "watch",
     name: "Apple Watch",
+    storeName: { uz: "Soatlar", ru: "Часы", en: "Watches" },
     models: {
       uz: "SE 2, Series 11, Ultra 3",
       ru: "SE 2, Series 11, Ultra 3",
       en: "SE 2, Series 11, Ultra 3",
     },
+    query: "Apple Watch",
+    render: "/renders/watch.webp",
     from: 3_386_000,
     order: 3,
   },
   {
     id: "airpods",
     name: "AirPods",
+    storeName: { uz: "Aksessuarlar", ru: "Аксессуары", en: "Accessories" },
     models: {
       uz: "AirPods 4, Pro 3, Max 2",
       ru: "AirPods 4, Pro 3, Max 2",
       en: "AirPods 4, Pro 3, Max 2",
     },
+    query: "AirPods",
+    render: "/renders/airpods.webp",
     from: 1_785_000,
     order: 4,
   },
@@ -299,6 +322,10 @@ export const products: Product[] = [
 ];
 
 export const featuredProducts = products.filter((p) => p.featured);
+
+export function categoryOf(id: CategoryId): Category {
+  return categories.find((c) => c.id === id)!;
+}
 
 /** One representative per category for the showroom ring, in ring order. */
 export const showroomItems: { category: CategoryId; product: Product }[] = [

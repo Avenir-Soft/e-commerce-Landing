@@ -8,9 +8,9 @@ import { useGSAP } from "@gsap/react";
 import type { Lang } from "@/lib/languages";
 import type { Dictionary } from "@/lib/i18n";
 import { categories, showroomItems } from "@/lib/catalog";
-import { formatFrom } from "@/lib/format";
-import { site } from "@/lib/site";
+import { storeLinks } from "@/lib/site";
 import { BagIcon } from "@/components/layout/Header";
+import { Price } from "@/components/ui/Price";
 import { RING_COUNT, showroomState } from "./store";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -34,15 +34,17 @@ export function Hero({ lang, t }: { lang: Lang; t: Dictionary["hero"] }) {
       const el = root.current!;
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       showroomState.reduced = reduce;
+
       // ---- load choreography ----
       el.removeAttribute("data-pending");
       if (!reduce) {
         gsap
           .timeline({ defaults: { ease: "expo.out" } })
-          .from(el.querySelectorAll(".hero__line > span"), { yPercent: 112, duration: 1.2, stagger: 0.12 }, 0.05)
-          .from(el.querySelector("[data-load='lead']"), { y: 28, opacity: 0, duration: 0.9 }, 0.4)
-          .from(el.querySelectorAll("[data-load='cta'] > *"), { y: 22, opacity: 0, duration: 0.8, stagger: 0.08 }, 0.55)
-          .from(el.querySelector("[data-load='label']"), { y: 30, opacity: 0, duration: 0.9 }, 0.8)
+          .from(el.querySelector("[data-load='tagline']"), { y: 16, opacity: 0, duration: 0.9 }, 0)
+          .from(el.querySelectorAll(".hero__line > span"), { yPercent: 112, duration: 1.2, stagger: 0.12 }, 0.1)
+          .from(el.querySelector("[data-load='lead']"), { y: 28, opacity: 0, duration: 0.9 }, 0.45)
+          .from(el.querySelectorAll("[data-load='cta'] > *"), { y: 22, opacity: 0, duration: 0.8, stagger: 0.08 }, 0.6)
+          .from(el.querySelector("[data-load='label']"), { y: 30, opacity: 0, duration: 0.9 }, 0.85)
           .from(el.querySelector("[data-load='hint']"), { opacity: 0, duration: 0.8 }, 1.1);
       }
 
@@ -116,7 +118,10 @@ export function Hero({ lang, t }: { lang: Lang; t: Dictionary["hero"] }) {
 
       <div className="shell hero__grid">
         <div className="hero__copy">
-          <h1 id="hero-title" className="t-display">
+          <p className="t-eyebrow" data-load="tagline">
+            {t.tagline}
+          </p>
+          <h1 id="hero-title" className="t-display mt-3">
             {t.title.map((line) => (
               <span key={line} className="hero__line">
                 <span>{line}</span>
@@ -127,7 +132,7 @@ export function Hero({ lang, t }: { lang: Lang; t: Dictionary["hero"] }) {
             {t.lead}
           </p>
           <div className="mt-7 flex flex-wrap items-center gap-3" data-load="cta">
-            <a href={site.storeUrl} target="_blank" rel="noopener" className="btn btn-solid">
+            <a href={storeLinks.home} target="_blank" rel="noopener" className="btn btn-solid">
               <BagIcon />
               {t.primary}
             </a>
@@ -144,16 +149,19 @@ export function Hero({ lang, t }: { lang: Lang; t: Dictionary["hero"] }) {
           >
             <div className="min-w-0">
               <p className="text-ink-3 t-small">
-                {category.name}
+                {category.storeName[lang]}
                 <span className="mx-2 opacity-50">·</span>
                 <span className="t-num">{counter}</span>
               </p>
               <p className="t-h3 mt-0.5 truncate" key={item.product.id}>
                 {item.product.name}
               </p>
-              <p className="t-num mt-1 font-semibold text-ink">{formatFrom(item.product.price, lang)}</p>
+              <p className="mt-1 text-ink-2 t-small">
+                {item.product.spec[lang]}
+                <Price value={item.product.price} lang={lang} from className="ml-3 font-semibold text-ink" />
+              </p>
             </div>
-            <a href={site.storeUrl} target="_blank" rel="noopener" className="btn btn-quiet btn-sm shrink-0">
+            <a href={storeLinks.search(item.product.name)} target="_blank" rel="noopener" className="btn btn-quiet btn-sm shrink-0">
               {t.look}
             </a>
           </div>
