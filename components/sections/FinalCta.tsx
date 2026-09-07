@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 import type { Dictionary } from "@/lib/i18n";
-import { storeLinks } from "@/lib/site";
-import { BagIcon } from "@/components/layout/Header";
+import { links } from "@/lib/site";
+import { ArrowIcon } from "@/components/ui/Icons";
 
 export function FinalCta({ t }: { t: Dictionary["cta"] }) {
   return (
@@ -20,10 +20,15 @@ export function FinalCta({ t }: { t: Dictionary["cta"] }) {
               {t.heading}
             </h2>
             <p className="t-lead mt-6">{t.lead}</p>
-            <a href={storeLinks.home} target="_blank" rel="noopener" className="btn btn-solid mt-8">
-              <BagIcon />
-              {t.button}
-            </a>
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <a href={links.contact} target="_blank" rel="noopener" className="btn btn-solid">
+                {t.button}
+                <ArrowIcon />
+              </a>
+              <a href={links.demo} target="_blank" rel="noopener" className="btn btn-quiet">
+                {t.secondary}
+              </a>
+            </div>
           </div>
         </div>
       </div>

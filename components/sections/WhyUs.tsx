@@ -2,16 +2,17 @@ import type { CSSProperties } from "react";
 import type { Dictionary } from "@/lib/i18n";
 import { site } from "@/lib/site";
 import { SectionHead } from "@/components/ui/SectionHead";
+import { LockIcon } from "@/components/ui/Icons";
 
 /*
- * Bento of the five store promises. Sizes differ on purpose: the original
- * guarantee is the big card, the two numbers (days) get the serif figures,
- * payments show the four rails, support closes the row.
+ * Bento of the five platform promises. Sizes differ on purpose: "your brand"
+ * is the big card, the two numbers (payment rails, languages) get the serif
+ * figures, hosting shows the merchant's own domain, support closes the row.
  */
 
 export function WhyUs({ t }: { t: Dictionary["why"] }) {
   return (
-    <section id="trust" className="scroll-mt-20 py-24 md:py-32" aria-labelledby="why-title">
+    <section id="why" className="scroll-mt-20 py-24 md:py-32" aria-labelledby="why-title">
       <div className="shell">
         <SectionHead id="why-title" eyebrow={t.eyebrow} heading={t.heading} />
 
@@ -29,43 +30,59 @@ export function WhyUs({ t }: { t: Dictionary["why"] }) {
               <path d="M100 40 Q100 100 160 100 Q100 100 100 160 Q100 100 40 100 Q100 100 100 40 Z" fill="currentColor" opacity="0.6" />
             </svg>
             <div className="relative max-w-[30rem]">
-              <h3 className="t-h2">{t.original.title}</h3>
-              <p className="mt-4 text-ink-2">{t.original.text}</p>
-            </div>
-          </article>
-
-          <article
-            className="tile relative flex flex-col justify-between p-7 md:col-span-2"
-            style={{ "--gx": "20%", "--gy": "90%" } as CSSProperties}
-            data-reveal
-            data-tilt
-          >
-            <p className="t-figure">
-              {t.delivery.figure}
-              <span className="t-figure__unit">{t.delivery.unit}</span>
-            </p>
-            <div>
-              <h3 className="t-h3">{t.delivery.title}</h3>
-              <p className="mt-2 text-ink-2 t-small">{t.delivery.text}</p>
+              <h3 className="t-h2">{t.brand.title}</h3>
+              <p className="mt-4 text-ink-2">{t.brand.text}</p>
             </div>
           </article>
 
           <article
             className="tile beam relative flex flex-col justify-between p-7 md:col-span-2"
+            style={{ "--gx": "20%", "--gy": "90%" } as CSSProperties}
+            data-reveal
+            data-tilt
+          >
+            <p className="t-figure">
+              {t.payments.figure}
+              <span className="t-figure__unit">{t.payments.unit}</span>
+            </p>
+            <div className="mt-8">
+              <ul className="mb-4 flex flex-wrap gap-2" aria-label={t.payments.title}>
+                {site.payments.map((p) => (
+                  <li key={p} className="pay">
+                    {p}
+                  </li>
+                ))}
+              </ul>
+              <h3 className="t-h3">{t.payments.title}</h3>
+              <p className="mt-2 text-ink-2 t-small">{t.payments.text}</p>
+            </div>
+          </article>
+
+          <article
+            className="tile relative flex flex-col justify-between p-7 md:col-span-2"
             style={{ "--gx": "50%", "--gy": "0%" } as CSSProperties}
             data-reveal
             data-tilt
           >
-            <ul className="flex flex-wrap gap-2" aria-label={t.payments.title}>
-              {site.payments.map((p) => (
-                <li key={p} className="pay">
-                  {p}
-                </li>
-              ))}
-            </ul>
+            <div>
+              <div className="flex items-center gap-2 rounded-full bg-night/70 px-3.5 py-2 text-[0.85rem] ring-1 ring-line">
+                <span className="text-mark-2">
+                  <LockIcon />
+                </span>
+                <span className="text-ink-3">https://</span>
+                <span className="font-semibold text-ink">{t.hosting.domain}</span>
+              </div>
+              <ul className="mt-3 flex flex-wrap gap-1.5" aria-hidden="true">
+                {t.hosting.rails.map((r) => (
+                  <li key={r} className="chip">
+                    {r}
+                  </li>
+                ))}
+              </ul>
+            </div>
             <div className="mt-8">
-              <h3 className="t-h3">{t.payments.title}</h3>
-              <p className="mt-2 text-ink-2 t-small">{t.payments.text}</p>
+              <h3 className="t-h3">{t.hosting.title}</h3>
+              <p className="mt-2 text-ink-2 t-small">{t.hosting.text}</p>
             </div>
           </article>
 
@@ -76,12 +93,12 @@ export function WhyUs({ t }: { t: Dictionary["why"] }) {
             data-tilt
           >
             <p className="t-figure">
-              {t.returns.figure}
-              <span className="t-figure__unit">{t.returns.unit}</span>
+              {t.languages.figure}
+              <span className="t-figure__unit">{t.languages.unit}</span>
             </p>
-            <div>
-              <h3 className="t-h3">{t.returns.title}</h3>
-              <p className="mt-2 text-ink-2 t-small">{t.returns.text}</p>
+            <div className="mt-8">
+              <h3 className="t-h3">{t.languages.title}</h3>
+              <p className="mt-2 text-ink-2 t-small">{t.languages.text}</p>
             </div>
           </article>
 

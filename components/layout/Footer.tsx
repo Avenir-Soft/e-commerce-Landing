@@ -1,17 +1,10 @@
 import Link from "next/link";
 import type { Lang } from "@/lib/languages";
 import type { Dictionary } from "@/lib/i18n";
-import { modelCredits, site } from "@/lib/site";
+import { links, modelCredits, site } from "@/lib/site";
 import { Logo } from "@/components/brand/Logo";
 
-export function Footer({ lang, t }: { lang: Lang; t: Dictionary["footer"] }) {
-  const contacts = [
-    site.contacts.phone && { label: site.contacts.phone, href: `tel:${site.contacts.phone.replace(/\s/g, "")}` },
-    site.contacts.telegram && { label: site.contacts.telegram, href: `https://t.me/${site.contacts.telegram.replace("@", "")}` },
-    site.contacts.instagram && { label: site.contacts.instagram, href: `https://instagram.com/${site.contacts.instagram.replace("@", "")}` },
-    site.contacts.email && { label: site.contacts.email, href: `mailto:${site.contacts.email}` },
-  ].filter(Boolean) as { label: string; href: string }[];
-
+export function Footer({ lang, t, ask }: { lang: Lang; t: Dictionary["footer"]; ask: string }) {
   return (
     <footer className="border-t border-line py-14">
       <div className="shell grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
@@ -20,35 +13,31 @@ export function Footer({ lang, t }: { lang: Lang; t: Dictionary["footer"] }) {
             <Logo />
           </Link>
           <p className="mt-4 max-w-xs text-ink-2">{t.tagline}</p>
+          <ul className="mt-5 flex flex-wrap gap-2" aria-label="Payments">
+            {site.payments.map((p) => (
+              <li key={p} className="pay">
+                {p}
+              </li>
+            ))}
+          </ul>
         </div>
 
         <div className="flex flex-col gap-2 text-ink-2">
-          <a href={site.storeUrl} target="_blank" rel="noopener" className="transition-colors hover:text-ink">
-            {site.storeUrl.replace(/^https?:\/\//, "")}
+          <a href={links.contact} target="_blank" rel="noopener" className="transition-colors hover:text-ink">
+            {ask}
           </a>
-          <a href={`${site.storeUrl}/offer`} className="transition-colors hover:text-ink">
-            {t.offer}
+          <a href={links.demo} target="_blank" rel="noopener" className="transition-colors hover:text-ink">
+            {t.demo}
           </a>
-          <a href={`${site.storeUrl}/privacy`} className="transition-colors hover:text-ink">
-            {t.privacy}
+          <a href={links.developer} target="_blank" rel="noopener" className="transition-colors hover:text-ink">
+            {t.developer}
           </a>
-          {contacts.length > 0 && (
-            <div className="mt-4">
-              <p className="text-ink-3 t-small">{t.contacts}</p>
-              {contacts.map((c) => (
-                <a key={c.href} href={c.href} className="block transition-colors hover:text-ink">
-                  {c.label}
-                </a>
-              ))}
-              {site.contacts.address && <p className="mt-1">{site.contacts.address}</p>}
-            </div>
-          )}
         </div>
 
         <p className="text-ink-3 t-small md:text-right">
           © {new Date().getFullYear()} {site.name}
           <br />
-          <a href={site.developer.url} className="transition-colors hover:text-ink">
+          <a href={links.developer} className="transition-colors hover:text-ink">
             {t.madeBy}
           </a>
         </p>

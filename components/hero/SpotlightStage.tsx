@@ -15,7 +15,7 @@ import { BlobShadow, Dust, Studio } from "./Studio";
  * the next model by scale. Renders only while on screen.
  */
 
-const STAGE_IDS = ["iphone", "macbook", "watch"] as const;
+const STAGE_IDS = ["phone-home", "laptop-dashboard", "tablet-editor"] as const;
 const DPR_MAX = 1.25;
 
 const BEATS = STAGE_IDS.length;

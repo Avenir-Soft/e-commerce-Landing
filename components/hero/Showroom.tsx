@@ -19,14 +19,48 @@ import { BlobShadow, Dust, Studio, useRadialTexture } from "./Studio";
  * 1.25 and lowered further by PerformanceMonitor when frames drop.
  */
 
+/*
+ * The devices are only canvases: each one wears a screen of the platform.
+ * The same phone appears twice with different screens; that is the point.
+ */
 export const MODELS: ModelSpec[] = [
-  { id: "iphone", url: "/models/iphone.glb", size: 1.75, rotation: [0, Math.PI / 2, 0] },
-  { id: "macbook", url: "/models/macbook15.glb", size: 2.3, rotation: [0, -0.35, 0] },
-  { id: "ipad", url: "/models/ipad.glb", size: 1.85, rotation: [0, 0, 0] },
-  { id: "watch", url: "/models/watch.glb", size: 1.35, rotation: [0, 0, 0] },
-  { id: "airpods", url: "/models/airpods.glb", size: 1.25, rotation: [0, -0.5, 0] },
+  {
+    id: "phone-home",
+    url: "/models/iphone.glb",
+    size: 1.75,
+    rotation: [0, Math.PI / 2, 0],
+    screen: { material: "screen.001", url: "/screens/home.webp", flipY: true },
+  },
+  {
+    id: "laptop-dashboard",
+    url: "/models/macbook15.glb",
+    size: 2.3,
+    rotation: [0, -0.35, 0],
+    screen: { material: "VNZklasZKSWjWUk", url: "/screens/dashboard.webp", emissive: true, flipY: true },
+  },
+  {
+    id: "tablet-editor",
+    url: "/models/ipad.glb",
+    size: 1.85,
+    rotation: [0, 0, 0],
+    screen: { material: "screen", url: "/screens/editor.webp", flipY: true },
+  },
+  {
+    id: "phone-checkout",
+    url: "/models/iphone.glb",
+    size: 1.75,
+    rotation: [0, Math.PI / 2, 0],
+    screen: { material: "screen.001", url: "/screens/checkout.webp", flipY: true },
+  },
+  {
+    id: "laptop-orders",
+    url: "/models/macbook15.glb",
+    size: 2.3,
+    rotation: [0, -0.35, 0],
+    screen: { material: "VNZklasZKSWjWUk", url: "/screens/orders.webp", emissive: true, flipY: true },
+  },
 ];
-MODELS.forEach((m) => useGLTF.preload(m.url, false, true));
+new Set(MODELS.map((m) => m.url)).forEach((url) => useGLTF.preload(url, false, true));
 
 const SPACING = 3.1;
 const ROW_Y = -0.9;
@@ -177,7 +211,8 @@ function Scene() {
       <Studio />
       <fog attach="fog" args={["#02101f", 8, 17]} />
       <Dust />
-      <group scale={desktop ? 1 : 0.82} position={[0, desktop ? 0 : -0.2, 0]}>
+      {/* on phones the row sits lower and smaller, between the copy and the label */}
+      <group scale={desktop ? 1 : 0.75} position={[0, desktop ? 0 : -0.6, 0]}>
         <Carousel />
         <LightPool />
       </group>

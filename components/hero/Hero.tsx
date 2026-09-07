@@ -5,12 +5,9 @@ import { useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import type { Lang } from "@/lib/languages";
 import type { Dictionary } from "@/lib/i18n";
-import { categories, showroomItems } from "@/lib/catalog";
-import { storeLinks } from "@/lib/site";
-import { BagIcon } from "@/components/layout/Header";
-import { Price } from "@/components/ui/Price";
+import { links } from "@/lib/site";
+import { ArrowIcon } from "@/components/ui/Icons";
 import { INTRO_DONE_EVENT, RING_COUNT, showroomState } from "./store";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -20,11 +17,18 @@ const Showroom = dynamic(() => import("./Showroom").then((m) => m.Showroom), {
   loading: () => null,
 });
 
+/** One screen of the platform in the showroom, already in the page language. */
+export interface HeroMoment {
+  id: string;
+  title: string;
+  note: string;
+}
+
 /** How many viewport heights the hero stays pinned while the row slides. */
 const PIN_LENGTH_DESKTOP = 3;
 const PIN_LENGTH_MOBILE = 2.2;
 
-export function Hero({ lang, t }: { lang: Lang; t: Dictionary["hero"] }) {
+export function Hero({ t, moments }: { t: Dictionary["hero"]; moments: HeroMoment[] }) {
   const root = useRef<HTMLElement>(null);
   const [beat, setBeat] = useState(0);
   const [started, setStarted] = useState(false);
@@ -112,9 +116,8 @@ export function Hero({ lang, t }: { lang: Lang; t: Dictionary["hero"] }) {
     { scope: root }
   );
 
-  const item = showroomItems[beat];
-  const category = categories.find((c) => c.id === item.category)!;
-  const counter = t.counter.replace("{n}", String(beat + 1)).replace("{total}", String(RING_COUNT));
+  const moment = moments[Math.min(beat, moments.length - 1)];
+  const counter = t.counter.replace("{n}", String(beat + 1)).replace("{total}", String(moments.length));
 
   return (
     <section ref={root} className="hero" data-pending="" aria-labelledby="hero-title">
@@ -139,11 +142,11 @@ export function Hero({ lang, t }: { lang: Lang; t: Dictionary["hero"] }) {
             {t.lead}
           </p>
           <div className="mt-7 flex flex-wrap items-center gap-3" data-load="cta">
-            <a href={storeLinks.home} target="_blank" rel="noopener" className="btn btn-solid">
-              <BagIcon />
+            <a href={links.contact} target="_blank" rel="noopener" className="btn btn-solid">
               {t.primary}
+              <ArrowIcon />
             </a>
-            <a href="#catalog" className="btn btn-quiet">
+            <a href={links.demo} target="_blank" rel="noopener" className="btn btn-quiet">
               {t.secondary}
             </a>
           </div>
@@ -156,26 +159,22 @@ export function Hero({ lang, t }: { lang: Lang; t: Dictionary["hero"] }) {
           >
             <div className="min-w-0">
               <p className="text-ink-3 t-small">
-                {category.storeName[lang]}
-                <span className="mx-2 opacity-50">·</span>
                 <span className="t-num">{counter}</span>
+                <span className="mx-2 opacity-50">·</span>
+                {moment.note}
               </p>
-              <p className="t-h3 mt-0.5 truncate" key={item.product.id}>
-                {item.product.name}
-              </p>
-              <p className="mt-1 text-ink-2 t-small">
-                {item.product.spec[lang]}
-                <Price value={item.product.price} lang={lang} from className="ml-3 font-semibold text-ink" />
+              <p className="t-h3 mt-0.5 truncate" key={moment.id}>
+                {moment.title}
               </p>
             </div>
-            <a href={storeLinks.search(item.product.name)} target="_blank" rel="noopener" className="btn btn-quiet btn-sm shrink-0">
+            <a href={links.demo} target="_blank" rel="noopener" className="btn btn-quiet btn-sm shrink-0">
               {t.look}
             </a>
           </div>
           <div className="mt-3 flex gap-1.5 px-1" aria-hidden="true">
-            {showroomItems.map((s, i) => (
+            {moments.map((m, i) => (
               <span
-                key={s.product.id}
+                key={m.id}
                 className="h-0.5 rounded-full bg-ink transition-[width,opacity] duration-500"
                 style={{ width: i === beat ? "2rem" : "0.75rem", opacity: i === beat ? 1 : 0.3 }}
               />

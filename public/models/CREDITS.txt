@@ -6,12 +6,6 @@
 * author:	MajdyModels (https://sketchfab.com/MG990)
 * license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
 
-## watch.glb
-* title:	Apple Watch Ultra - Orange
-* source:	https://sketchfab.com/3d-models/apple-watch-ultra-orange-4656191de2e94767a8c16003fca1f268
-* author:	alboxer2000_ (https://sketchfab.com/alboxer2000_)
-* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
-
 ## ipad.glb
 * title:	Ipad Pro 12.9 (2020)
 * source:	https://sketchfab.com/3d-models/ipad-pro-129-2020-f0f7674522124f3bbc2d0f898963457e
@@ -24,15 +18,5 @@
 * author:	akshatmittal (https://sketchfab.com/akshatmittal)
 * license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
 
-## macbookm2.glb
-* title:	MacBook Air M2
-* source:	https://sketchfab.com/3d-models/macbook-air-m2-786fa23d402a4f90ae36c4168997f9cc
-* author:	rtql8d (https://sketchfab.com/rtql8d)
-* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
-
-## airpods.glb
-* title:	Headphones AirPods Pro
-* source:	https://sketchfab.com/3d-models/headphones-airpods-pro-a6f024575e904a31b44b25a29d52e718
-* author:	Valentine_crut (https://sketchfab.com/Valentine_crut)
-* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
-
+The devices are used only as screens for the platform's own UI (public/screens);
+the landing does not sell them.

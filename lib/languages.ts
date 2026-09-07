@@ -12,10 +12,3 @@ export const languageNames: Record<Lang, string> = {
   ru: "Русский",
   en: "English",
 };
-
-/** Locale used for number formatting: UZ/RU group thousands with a space. */
-export const numberLocale: Record<Lang, string> = {
-  uz: "ru-RU",
-  ru: "ru-RU",
-  en: "ru-RU",
-};

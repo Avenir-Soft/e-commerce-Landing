@@ -6,18 +6,19 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { Dictionary } from "@/lib/i18n";
-import { storeLinks } from "@/lib/site";
+import { links } from "@/lib/site";
 import { spotState } from "@/components/hero/store";
 import { SectionHead } from "@/components/ui/SectionHead";
+import { ArrowIcon } from "@/components/ui/Icons";
 
 gsap.registerPlugin(ScrollTrigger);
 
 /*
- * Apple-style product story: on desktop a real model sits on a turntable
- * that stays pinned on the left (CSS sticky, no scroll hijacking) and turns
- * as you scroll, while three feature beats pass on the right; the beat in
- * the middle of the viewport decides which product is on the stage. On
- * smaller screens each beat carries its own still.
+ * The showcase: on desktop a real device wearing a platform screen sits on a
+ * turntable that stays pinned on the left (CSS sticky, no scroll hijacking)
+ * and turns as you scroll, while three chapters of the platform pass on the
+ * right; the chapter in the middle of the viewport decides which device is
+ * on the stage. On smaller screens each chapter carries its own still.
  */
 
 const SpotlightStage = dynamic(() => import("@/components/hero/SpotlightStage").then((m) => m.SpotlightStage), {
@@ -25,10 +26,10 @@ const SpotlightStage = dynamic(() => import("@/components/hero/SpotlightStage").
   loading: () => null,
 });
 
-const renders = ["/renders/iphone.webp", "/renders/macbook.webp", "/renders/watch.webp"];
-const queries = ["iPhone 17 Pro", "MacBook Air", "Apple Watch Ultra"];
+/** Stills of the same three devices the turntable shows (see STAGE_IDS in SpotlightStage). */
+const renders = ["/renders/phone-home.webp", "/renders/laptop-dashboard.webp", "/renders/tablet-editor.webp"];
 
-export function Spotlight({ t, look }: { t: Dictionary["spotlight"]; look: string }) {
+export function Spotlight({ t, ask }: { t: Dictionary["spotlight"]; ask: string }) {
   const section = useRef<HTMLElement>(null);
   const beats = useRef<(HTMLElement | null)[]>([]);
   const [active, setActive] = useState(0);
@@ -70,7 +71,12 @@ export function Spotlight({ t, look }: { t: Dictionary["spotlight"]; look: strin
   }, []);
 
   return (
-    <section ref={section} className="spot relative overflow-clip py-24 md:py-32" aria-labelledby="spotlight-title">
+    <section
+      id="showcase"
+      ref={section}
+      className="spot relative scroll-mt-20 overflow-clip py-24 md:py-32"
+      aria-labelledby="spotlight-title"
+    >
       <div className="spot__glow" aria-hidden="true" />
       <div className="shell">
         <SectionHead id="spotlight-title" eyebrow={t.eyebrow} heading={t.heading} />
@@ -126,8 +132,14 @@ export function Spotlight({ t, look }: { t: Dictionary["spotlight"]; look: strin
                     </li>
                   ))}
                 </ul>
-                <a href={storeLinks.search(queries[i])} target="_blank" rel="noopener" className="btn btn-quiet mt-8 self-start">
-                  {look}
+                <a
+                  href={i === 0 ? links.demo : links.contact}
+                  target="_blank"
+                  rel="noopener"
+                  className="btn btn-quiet mt-8 self-start"
+                >
+                  {i === 0 ? t.look : ask}
+                  <ArrowIcon />
                 </a>
               </li>
             ))}

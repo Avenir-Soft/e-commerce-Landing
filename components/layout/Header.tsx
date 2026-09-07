@@ -4,14 +4,15 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { Lang } from "@/lib/languages";
 import type { Dictionary } from "@/lib/i18n";
-import { site } from "@/lib/site";
+import { links, site } from "@/lib/site";
 import { Logo } from "@/components/brand/Logo";
+import { ArrowIcon } from "@/components/ui/Icons";
 import { LangMenu } from "./LangMenu";
 
-const links = [
-  { id: "catalog", key: "catalog" },
-  { id: "trust", key: "delivery" },
-  { id: "steps", key: "payment" },
+const sections = [
+  { id: "features", key: "features" },
+  { id: "showcase", key: "showcase" },
+  { id: "steps", key: "steps" },
   { id: "faq", key: "faq" },
 ] as const;
 
@@ -62,14 +63,14 @@ export function Header({ lang, nav }: { lang: Lang; nav: Dictionary["nav"] }) {
         </Link>
 
         <nav className="hidden items-center gap-7 lg:flex" aria-label="Sections">
-          {links.map((l, i) => (
+          {sections.map((s, i) => (
             <a
-              key={l.id}
-              href={`#${l.id}`}
+              key={s.id}
+              href={`#${s.id}`}
               className="header-nav-item text-[0.95rem] font-medium text-ink-2 transition-colors duration-300 hover:text-ink"
               style={{ animationDelay: `${0.55 + i * 0.07}s` }}
             >
-              {nav[l.key]}
+              {nav[s.key]}
             </a>
           ))}
         </nav>
@@ -78,14 +79,9 @@ export function Header({ lang, nav }: { lang: Lang; nav: Dictionary["nav"] }) {
           <div className="hidden sm:block">
             <LangMenu lang={lang} label={nav.language} />
           </div>
-          <a
-            href={site.storeUrl}
-            target="_blank"
-            rel="noopener"
-            className="btn btn-solid btn-sm hidden md:inline-flex"
-          >
-            <BagIcon />
+          <a href={links.contact} target="_blank" rel="noopener" className="btn btn-solid btn-sm hidden md:inline-flex">
             {nav.open}
+            <ArrowIcon />
           </a>
           <button
             type="button"
@@ -105,20 +101,18 @@ export function Header({ lang, nav }: { lang: Lang; nav: Dictionary["nav"] }) {
         className="absolute inset-x-0 top-full border-t border-line bg-night/95 backdrop-blur-md lg:hidden"
       >
         <div className="shell flex flex-col gap-2 py-6">
-          {links.map((l) => (
-            <a
-              key={l.id}
-              href={`#${l.id}`}
-              onClick={() => setOpen(false)}
-              className="t-h3 py-3 text-ink"
-            >
-              {nav[l.key]}
+          {sections.map((s) => (
+            <a key={s.id} href={`#${s.id}`} onClick={() => setOpen(false)} className="t-h3 py-3 text-ink">
+              {nav[s.key]}
             </a>
           ))}
+          <a href={links.demo} target="_blank" rel="noopener" className="t-h3 py-3 text-ink-2">
+            {nav.demo}
+          </a>
           <div className="mt-4 flex flex-wrap items-center gap-4">
-            <a href={site.storeUrl} target="_blank" rel="noopener" className="btn btn-solid">
-              <BagIcon />
+            <a href={links.contact} target="_blank" rel="noopener" className="btn btn-solid">
               {nav.open}
+              <ArrowIcon />
             </a>
             <LangMenu lang={lang} label={nav.language} />
           </div>
@@ -146,26 +140,5 @@ export function Header({ lang, nav }: { lang: Lang; nav: Dictionary["nav"] }) {
         }
       `}</style>
     </header>
-  );
-}
-
-export function BagIcon({ className = "" }: { className?: string }) {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden="true"
-      className={className}
-    >
-      <path
-        d="M6 8h12l1 12H5L6 8Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinejoin="round"
-      />
-      <path d="M9 8V6a3 3 0 0 1 6 0v2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
   );
 }

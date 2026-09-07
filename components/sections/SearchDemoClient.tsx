@@ -2,46 +2,40 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Dictionary } from "@/lib/i18n";
-import type { CategoryId } from "@/lib/catalog";
-import { storeLinks } from "@/lib/site";
+import { CheckIcon } from "@/components/ui/Icons";
 
 export interface SearchItem {
   id: string;
   name: string;
-  category: CategoryId;
-  categoryName: string;
+  category: string;
   spec: string;
-  /** Null when prices are hidden on the landing. */
-  price: string | null;
   tags: string[];
 }
-
-/** Words people use for a product line in any of the three languages. */
-const aliases: Record<CategoryId, string[]> = {
-  iphone: ["iphone", "айфон", "ayfon", "telefon", "телефон", "phone", "smartfon", "смартфон"],
-  mac: ["macbook", "макбук", "mac", "noutbuk", "ноутбук", "laptop", "notebook", "kompyuter", "компьютер"],
-  ipad: ["ipad", "айпад", "planshet", "планшет", "tablet"],
-  watch: ["watch", "часы", "soat", "smart soat", "умные часы"],
-  airpods: ["airpods", "аирподс", "quloqchin", "наушники", "earbuds", "headphones", "quloqchinlar"],
-};
 
 const TYPE_MS = 48;
 const DELETE_MS = 22;
 const HOLD_MS = 2600;
 const MAX_RESULTS = 3;
 
+/**
+ * A small stand-in for the platform's semantic search: plain words from the
+ * shopper are matched against each item's tags, name and category. Enough to
+ * show that "a watch as a gift" finds the watch without a model number.
+ */
 function score(item: SearchItem, query: string): number {
   const q = query.toLowerCase().trim();
   if (q.length < 2) return 0;
   const tokens = q.split(/\s+/).filter((w) => w.length > 2);
   let s = 0;
   for (const tag of item.tags) {
-    if (q.includes(tag)) s += 3;
-    else if (tokens.some((w) => tag.includes(w) || w.includes(tag))) s += 1;
+    const tg = tag.toLowerCase();
+    if (q.includes(tg)) s += 3;
+    else if (tokens.some((w) => tg.includes(w) || w.includes(tg))) s += 1;
   }
   const name = item.name.toLowerCase();
   if (tokens.some((w) => name.includes(w))) s += 2;
-  if (aliases[item.category].some((a) => q.includes(a))) s += 2;
+  const category = item.category.toLowerCase();
+  if (tokens.some((w) => category.includes(w))) s += 1;
   return s;
 }
 
@@ -156,26 +150,19 @@ export function SearchDemoClient({ t, items }: { t: Dictionary["search"]; items:
               <li className="px-3 py-4 text-ink-2">{t.empty}</li>
             )}
             {results.map((r, i) => (
-              <li key={r.id} style={{ animation: `result-in 0.6s var(--ease-out-expo) both`, animationDelay: `${i * 60}ms` }}>
-                <a
-                  href={storeLinks.search(r.name)}
-                  target="_blank"
-                  rel="noopener"
-                  className="flex items-center justify-between gap-4 rounded-xl bg-white/[0.04] px-4 py-3 transition-[background-color] duration-300 hover:bg-white/[0.07]"
-                >
-                  <div className="min-w-0">
-                    <p className="text-ink-3 t-small">{r.categoryName}</p>
-                    <p className="truncate font-semibold">{r.name}</p>
-                    <p className="text-ink-2 t-small">{r.spec}</p>
-                  </div>
-                  {r.price ? (
-                    <span className="t-num shrink-0 font-semibold">{r.price}</span>
-                  ) : (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="shrink-0 text-ink-3">
-                      <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  )}
-                </a>
+              <li
+                key={r.id}
+                className="flex items-center justify-between gap-4 rounded-xl bg-white/[0.04] px-4 py-3"
+                style={{ animation: `result-in 0.6s var(--ease-out-expo) both`, animationDelay: `${i * 60}ms` }}
+              >
+                <div className="min-w-0">
+                  <p className="text-ink-3 t-small">{r.category}</p>
+                  <p className="truncate font-semibold">{r.name}</p>
+                  <p className="text-ink-2 t-small">{r.spec}</p>
+                </div>
+                <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-mark/20 text-mark-2" aria-hidden="true">
+                  <CheckIcon />
+                </span>
               </li>
             ))}
           </ul>

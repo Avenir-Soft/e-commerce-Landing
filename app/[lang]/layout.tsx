@@ -72,7 +72,7 @@ export default async function LangLayout({ children, params }: LayoutProps<"/[la
         <SmoothScroll />
         <Header lang={lang} nav={t.nav} />
         {children}
-        <Footer lang={lang} t={t.footer} />
+        <Footer lang={lang} t={t.footer} ask={t.hero.primary} />
       </body>
     </html>
   );
