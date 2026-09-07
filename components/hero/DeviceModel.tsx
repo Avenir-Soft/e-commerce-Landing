@@ -18,7 +18,10 @@ const ENV_MAP_INTENSITY = 1.4;
 /**
  * Loads a meshopt-compressed GLB, centres it and scales it to `spec.size`, so
  * every product line sits on the carousel at a comparable size regardless of
- * the units the artist exported in.
+ * the units the artist exported in. Expensive material features that need an
+ * extra render pass (transmission) are switched off: on this page the models
+ * only ever face the camera, so plain glossy glass looks the same for a
+ * fraction of the cost.
  */
 export function DeviceModel({ spec }: { spec: ModelSpec }) {
   const { scene } = useGLTF(spec.url, false, true);
@@ -28,10 +31,18 @@ export function DeviceModel({ spec }: { spec: ModelSpec }) {
     clone.traverse((node) => {
       const mesh = node as THREE.Mesh;
       if (!mesh.isMesh) return;
+      mesh.frustumCulled = true;
       const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
       for (const material of materials) {
-        const std = material as THREE.MeshStandardMaterial;
-        if (std.isMeshStandardMaterial) std.envMapIntensity = ENV_MAP_INTENSITY;
+        const std = material as THREE.MeshPhysicalMaterial;
+        if (!std.isMeshStandardMaterial) continue;
+        std.envMapIntensity = ENV_MAP_INTENSITY;
+        if ("transmission" in std && std.transmission > 0) {
+          std.transmission = 0;
+          std.transparent = true;
+          std.opacity = Math.max(std.opacity, 0.85);
+          std.needsUpdate = true;
+        }
       }
     });
     const box = new THREE.Box3().setFromObject(clone);

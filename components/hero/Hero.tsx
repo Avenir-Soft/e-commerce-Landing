@@ -11,7 +11,7 @@ import { categories, showroomItems } from "@/lib/catalog";
 import { formatFrom } from "@/lib/format";
 import { site } from "@/lib/site";
 import { BagIcon } from "@/components/layout/Header";
-import { INTRO_DONE_EVENT, RING_COUNT, showroomState } from "./store";
+import { RING_COUNT, showroomState } from "./store";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -34,23 +34,17 @@ export function Hero({ lang, t }: { lang: Lang; t: Dictionary["hero"] }) {
       const el = root.current!;
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       showroomState.reduced = reduce;
-      let intro: gsap.core.Timeline | undefined;
-
-      // ---- load choreography, held back until the intro curtain has lifted ----
-      const play = () => {
-        el.removeAttribute("data-pending");
-        ScrollTrigger.refresh();
-        if (reduce) return;
-        intro = gsap.timeline({ defaults: { ease: "expo.out" } });
-        intro
-          .from(el.querySelectorAll(".hero__line > span"), { yPercent: 112, duration: 1.3, stagger: 0.12 }, 0.1)
-          .from(el.querySelector("[data-load='lead']"), { y: 28, opacity: 0, duration: 0.9 }, 0.5)
-          .from(el.querySelectorAll("[data-load='cta'] > *"), { y: 22, opacity: 0, duration: 0.8, stagger: 0.08 }, 0.65)
-          .from(el.querySelector("[data-load='label']"), { y: 30, opacity: 0, duration: 0.9 }, 0.9)
-          .from(el.querySelector("[data-load='hint']"), { opacity: 0, duration: 0.8 }, 1.2);
-      };
-      if (showroomState.introDone) play();
-      else window.addEventListener(INTRO_DONE_EVENT, play, { once: true });
+      // ---- load choreography ----
+      el.removeAttribute("data-pending");
+      if (!reduce) {
+        gsap
+          .timeline({ defaults: { ease: "expo.out" } })
+          .from(el.querySelectorAll(".hero__line > span"), { yPercent: 112, duration: 1.2, stagger: 0.12 }, 0.05)
+          .from(el.querySelector("[data-load='lead']"), { y: 28, opacity: 0, duration: 0.9 }, 0.4)
+          .from(el.querySelectorAll("[data-load='cta'] > *"), { y: 22, opacity: 0, duration: 0.8, stagger: 0.08 }, 0.55)
+          .from(el.querySelector("[data-load='label']"), { y: 30, opacity: 0, duration: 0.9 }, 0.8)
+          .from(el.querySelector("[data-load='hint']"), { opacity: 0, duration: 0.8 }, 1.1);
+      }
 
       // ---- scroll choreography: pin the hero, scrub progress into the carousel ----
       const mm = gsap.matchMedia();
@@ -101,10 +95,8 @@ export function Hero({ lang, t }: { lang: Lang; t: Dictionary["hero"] }) {
       io.observe(el);
 
       return () => {
-        window.removeEventListener(INTRO_DONE_EVENT, play);
         window.removeEventListener("pointermove", onMove);
         io.disconnect();
-        intro?.kill();
         mm.revert();
       };
     },

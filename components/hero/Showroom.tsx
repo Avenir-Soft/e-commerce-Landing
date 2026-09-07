@@ -1,23 +1,19 @@
 "use client";
 
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import {
-  Environment,
-  Lightformer,
-  MeshReflectorMaterial,
-  PerformanceMonitor,
-  useGLTF,
-} from "@react-three/drei";
-import { Bloom, EffectComposer } from "@react-three/postprocessing";
+import { Environment, Lightformer, PerformanceMonitor, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
-import { RING_COUNT, markModelsReady, showroomState } from "./store";
+import { RING_COUNT, showroomState } from "./store";
 import { DeviceModel, type ModelSpec } from "./DeviceModel";
 
 /*
- * A horizontal showroom: the five real product models stand in a row on a
- * reflective floor. Scrolling the pinned hero slides the row sideways so the
- * next device glides into the spotlight; the pointer turns the lit device.
+ * A horizontal showroom: the five real product models stand in a row above a
+ * pool of light. Scrolling the pinned hero slides the row sideways so the next
+ * device glides into the spotlight; the pointer turns the lit device.
+ *
+ * Budget: one render pass, no post-processing, no reflections, DPR capped at
+ * 1.25 and lowered further by PerformanceMonitor when frames drop.
  */
 
 export const MODELS: ModelSpec[] = [
@@ -36,6 +32,7 @@ const DESKTOP_MIN_WIDTH = 1024;
 const ENTRANCE_DELAY = 0.15;
 const ENTRANCE_STAGGER = 0.12;
 const ENTRANCE_DURATION = 1.2;
+const DPR_MAX = 1.25;
 
 function damp(current: number, target: number, lambda: number, dt: number) {
   return current + (target - current) * (1 - Math.exp(-lambda * dt));
@@ -74,6 +71,8 @@ function Carousel() {
       const idle = reduced ? 0 : Math.sin(state.clock.elapsedTime * 0.4 + i * 1.3) * 0.2;
       g.rotation.y = damp(g.rotation.y, idle + mx * 0.4 * focus, 3, dt);
       g.rotation.x = damp(g.rotation.x, -my * 0.12 * focus, 3, dt);
+      // items far off-screen do not need to render at all
+      g.visible = Math.abs(i - current) < 2.2;
     });
   });
 
@@ -97,28 +96,27 @@ function Carousel() {
   );
 }
 
-function Floor({ reflective }: { reflective: boolean }) {
+/** A soft pool of blue light under the lit device: one additive disc, no reflections. */
+function LightPool() {
+  const texture = useMemo(() => {
+    const size = 256;
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = size;
+    const ctx = canvas.getContext("2d")!;
+    const g = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+    g.addColorStop(0, "rgba(96,165,250,0.55)");
+    g.addColorStop(0.35, "rgba(37,99,235,0.28)");
+    g.addColorStop(1, "rgba(2,16,31,0)");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, size, size);
+    const t = new THREE.CanvasTexture(canvas);
+    t.colorSpace = THREE.SRGBColorSpace;
+    return t;
+  }, []);
   return (
-    <mesh rotation-x={-Math.PI / 2} position={[0, FLOOR_Y, 0]}>
-      <planeGeometry args={[60, 24]} />
-      {reflective ? (
-        <MeshReflectorMaterial
-          blur={[500, 120]}
-          resolution={1024}
-          mixBlur={1}
-          mixStrength={18}
-          roughness={0.9}
-          depthScale={1.1}
-          minDepthThreshold={0.4}
-          maxDepthThreshold={1.4}
-          color="#02091a"
-          metalness={0.35}
-          mirror={0.45}
-          envMapIntensity={0.15}
-        />
-      ) : (
-        <meshStandardMaterial color="#03091a" roughness={0.95} metalness={0.2} />
-      )}
+    <mesh rotation-x={-Math.PI / 2} position={[0, FLOOR_Y, -0.4]}>
+      <planeGeometry args={[7.5, 4.5]} />
+      <meshBasicMaterial map={texture} transparent depthWrite={false} blending={THREE.AdditiveBlending} />
     </mesh>
   );
 }
@@ -141,19 +139,6 @@ function Studio() {
   );
 }
 
-/** Renders only once every model has been parsed; that moment lifts the intro curtain. */
-function ReadySignal() {
-  useGLTF(
-    MODELS.map((m) => m.url),
-    false,
-    true
-  );
-  useEffect(() => {
-    markModelsReady();
-  }, []);
-  return null;
-}
-
 function CameraRig({ desktop }: { desktop: boolean }) {
   const camera = useThree((s) => s.camera);
   useEffect(() => {
@@ -169,19 +154,11 @@ function Scene() {
   return (
     <>
       <CameraRig desktop={desktop} />
-      <Suspense fallback={null}>
-        <ReadySignal />
-      </Suspense>
       <Studio />
       <group scale={desktop ? 1 : 0.82} position={[0, desktop ? 0 : -0.2, 0]}>
         <Carousel />
-        <Floor reflective={desktop} />
+        <LightPool />
       </group>
-      {desktop && (
-        <EffectComposer multisampling={0}>
-          <Bloom mipmapBlur intensity={0.35} luminanceThreshold={0.88} luminanceSmoothing={0.2} radius={0.6} />
-        </EffectComposer>
-      )}
     </>
   );
 }
@@ -199,7 +176,7 @@ function supportsWebGL() {
 export function Showroom() {
   const wrap = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(true);
-  const [dpr, setDpr] = useState(1.5);
+  const [dpr, setDpr] = useState(() => Math.min(DPR_MAX, typeof window === "undefined" ? 1 : window.devicePixelRatio));
   const [webgl] = useState(supportsWebGL);
 
   useEffect(() => {
@@ -209,10 +186,6 @@ export function Showroom() {
     io.observe(el);
     return () => io.disconnect();
   }, []);
-
-  useEffect(() => {
-    if (!webgl) markModelsReady();
-  }, [webgl]);
 
   if (!webgl) return null;
 
@@ -224,6 +197,7 @@ export function Showroom() {
         gl={{
           antialias: true,
           alpha: true,
+          stencil: false,
           powerPreference: "high-performance",
           toneMapping: THREE.ACESFilmicToneMapping,
           toneMappingExposure: 1.1,
@@ -231,7 +205,7 @@ export function Showroom() {
         frameloop={visible ? "always" : "never"}
         onCreated={({ gl }) => gl.setClearColor(0x000000, 0)}
       >
-        <PerformanceMonitor onDecline={() => setDpr(1)} onIncline={() => setDpr(1.5)} />
+        <PerformanceMonitor onDecline={() => setDpr(1)} onIncline={() => setDpr(Math.min(DPR_MAX, window.devicePixelRatio))} />
         <Scene />
       </Canvas>
     </div>

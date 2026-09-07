@@ -104,11 +104,6 @@
     opacity: 0;
   }
 
-  /* reticle cursor replaces the native one on fine pointers */
-  html.has-cursor,
-  html.has-cursor * {
-    cursor: none !important;
-  }
 
   @media (prefers-reduced-motion: reduce) {
     *,
@@ -288,9 +283,8 @@
     inset: -20%;
     pointer-events: none;
     background:
-      radial-gradient(28% 30% at 30% 35%, rgb(37 99 235 / 0.28), transparent 70%),
-      radial-gradient(22% 26% at 72% 30%, rgb(96 165 250 / 0.16), transparent 70%);
-    filter: blur(50px);
+      radial-gradient(30% 32% at 30% 35%, rgb(37 99 235 / 0.22), transparent 72%),
+      radial-gradient(24% 28% at 72% 30%, rgb(96 165 250 / 0.12), transparent 72%);
     animation: aurora 18s var(--ease-in-out-expo) infinite alternate;
   }
   @keyframes aurora {
@@ -398,124 +392,6 @@
     }
   }
 
-  /* ---------- Intro curtain -------------------------------------------- */
-  .intro {
-    position: fixed;
-    inset: 0;
-    z-index: 80;
-    display: grid;
-    place-items: center;
-    background: var(--color-night);
-    clip-path: inset(0 0 0 0);
-    transition: clip-path 0.95s var(--ease-in-out-expo);
-  }
-  .intro--exit {
-    clip-path: inset(0 0 100% 0);
-    pointer-events: none;
-  }
-  .intro__inner {
-    display: grid;
-    justify-items: center;
-    gap: 1.4rem;
-  }
-  .intro__mark {
-    width: clamp(120px, 18vw, 200px);
-    height: auto;
-    color: var(--color-ink);
-    overflow: visible;
-  }
-  .intro__axis {
-    stroke: currentColor;
-    stroke-width: 3;
-    stroke-dasharray: 52;
-    stroke-dashoffset: 52;
-    animation: draw 0.9s var(--ease-out-expo) 0.15s forwards;
-  }
-  .intro__tip {
-    fill: var(--color-night);
-    stroke: currentColor;
-    stroke-width: 2.6;
-    opacity: 0;
-    animation: pop 0.5s var(--ease-out-expo) 0.9s forwards;
-  }
-  .intro__star {
-    fill: var(--color-mark);
-    transform-origin: 60px 60px;
-    transform: scale(0);
-    animation: star 0.8s var(--ease-out-expo) 0.55s forwards;
-  }
-  @keyframes draw {
-    to {
-      stroke-dashoffset: 0;
-    }
-  }
-  @keyframes pop {
-    to {
-      opacity: 1;
-    }
-  }
-  @keyframes star {
-    to {
-      transform: scale(1);
-    }
-  }
-  .intro__bar {
-    width: clamp(120px, 18vw, 200px);
-    height: 2px;
-    background: rgb(243 246 251 / 0.12);
-    overflow: hidden;
-  }
-  .intro__bar > span {
-    display: block;
-    height: 100%;
-    background: var(--color-mark-2);
-    transform-origin: left;
-    transition: transform 0.4s var(--ease-out-expo);
-  }
-  .intro__text {
-    color: var(--color-ink-3);
-    font-size: 0.875rem;
-  }
-  .intro__skip {
-    position: absolute;
-    right: var(--gutter);
-    bottom: 1.5rem;
-    color: var(--color-ink-3);
-    font-size: 0.875rem;
-    transition: color 0.3s var(--ease-out-quart);
-  }
-  .intro__skip:hover {
-    color: var(--color-ink);
-  }
-
-  /* ---------- Reticle cursor ------------------------------------------- */
-  #cursor {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 90;
-    width: 40px;
-    height: 40px;
-    margin: -20px 0 0 -20px;
-    color: var(--color-ink);
-    pointer-events: none;
-    opacity: 0;
-    mix-blend-mode: difference;
-    transition: opacity 0.3s var(--ease-out-quart);
-  }
-  #cursor svg {
-    width: 100%;
-    height: 100%;
-    transform: scale(var(--cursor-scale, 1)) rotate(var(--cursor-rot, 0deg));
-    transition: transform 0.45s var(--ease-out-expo);
-  }
-  html.has-cursor #cursor.is-visible {
-    opacity: 1;
-  }
-  #cursor.is-active {
-    --cursor-scale: 1.7;
-    --cursor-rot: 45deg;
-  }
 
   /* ---------- Final CTA orb -------------------------------------------- */
   .cta__orb {
@@ -525,8 +401,7 @@
     width: 48%;
     aspect-ratio: 1;
     border-radius: 50%;
-    background: radial-gradient(circle at 40% 40%, rgb(96 165 250 / 0.55), rgb(37 99 235 / 0.2) 45%, transparent 70%);
-    filter: blur(40px);
+    background: radial-gradient(circle at 40% 40%, rgb(96 165 250 / 0.4), rgb(37 99 235 / 0.16) 45%, transparent 72%);
     transform: translateY(-50%);
     animation: orb 9s var(--ease-in-out-expo) infinite alternate;
     pointer-events: none;
@@ -537,6 +412,17 @@
     }
     to {
       transform: translate3d(-8%, -42%, 0) scale(1.1);
+    }
+  }
+
+  .lang-menu {
+    transform-origin: top right;
+    animation: menu-in 0.35s var(--ease-out-expo);
+  }
+  @keyframes menu-in {
+    from {
+      opacity: 0;
+      transform: translateY(-6px) scale(0.98);
     }
   }
 

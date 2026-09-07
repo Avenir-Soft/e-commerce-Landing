@@ -11,25 +11,6 @@ export const showroomState = {
   /** Set false when the hero leaves the viewport to pause rendering. */
   visible: true,
   reduced: false,
-  /** True once the intro overlay has left (or was skipped). */
-  introDone: false,
-  /** True once every product model is parsed and usable (or 3D is unavailable). */
-  modelsReady: false,
 };
-
-export const INTRO_DONE_EVENT = "avenir:intro-done";
-export const MODELS_READY_EVENT = "avenir:models-ready";
-
-export function finishIntro() {
-  if (showroomState.introDone) return;
-  showroomState.introDone = true;
-  window.dispatchEvent(new Event(INTRO_DONE_EVENT));
-}
-
-export function markModelsReady() {
-  if (showroomState.modelsReady) return;
-  showroomState.modelsReady = true;
-  window.dispatchEvent(new Event(MODELS_READY_EVENT));
-}
 
 export const RING_COUNT = 5;

@@ -15,7 +15,6 @@ export interface Dictionary {
     close: string;
     language: string;
   };
-  intro: { loading: string; skip: string };
   hero: {
     /** Headline lines, one string per line so every break is controlled. */
     title: string[];
@@ -67,7 +66,6 @@ const uz: Dictionary = {
     close: "Yopish",
     language: "Til",
   },
-  intro: { loading: "Vitrina tayyorlanmoqda", skip: "O'tkazib yuborish" },
   hero: {
     title: ["iPhone'dan MacBook'gacha.", "Hammasi bitta do'konda."],
     lead: `Avenir Store — ${site.city}dagi Apple do'koni. Tanlang, Click yoki Payme bilan to'lang, ${site.delivery.expressDays} kunda qo'lingizda.`,
@@ -201,7 +199,6 @@ const ru: Dictionary = {
     close: "Закрыть",
     language: "Язык",
   },
-  intro: { loading: "Готовим витрину", skip: "Пропустить" },
   hero: {
     title: ["От iPhone до MacBook.", "Всё в одном магазине."],
     lead: `Avenir Store — магазин Apple в Ташкенте. Выбирайте, платите через Click или Payme, получайте за ${site.delivery.expressDays} дня.`,
@@ -335,7 +332,6 @@ const en: Dictionary = {
     close: "Close",
     language: "Language",
   },
-  intro: { loading: "Setting up the showroom", skip: "Skip" },
   hero: {
     title: ["From iPhone to MacBook.", "All in one store."],
     lead: `Avenir Store is an Apple store in Tashkent. Choose, pay with Click or Payme, and have it in ${site.delivery.expressDays} days.`,

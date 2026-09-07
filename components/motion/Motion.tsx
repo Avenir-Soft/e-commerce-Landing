@@ -7,9 +7,9 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 /**
- * Page-wide motion: scroll reveals, magnetic buttons, tilting tiles, animated
- * FAQ panels and the reticle cursor. Everything is disabled under reduced
- * motion; pointer effects only run for fine pointers.
+ * Page-wide motion: scroll reveals, magnetic buttons, tilting tiles and
+ * animated FAQ panels. Everything is disabled under reduced motion; pointer
+ * effects only run for fine pointers.
  */
 export function Motion() {
   useEffect(() => {
@@ -24,12 +24,12 @@ export function Motion() {
         gsap.set(items, { opacity: 1, y: 0 });
         return;
       }
-      gsap.set(items, { opacity: 0, y: 44 });
+      gsap.set(items, { opacity: 0, y: 40 });
       ScrollTrigger.batch(items, {
         start: "top 90%",
         once: true,
         onEnter: (els) =>
-          gsap.to(els, { opacity: 1, y: 0, duration: 1.1, ease: "expo.out", stagger: 0.08, overwrite: true }),
+          gsap.to(els, { opacity: 1, y: 0, duration: 1, ease: "expo.out", stagger: 0.07, overwrite: true }),
       });
     });
     cleanups.push(() => ctx.revert());
@@ -73,7 +73,7 @@ export function Motion() {
         const r = btn.getBoundingClientRect();
         const dx = e.clientX - (r.left + r.width / 2);
         const dy = e.clientY - (r.top + r.height / 2);
-        gsap.to(btn, { x: dx * 0.22, y: dy * 0.22, duration: 0.5, ease: "expo.out", overwrite: "auto" });
+        gsap.to(btn, { x: dx * 0.2, y: dy * 0.2, duration: 0.5, ease: "expo.out", overwrite: "auto" });
       };
       const onLeave = () => gsap.to(btn, { x: 0, y: 0, duration: 0.9, ease: "elastic.out(1, 0.45)", overwrite: "auto" });
       btn.addEventListener("pointermove", onMove, { passive: true });
@@ -93,8 +93,8 @@ export function Motion() {
         tile.style.setProperty("--gx", `${(px * 100).toFixed(1)}%`);
         tile.style.setProperty("--gy", `${(py * 100).toFixed(1)}%`);
         gsap.to(tile, {
-          rotateY: (px - 0.5) * 9,
-          rotateX: (0.5 - py) * 9,
+          rotateY: (px - 0.5) * 8,
+          rotateX: (0.5 - py) * 8,
           transformPerspective: 1100,
           duration: 0.6,
           ease: "expo.out",
@@ -111,46 +111,8 @@ export function Motion() {
       });
     });
 
-    // ---- reticle cursor ----
-    const cursor = document.getElementById("cursor");
-    if (cursor) {
-      document.documentElement.classList.add("has-cursor");
-      const xTo = gsap.quickTo(cursor, "x", { duration: 0.32, ease: "expo.out" });
-      const yTo = gsap.quickTo(cursor, "y", { duration: 0.32, ease: "expo.out" });
-      const onMove = (e: PointerEvent) => {
-        xTo(e.clientX);
-        yTo(e.clientY);
-        cursor.classList.add("is-visible");
-      };
-      const onOver = (e: PointerEvent) => {
-        const hot = (e.target as Element | null)?.closest?.("a, button, [data-cursor], input, summary");
-        cursor.classList.toggle("is-active", !!hot);
-      };
-      const onLeave = () => cursor.classList.remove("is-visible");
-      window.addEventListener("pointermove", onMove, { passive: true });
-      document.addEventListener("pointerover", onOver, { passive: true });
-      document.documentElement.addEventListener("pointerleave", onLeave);
-      cleanups.push(() => {
-        document.documentElement.classList.remove("has-cursor");
-        window.removeEventListener("pointermove", onMove);
-        document.removeEventListener("pointerover", onOver);
-        document.documentElement.removeEventListener("pointerleave", onLeave);
-      });
-    }
-
     return () => cleanups.forEach((fn) => fn());
   }, []);
 
-  return (
-    <div id="cursor" aria-hidden="true">
-      <svg viewBox="0 0 40 40" fill="none">
-        <circle cx="20" cy="20" r="13" stroke="currentColor" strokeWidth="1.2" />
-        <line x1="20" y1="2" x2="20" y2="10" stroke="currentColor" strokeWidth="1.4" />
-        <line x1="20" y1="30" x2="20" y2="38" stroke="currentColor" strokeWidth="1.4" />
-        <line x1="2" y1="20" x2="10" y2="20" stroke="currentColor" strokeWidth="1.4" />
-        <line x1="30" y1="20" x2="38" y2="20" stroke="currentColor" strokeWidth="1.4" />
-        <circle cx="20" cy="20" r="2" fill="#2563eb" />
-      </svg>
-    </div>
-  );
+  return null;
 }

@@ -6,7 +6,7 @@ import type { Lang } from "@/lib/languages";
 import type { Dictionary } from "@/lib/i18n";
 import { site } from "@/lib/site";
 import { Logo } from "@/components/brand/Logo";
-import { LangSwitch } from "./LangSwitch";
+import { LangMenu } from "./LangMenu";
 
 const links = [
   { id: "catalog", key: "catalog" },
@@ -37,7 +37,7 @@ export function Header({ lang, nav }: { lang: Lang; nav: Dictionary["nav"] }) {
     <header
       className={`fixed inset-x-0 top-0 z-50 h-(--header-h) transition-[background-color,box-shadow,backdrop-filter] duration-500 ${
         scrolled || open
-          ? "bg-night/75 shadow-[0_1px_0_0_var(--color-line)] backdrop-blur-xl"
+          ? "bg-night/75 shadow-[0_1px_0_0_var(--color-line)] backdrop-blur-md"
           : "bg-transparent"
       }`}
     >
@@ -61,7 +61,7 @@ export function Header({ lang, nav }: { lang: Lang; nav: Dictionary["nav"] }) {
 
         <div className="flex items-center gap-3">
           <div className="hidden sm:block">
-            <LangSwitch lang={lang} label={nav.language} />
+            <LangMenu lang={lang} label={nav.language} />
           </div>
           <a
             href={site.storeUrl}
@@ -87,7 +87,7 @@ export function Header({ lang, nav }: { lang: Lang; nav: Dictionary["nav"] }) {
       <div
         id="mobile-menu"
         hidden={!open}
-        className="absolute inset-x-0 top-full border-t border-line bg-night/95 backdrop-blur-xl lg:hidden"
+        className="absolute inset-x-0 top-full border-t border-line bg-night/95 backdrop-blur-md lg:hidden"
       >
         <div className="shell flex flex-col gap-2 py-6">
           {links.map((l) => (
@@ -105,7 +105,7 @@ export function Header({ lang, nav }: { lang: Lang; nav: Dictionary["nav"] }) {
               <BagIcon />
               {nav.open}
             </a>
-            <LangSwitch lang={lang} label={nav.language} />
+            <LangMenu lang={lang} label={nav.language} />
           </div>
         </div>
       </div>

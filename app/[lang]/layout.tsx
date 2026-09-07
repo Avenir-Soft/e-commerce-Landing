@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { preload } from "react-dom";
 import { notFound } from "next/navigation";
 import { Manrope, Unbounded } from "next/font/google";
 import { isLang, languages, type Lang } from "@/lib/languages";
@@ -52,6 +53,9 @@ export default async function LangLayout({ children, params }: LayoutProps<"/[la
   const { lang } = await params;
   if (!isLang(lang)) notFound();
   const t = getDictionary(lang as Lang);
+  // start the first two showroom models before the 3D bundle is even parsed
+  preload("/models/iphone.glb", { as: "fetch", crossOrigin: "anonymous" });
+  preload("/models/macbook15.glb", { as: "fetch", crossOrigin: "anonymous" });
 
   return (
     <html lang={lang} className={`${unbounded.variable} ${manrope.variable}`}>

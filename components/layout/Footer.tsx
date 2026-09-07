@@ -3,7 +3,6 @@ import type { Lang } from "@/lib/languages";
 import type { Dictionary } from "@/lib/i18n";
 import { modelCredits, site } from "@/lib/site";
 import { Logo } from "@/components/brand/Logo";
-import { LangSwitch } from "./LangSwitch";
 
 export function Footer({ lang, t }: { lang: Lang; t: Dictionary["footer"] }) {
   const contacts = [
@@ -46,16 +45,13 @@ export function Footer({ lang, t }: { lang: Lang; t: Dictionary["footer"] }) {
           )}
         </div>
 
-        <div className="flex flex-col items-start gap-4 md:items-end">
-          <LangSwitch lang={lang} label="Language" />
-          <p className="text-ink-3 t-small md:text-right">
-            © {new Date().getFullYear()} {site.name}
-            <br />
-            <a href={site.developer.url} className="transition-colors hover:text-ink">
-              {t.madeBy}
-            </a>
-          </p>
-        </div>
+        <p className="text-ink-3 t-small md:text-right">
+          © {new Date().getFullYear()} {site.name}
+          <br />
+          <a href={site.developer.url} className="transition-colors hover:text-ink">
+            {t.madeBy}
+          </a>
+        </p>
       </div>
 
       <p className="shell mt-10 text-[0.75rem] leading-relaxed text-ink-3/80">

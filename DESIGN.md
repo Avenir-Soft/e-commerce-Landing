@@ -19,17 +19,21 @@ from an ad, a post or a search result into the store.
 ## Concept
 
 **A showroom, one product under the light at a time.** The hero is pinned and
-the five real product models stand in a row on a reflective floor. Scrolling
+the five real product models stand in a row above a pool of light. Scrolling
 slides the row sideways so the next device glides into the spotlight while the
-price label in the corner follows; the pointer turns the lit device. A brand
-curtain (the reticle drawing itself) covers the first paint while the models
-download, then lifts into the headline choreography.
+price label in the corner follows; the pointer turns the lit device. The
+headline choreography starts on first paint; the models pop in as they arrive.
 
 The page keeps moving after the hero: a slow price ticker, mask reveals on every
 section, tiles that tilt and glow under the pointer, magnetic buttons, animated
 FAQ panels, a drifting aurora behind the hero and an orb behind the final call
-to action, and a reticle cursor on fine pointers. All of it is switched off by
-`prefers-reduced-motion`.
+to action. All of it is switched off by `prefers-reduced-motion`.
+
+Performance budget for the 3D: one render pass, no post-processing, no
+reflections, no transmission materials, DPR capped at 1.25 and lowered by
+`PerformanceMonitor` when frames drop, rendering paused while the hero is off
+screen, off-screen carousel items hidden. The owner rejected an intro curtain
+and a custom cursor (2026-09-07): keep the page instant and the cursor native.
 
 ## 3D models
 
@@ -62,7 +66,7 @@ scroll synced with GSAP ScrollTrigger.
 
 ## Page order
 
-1. Intro curtain → hero with the showroom, headline, lead, two buttons, live label.
+1. Hero with the showroom, headline, lead, two buttons, live label.
 2. Price ticker.
 3. Lineup — five tiles, iPhone spans two columns, each lit from a different corner.
 4. Featured — six rows with real starting prices.
@@ -80,5 +84,3 @@ scroll synced with GSAP ScrollTrigger.
   Shopify feed (the same feed E-COMMERCE seeds from). Swap for the store's own.
 - Warranty period and conditions — copy says "kafolat bilan" without a term.
 - OG image — none yet; `generateMetadata` in `app/[lang]/layout.tsx` is ready for it.
-- The reticle cursor replaces the native cursor on desktop; remove the cursor
-  block in `components/motion/Motion.tsx` if the owner prefers the default.
