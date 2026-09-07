@@ -666,6 +666,54 @@
     }
   }
 
+  /* ---------- Brand lockup --------------------------------------------- */
+  .brand {
+    display: block;
+    height: 56px;
+    width: auto;
+    color: var(--color-ink);
+    overflow: visible;
+  }
+  .brand__axis {
+    stroke: currentColor;
+    stroke-width: 2.2;
+  }
+  .brand__tip {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.9;
+  }
+  .brand__star {
+    fill: currentColor;
+    transform-origin: 60px 60px;
+    transition:
+      fill 0.4s var(--ease-out-quart),
+      transform 0.75s var(--ease-out-expo);
+  }
+  a:hover .brand__star {
+    fill: var(--color-mark-2);
+    transform: rotate(90deg) scale(1.06);
+  }
+  .brand__word {
+    fill: currentColor;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 25px;
+    letter-spacing: 1.6px;
+  }
+  .brand__sub {
+    fill: var(--color-ink-2);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: 5.5px;
+  }
+  @media (max-width: 40rem) {
+    .brand {
+      height: 44px;
+    }
+  }
+
   /* ---------- Language menu -------------------------------------------- */
   .lang-menu {
     transform-origin: top right;

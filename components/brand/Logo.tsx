@@ -1,15 +1,50 @@
+/*
+ * The Avenir mark as used on avenir.uz: a four-point star on a reticle whose
+ * horizontal axis runs on under the wordmark to a hollow diamond, "AVENIR"
+ * set above the axis in tracked capitals, "STORE" beneath it. Drawn as one
+ * SVG so the proportions never drift between header, footer and mocks.
+ */
+
+const TIPS: [number, number][] = [
+  [60, 10],
+  [60, 110],
+  [10, 60],
+  [205, 60],
+];
+
+export function Logo({ className = "" }: { className?: string }) {
+  return (
+    <svg className={`brand ${className}`} viewBox="0 0 215 120" role="img" aria-label="Avenir Store">
+      <line className="brand__axis" x1="60" y1="10" x2="60" y2="110" />
+      <line className="brand__axis" x1="10" y1="60" x2="205" y2="60" />
+      {TIPS.map(([x, y]) => (
+        <rect
+          key={`${x}-${y}`}
+          className="brand__tip"
+          x={x - 3}
+          y={y - 3}
+          width="6"
+          height="6"
+          transform={`rotate(45 ${x} ${y})`}
+        />
+      ))}
+      <path className="brand__star" d="M60 28 Q60 60 82.7 60 Q60 60 60 92 Q60 60 37.3 60 Q60 60 60 28 Z" />
+      <text className="brand__word" x="72" y="49">
+        AVENIR
+      </text>
+      <text className="brand__sub" x="73" y="92">
+        STORE
+      </text>
+    </svg>
+  );
+}
+
+/** The bare reticle mark, for small places such as the phone mock. */
 export function Mark({ size = 34, className = "" }: { size?: number; className?: string }) {
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 120 120"
-      fill="none"
-      aria-hidden="true"
-      className={className}
-    >
-      <line x1="60" y1="8" x2="60" y2="112" stroke="currentColor" strokeWidth="3" />
-      <line x1="8" y1="60" x2="112" y2="60" stroke="currentColor" strokeWidth="3" />
+    <svg width={size} height={size} viewBox="0 0 120 120" fill="none" aria-hidden="true" className={className}>
+      <line x1="60" y1="8" x2="60" y2="112" stroke="currentColor" strokeWidth="2.6" />
+      <line x1="8" y1="60" x2="112" y2="60" stroke="currentColor" strokeWidth="2.6" />
       {[
         [60, 8],
         [60, 112],
@@ -23,23 +58,12 @@ export function Mark({ size = 34, className = "" }: { size?: number; className?:
           width="6.4"
           height="6.4"
           transform={`rotate(45 ${x} ${y})`}
-          fill="var(--color-night)"
+          fill="none"
           stroke="currentColor"
-          strokeWidth="2.6"
+          strokeWidth="2.2"
         />
       ))}
-      <path d="M60 28 Q60 60 92 60 Q60 60 60 92 Q60 60 28 60 Q60 60 60 28 Z" fill="#2563EB" />
+      <path d="M60 28 Q60 60 92 60 Q60 60 60 92 Q60 60 28 60 Q60 60 60 28 Z" fill="currentColor" />
     </svg>
-  );
-}
-
-export function Logo({ className = "" }: { className?: string }) {
-  return (
-    <span className={`inline-flex items-center gap-2.5 ${className}`}>
-      <Mark />
-      <span className="font-display text-[1.05rem] font-semibold tracking-[-0.02em]">
-        Avenir <span className="font-normal opacity-70">Store</span>
-      </span>
-    </span>
   );
 }
