@@ -1,16 +1,19 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Environment, Lightformer, PerformanceMonitor, useGLTF } from "@react-three/drei";
+import { PerformanceMonitor, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
-import { RING_COUNT, showroomState } from "./store";
+import { RING_COUNT, attachDragSpin, damp, showroomState } from "./store";
 import { DeviceModel, type ModelSpec } from "./DeviceModel";
+import { BlobShadow, Dust, Studio, useRadialTexture } from "./Studio";
 
 /*
  * A horizontal showroom: the five real product models stand in a row above a
  * pool of light. Scrolling the pinned hero slides the row sideways so the next
- * device glides into the spotlight; the pointer turns the lit device.
+ * device glides into the spotlight; the pointer turns the lit device and a
+ * horizontal drag spins it with momentum. A warm light orbits the scene so
+ * highlights travel across the glass and metal.
  *
  * Budget: one render pass, no post-processing, no reflections, DPR capped at
  * 1.25 and lowered further by PerformanceMonitor when frames drop.
@@ -34,9 +37,6 @@ const ENTRANCE_STAGGER = 0.12;
 const ENTRANCE_DURATION = 1.2;
 const DPR_MAX = 1.25;
 
-function damp(current: number, target: number, lambda: number, dt: number) {
-  return current + (target - current) * (1 - Math.exp(-lambda * dt));
-}
 const easeOutExpo = (t: number) => (t >= 1 ? 1 : 1 - Math.pow(2, -10 * t));
 
 function Carousel() {
@@ -50,7 +50,14 @@ function Carousel() {
     if (!r) return;
     if (t0.current === null) t0.current = state.clock.elapsedTime;
     const elapsed = state.clock.elapsedTime - t0.current;
+    const time = state.clock.elapsedTime;
     const reduced = showroomState.reduced;
+
+    // momentum from a drag decays on its own
+    if (!showroomState.dragging) {
+      showroomState.spin += showroomState.spinVelocity * dt;
+      showroomState.spinVelocity *= Math.exp(-2.2 * dt);
+    }
 
     const target = -showroomState.progress * (RING_COUNT - 1) * SPACING;
     r.position.x = reduced ? target : damp(r.position.x, target, 5, dt);
@@ -65,13 +72,14 @@ function Carousel() {
       const enter = reduced
         ? 1
         : easeOutExpo(Math.max(0, (elapsed - ENTRANCE_DELAY - i * ENTRANCE_STAGGER) / ENTRANCE_DURATION));
+      const bob = reduced ? 0 : Math.sin(time * 0.8 + i * 1.7) * 0.03;
       g.scale.setScalar((0.6 + 0.4 * focus) * enter);
-      g.position.y = ROW_Y - 0.3 * d - (1 - enter) * 0.9;
+      g.position.y = ROW_Y - 0.3 * d - (1 - enter) * 0.9 + bob;
       g.position.z = -1.1 * d;
-      const idle = reduced ? 0 : Math.sin(state.clock.elapsedTime * 0.4 + i * 1.3) * 0.2;
-      g.rotation.y = damp(g.rotation.y, idle + mx * 0.4 * focus, 3, dt);
+      const idle = reduced ? 0 : Math.sin(time * 0.4 + i * 1.3) * 0.2;
+      const targetY = idle + mx * 0.4 * focus + showroomState.spin * focus;
+      g.rotation.y = damp(g.rotation.y, targetY, showroomState.dragging ? 12 : 3, dt);
       g.rotation.x = damp(g.rotation.x, -my * 0.12 * focus, 3, dt);
-      // items far off-screen do not need to render at all
       g.visible = Math.abs(i - current) < 2.2;
     });
   });
@@ -90,29 +98,16 @@ function Carousel() {
           <Suspense fallback={null}>
             <DeviceModel spec={spec} />
           </Suspense>
+          <BlobShadow size={spec.size} y={FLOOR_Y - ROW_Y + 0.01} />
         </group>
       ))}
     </group>
   );
 }
 
-/** A soft pool of blue light under the lit device: one additive disc, no reflections. */
+/** A soft pool of blue light under the lit device. */
 function LightPool() {
-  const texture = useMemo(() => {
-    const size = 256;
-    const canvas = document.createElement("canvas");
-    canvas.width = canvas.height = size;
-    const ctx = canvas.getContext("2d")!;
-    const g = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
-    g.addColorStop(0, "rgba(96,165,250,0.55)");
-    g.addColorStop(0.35, "rgba(37,99,235,0.28)");
-    g.addColorStop(1, "rgba(2,16,31,0)");
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, size, size);
-    const t = new THREE.CanvasTexture(canvas);
-    t.colorSpace = THREE.SRGBColorSpace;
-    return t;
-  }, []);
+  const texture = useRadialTexture("rgba(96,165,250,0.55)", "rgba(37,99,235,0.28)", "rgba(2,16,31,0)");
   return (
     <mesh rotation-x={-Math.PI / 2} position={[0, FLOOR_Y, -0.4]}>
       <planeGeometry args={[7.5, 4.5]} />
@@ -121,30 +116,28 @@ function LightPool() {
   );
 }
 
-function Studio() {
-  return (
-    <>
-      <ambientLight intensity={0.3} />
-      <directionalLight position={[4, 6, 5]} intensity={0.9} />
-      <spotLight position={[0, 6, 3]} angle={0.42} penumbra={1} intensity={90} color="#eef3ff" />
-      <spotLight position={[-7, 3, -1]} angle={0.5} penumbra={1} intensity={40} color="#3b82f6" />
-      <spotLight position={[7, 2, 2]} angle={0.5} penumbra={1} intensity={25} color="#93c5fd" />
-      <Environment resolution={256} frames={1}>
-        <Lightformer intensity={2.4} form="rect" scale={[8, 3, 1]} position={[0, 5, -1]} rotation-x={Math.PI / 2} color="#e8eefc" />
-        <Lightformer intensity={1.2} form="rect" scale={[2, 7, 1]} position={[-6, 1, 2]} rotation-y={Math.PI / 2} color="#7fb3ff" />
-        <Lightformer intensity={1.6} form="rect" scale={[3, 6, 1]} position={[6, 0, 1]} rotation-y={-Math.PI / 2} color="#ffffff" />
-      </Environment>
-      <fog attach="fog" args={["#02101f", 8, 17]} />
-    </>
-  );
-}
-
 function CameraRig({ desktop }: { desktop: boolean }) {
-  const camera = useThree((s) => s.camera);
-  useEffect(() => {
-    camera.position.set(0, 1.15, desktop ? 8.4 : 10.5);
+  const placed = useRef<boolean | null>(null);
+  useFrame((state, delta) => {
+    const camera = state.camera;
+    const baseZ = desktop ? 8.4 : 10.5;
+    if (placed.current !== desktop) {
+      placed.current = desktop;
+      camera.position.set(0, 1.15, baseZ);
+      camera.lookAt(0, 0.05, 0);
+    }
+    if (showroomState.reduced) return;
+    const dt = Math.min(delta, 0.05);
+    const t = state.clock.elapsedTime;
+    // a breathing dolly plus a slight parallax against the pointer
+    const tx = showroomState.mouseX * 0.18 + Math.sin(t * 0.21) * 0.05;
+    const ty = 1.15 - showroomState.mouseY * 0.1 + Math.sin(t * 0.17) * 0.04;
+    const tz = baseZ - showroomState.progress * 0.35;
+    camera.position.x = damp(camera.position.x, tx, 2, dt);
+    camera.position.y = damp(camera.position.y, ty, 2, dt);
+    camera.position.z = damp(camera.position.z, tz, 2, dt);
     camera.lookAt(0, 0.05, 0);
-  }, [camera, desktop]);
+  });
   return null;
 }
 
@@ -155,6 +148,8 @@ function Scene() {
     <>
       <CameraRig desktop={desktop} />
       <Studio />
+      <fog attach="fog" args={["#02101f", 8, 17]} />
+      <Dust />
       <group scale={desktop ? 1 : 0.82} position={[0, desktop ? 0 : -0.2, 0]}>
         <Carousel />
         <LightPool />
@@ -184,13 +179,17 @@ export function Showroom() {
     if (!el) return;
     const io = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), { threshold: 0 });
     io.observe(el);
-    return () => io.disconnect();
+    const detach = attachDragSpin(el, showroomState);
+    return () => {
+      io.disconnect();
+      detach();
+    };
   }, []);
 
   if (!webgl) return null;
 
   return (
-    <div ref={wrap} className="h-full w-full">
+    <div ref={wrap} className="h-full w-full cursor-grab active:cursor-grabbing" style={{ touchAction: "pan-y" }}>
       <Canvas
         dpr={dpr}
         camera={{ fov: 30, near: 0.1, far: 60 }}

@@ -50,6 +50,11 @@ export function Lineup({ lang, t }: { lang: Lang; t: Dictionary["lineup"] }) {
               priority={false}
               className="tile-day__render pointer-events-none absolute -right-[6%] -top-[8%] w-[62%] max-w-[36rem] drop-shadow-[0_40px_60px_rgb(11_28_51/0.35)]"
             />
+            <span
+              className="sheen tile-day__render absolute -right-[6%] -top-[8%] aspect-square w-[62%] max-w-[36rem]"
+              style={{ "--mask": `url(${iphone.render})` } as CSSProperties}
+              aria-hidden="true"
+            />
             <div className="relative">
               <p className="t-eyebrow-day">{iphone.storeName[lang]}</p>
               <h3 className="t-display mt-2">{iphone.name}</h3>
@@ -79,6 +84,11 @@ export function Lineup({ lang, t }: { lang: Lang; t: Dictionary["lineup"] }) {
                 height={1200}
                 sizes="(min-width: 768px) 30vw, 100vw"
                 className="tile-day__render pointer-events-none absolute -right-[4%] -top-[4%] w-[46%] max-w-[13rem] drop-shadow-[0_30px_40px_rgb(11_28_51/0.3)]"
+              />
+              <span
+                className="sheen tile-day__render absolute -right-[4%] -top-[4%] aspect-square w-[46%] max-w-[13rem]"
+                style={{ "--mask": `url(${c.render})` } as CSSProperties}
+                aria-hidden="true"
               />
               <div className="relative max-w-[62%]">
                 <p className="t-eyebrow-day">{c.storeName[lang]}</p>

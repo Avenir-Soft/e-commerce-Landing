@@ -136,6 +136,9 @@ export function Motion() {
         const py = (e.clientY - r.top) / r.height;
         tile.style.setProperty("--gx", `${(px * 100).toFixed(1)}%`);
         tile.style.setProperty("--gy", `${(py * 100).toFixed(1)}%`);
+        // the product still drifts against the pointer, as if it sat above the card
+        tile.style.setProperty("--tx", `${((0.5 - px) * 14).toFixed(1)}px`);
+        tile.style.setProperty("--ty", `${((0.5 - py) * 10).toFixed(1)}px`);
         gsap.to(tile, {
           rotateY: (px - 0.5) * 7,
           rotateX: (0.5 - py) * 7,
@@ -145,8 +148,11 @@ export function Motion() {
           overwrite: "auto",
         });
       };
-      const onLeave = () =>
+      const onLeave = () => {
+        tile.style.setProperty("--tx", "0px");
+        tile.style.setProperty("--ty", "0px");
         gsap.to(tile, { rotateX: 0, rotateY: 0, duration: 0.9, ease: "expo.out", overwrite: "auto" });
+      };
       tile.addEventListener("pointermove", onMove, { passive: true });
       tile.addEventListener("pointerleave", onLeave, { passive: true });
       cleanups.push(() => {

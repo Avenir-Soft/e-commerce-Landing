@@ -42,6 +42,18 @@ are magnetic, the price ticker scrolls, a shine runs around the key cards and a
 beam around the payment card, the aurora and orb drift. All of it is switched
 off by `prefers-reduced-motion`.
 
+Realism layer (2026-09-07, "realistic animation" request): a warm light
+orbits both 3D stages so highlights travel across glass and metal; every
+device has a blurred contact shadow and a slow float; dust drifts in the air;
+the hero camera breathes and parallaxes against the pointer; a horizontal drag
+spins the lit device with momentum (vertical drags still scroll). The showcase
+puts a real model on a turntable that sweeps ±63° while its beat scrolls by
+and crossfades to the next by scale. Catalog stills drift against the pointer
+and a highlight sweeps across the product silhouette on hover; the primary
+button gets a light pass; the header slips away while reading down and
+returns on the first scroll up; dark rooms cast a soft shadow into the light
+ones. The hero and showcase stages both hold 60 fps in the test browser.
+
 ## Assets
 
 - `public/models/*.glb` — CC-BY-4.0 models from Sketchfab, compressed with
