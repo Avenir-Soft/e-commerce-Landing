@@ -64,12 +64,12 @@ export function Header({ lang, nav }: { lang: Lang; nav: Dictionary["nav"] }) {
             <LangSwitch lang={lang} label={nav.language} />
           </div>
           <a
-            href={site.botUrl}
+            href={site.storeUrl}
             target="_blank"
             rel="noopener"
             className="btn btn-solid btn-sm hidden md:inline-flex"
           >
-            <TelegramIcon />
+            <BagIcon />
             {nav.open}
           </a>
           <button
@@ -101,8 +101,8 @@ export function Header({ lang, nav }: { lang: Lang; nav: Dictionary["nav"] }) {
             </a>
           ))}
           <div className="mt-4 flex flex-wrap items-center gap-4">
-            <a href={site.botUrl} target="_blank" rel="noopener" className="btn btn-solid">
-              <TelegramIcon />
+            <a href={site.storeUrl} target="_blank" rel="noopener" className="btn btn-solid">
+              <BagIcon />
               {nav.open}
             </a>
             <LangSwitch lang={lang} label={nav.language} />
@@ -134,17 +134,23 @@ export function Header({ lang, nav }: { lang: Lang; nav: Dictionary["nav"] }) {
   );
 }
 
-export function TelegramIcon({ className = "" }: { className?: string }) {
+export function BagIcon({ className = "" }: { className?: string }) {
   return (
     <svg
       width="18"
       height="18"
       viewBox="0 0 24 24"
-      fill="currentColor"
+      fill="none"
       aria-hidden="true"
       className={className}
     >
-      <path d="M21.7 3.3a1.4 1.4 0 0 0-1.5-.2L2.9 10.3c-1.2.5-1.1 1.3-.2 1.6l4.4 1.4 1.7 5.3c.2.6.4.8.8.8.5 0 .7-.2 1-.5l2.5-2.4 4.6 3.4c.8.5 1.4.2 1.6-.8l3-14.2c.3-1.2-.3-1.7-.6-1.6zM9.4 13.8l7.9-5c.4-.2.7-.1.4.2l-6.5 5.9-.3 2.9-1.5-4z" />
+      <path
+        d="M6 8h12l1 12H5L6 8Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+      <path d="M9 8V6a3 3 0 0 1 6 0v2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   );
 }

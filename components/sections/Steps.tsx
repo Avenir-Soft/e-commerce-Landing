@@ -11,13 +11,19 @@ export function Steps({ lang, t }: { lang: Lang; t: Dictionary["steps"] }) {
     <section id="steps" className="day scroll-mt-20 py-24 md:py-32" aria-labelledby="steps-title">
       <div className="shell grid items-center gap-14 lg:grid-cols-[6fr_5fr] lg:gap-20">
         <div>
-          <h2 id="steps-title" className="t-h2">
+          <h2 id="steps-title" className="t-h2" data-reveal>
             {t.heading}
           </h2>
-          <p className="t-lead mt-5 !text-day-ink-2">{t.lead}</p>
+          <p className="t-lead mt-5 !text-day-ink-2" data-reveal>
+            {t.lead}
+          </p>
           <ol className="mt-12 grid gap-8">
             {t.items.map((step, i) => (
-              <li key={step.title} className="grid grid-cols-[3rem_1fr] gap-4 border-t border-day-ink/10 pt-5">
+              <li
+                key={step.title}
+                className="grid grid-cols-[3rem_1fr] gap-4 border-t border-day-ink/10 pt-5"
+                data-reveal
+              >
                 <span className="font-display text-[1.6rem] font-semibold leading-none text-mark">
                   {i + 1}
                 </span>
@@ -28,13 +34,15 @@ export function Steps({ lang, t }: { lang: Lang; t: Dictionary["steps"] }) {
               </li>
             ))}
           </ol>
-          <a href={site.botUrl} target="_blank" rel="noopener" className="btn btn-day mt-10">
-            {t.phone.button}
-          </a>
+          <div data-reveal>
+            <a href={site.storeUrl} target="_blank" rel="noopener" className="btn btn-day mt-10">
+              {t.phone.button}
+            </a>
+          </div>
         </div>
 
-        {/* A still of the Mini App, drawn in CSS so it stays in sync with the real fonts and copy. */}
-        <div className="flex justify-center lg:justify-end" aria-hidden="true">
+        {/* A still of the store on a phone, drawn in CSS so it stays in sync with the real fonts and copy. */}
+        <div className="flex justify-center lg:justify-end" aria-hidden="true" data-reveal>
           <div className="phone">
             <div className="phone__screen">
               <div className="flex items-center justify-between px-4 pt-4 text-[0.7rem] text-ink-2">

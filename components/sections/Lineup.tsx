@@ -20,16 +20,20 @@ export function Lineup({ lang, t }: { lang: Lang; t: Dictionary["lineup"] }) {
   return (
     <section id="catalog" className="scroll-mt-20 py-24 md:py-32" aria-labelledby="lineup-title">
       <div className="shell">
-        <SectionHead id="lineup-title" heading={t.heading} lead={t.lead} />
+        <div data-reveal>
+          <SectionHead id="lineup-title" heading={t.heading} lead={t.lead} />
+        </div>
         <div className="mt-12 grid gap-4 md:grid-cols-3">
           {items.map((c, i) => (
             <a
               key={c.id}
-              href={site.botUrl}
+              href={site.storeUrl}
               target="_blank"
               rel="noopener"
               className={`tile flex min-h-[15rem] min-w-0 flex-col justify-between p-6 md:p-8 ${i === 0 ? "md:col-span-2" : ""}`}
               style={{ "--gx": glow[c.id][0], "--gy": glow[c.id][1] } as CSSProperties}
+              data-reveal
+              data-tilt
             >
               <div>
                 <h3 className="t-h2">{c.name}</h3>

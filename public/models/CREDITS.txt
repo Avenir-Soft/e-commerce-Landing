@@ -1,0 +1,38 @@
+3D models used on the Avenir Store landing (all CC-BY-4.0, see each license.txt):
+
+## iphone.glb
+* title:	iPhone 16 Pro Max
+* source:	https://sketchfab.com/3d-models/iphone-16-pro-max-41a071ae12794b668502f58d1e0fd1a3
+* author:	MajdyModels (https://sketchfab.com/MG990)
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+
+## watch.glb
+* title:	Apple Watch Ultra - Orange
+* source:	https://sketchfab.com/3d-models/apple-watch-ultra-orange-4656191de2e94767a8c16003fca1f268
+* author:	alboxer2000_ (https://sketchfab.com/alboxer2000_)
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+
+## ipad.glb
+* title:	Ipad Pro 12.9 (2020)
+* source:	https://sketchfab.com/3d-models/ipad-pro-129-2020-f0f7674522124f3bbc2d0f898963457e
+* author:	Konstantin Koretskyi (https://sketchfab.com/cgnoobmaster)
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+
+## macbook15.glb
+* title:	Apple Macbook Air 15 (Space Gray) 2023
+* source:	https://sketchfab.com/3d-models/apple-macbook-air-15-space-gray-2023-e8d82e341c794141a2561c2c9d01d79e
+* author:	akshatmittal (https://sketchfab.com/akshatmittal)
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+
+## macbookm2.glb
+* title:	MacBook Air M2
+* source:	https://sketchfab.com/3d-models/macbook-air-m2-786fa23d402a4f90ae36c4168997f9cc
+* author:	rtql8d (https://sketchfab.com/rtql8d)
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+
+## airpods.glb
+* title:	Headphones AirPods Pro
+* source:	https://sketchfab.com/3d-models/headphones-airpods-pro-a6f024575e904a31b44b25a29d52e718
+* author:	Valentine_crut (https://sketchfab.com/Valentine_crut)
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+

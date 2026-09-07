@@ -1,15 +1,15 @@
 # Avenir Store — landing page
 
-Marketing site for Avenir Store, the Apple electronics shop that runs as a
-Telegram Mini App. Three languages (`/uz`, `/ru`, `/en`), a 3D hero built with
-React Three Fiber, GSAP ScrollTrigger and Lenis. Design rationale and the
-launch checklist are in [DESIGN.md](./DESIGN.md).
+Marketing site for Avenir Store, the Apple electronics shop. Three languages
+(`/uz`, `/ru`, `/en`), a pinned 3D showroom hero with real product models
+(React Three Fiber), GSAP ScrollTrigger, Lenis smooth scroll. Design rationale,
+model licences and the launch checklist are in [DESIGN.md](./DESIGN.md).
 
 ## Stack
 
 Next.js 16 (App Router, Turbopack), React 19, Tailwind CSS 4, TypeScript,
-`three` + `@react-three/fiber` + `@react-three/drei`, `gsap` + `@gsap/react`,
-`lenis`, `qrcode`.
+`three` + `@react-three/fiber` + `@react-three/drei` + `@react-three/postprocessing`,
+`gsap` + `@gsap/react`, `lenis`.
 
 ## Run
 
@@ -29,10 +29,11 @@ proxy.ts             redirects / to /uz, /ru or /en by Accept-Language
 lib/i18n.ts          dictionaries (server only — never import from a client file)
 lib/languages.ts     language list and types (client-safe)
 lib/catalog.ts       product lines, featured products, search tags, prices (UZS)
-lib/site.ts          bot link, store URL, contacts, delivery facts
-components/hero/     Hero (pin + choreography), Showroom (R3F canvas), devices
-components/sections/ Lineup, Featured, Trust, SearchDemo, Steps, Faq, FinalCta
-components/motion/   SmoothScroll (Lenis + ScrollTrigger sync)
+lib/site.ts          store URL, contacts, delivery facts, 3D model credits
+components/hero/     Intro curtain, Hero (pin + choreography), Showroom (R3F), DeviceModel
+components/sections/ Marquee, Lineup, Featured, Trust, SearchDemo, Steps, Faq, FinalCta
+components/motion/   SmoothScroll (Lenis + ScrollTrigger), Motion (reveals, tilt, cursor)
+public/models/       compressed GLB models + CREDITS.txt (CC-BY, attribution required)
 ```
 
 ## Content rules
@@ -41,3 +42,4 @@ components/motion/   SmoothScroll (Lenis + ScrollTrigger sync)
 - Facts shared across sections (delivery days, payments, city) live in
   `lib/site.ts` and are interpolated into the dictionaries.
 - Prices are integers in UZS in `lib/catalog.ts`; `lib/format.ts` renders them.
+- Every "open the store" action links to `site.storeUrl`.

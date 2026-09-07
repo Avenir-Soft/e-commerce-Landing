@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Lang } from "@/lib/languages";
 import type { Dictionary } from "@/lib/i18n";
-import { site } from "@/lib/site";
+import { modelCredits, site } from "@/lib/site";
 import { Logo } from "@/components/brand/Logo";
 import { LangSwitch } from "./LangSwitch";
 
@@ -24,6 +24,9 @@ export function Footer({ lang, t }: { lang: Lang; t: Dictionary["footer"] }) {
         </div>
 
         <div className="flex flex-col gap-2 text-ink-2">
+          <a href={site.storeUrl} target="_blank" rel="noopener" className="transition-colors hover:text-ink">
+            {site.storeUrl.replace(/^https?:\/\//, "")}
+          </a>
           <a href={`${site.storeUrl}/offer`} className="transition-colors hover:text-ink">
             {t.offer}
           </a>
@@ -54,6 +57,18 @@ export function Footer({ lang, t }: { lang: Lang; t: Dictionary["footer"] }) {
           </p>
         </div>
       </div>
+
+      <p className="shell mt-10 text-[0.75rem] leading-relaxed text-ink-3/80">
+        {t.credits}:{" "}
+        {modelCredits.map((m, i) => (
+          <span key={m.url}>
+            <a href={m.url} rel="noopener" className="underline-offset-2 hover:underline">
+              {m.title}
+            </a>{" "}
+            ({m.author}, CC BY 4.0){i < modelCredits.length - 1 ? ", " : "."}
+          </span>
+        ))}
+      </p>
     </footer>
   );
 }
