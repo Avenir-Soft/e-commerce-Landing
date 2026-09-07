@@ -75,13 +75,16 @@ export function Loader({ t }: { t: Dictionary["loader"] }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [phase]);
 
-  if (phase === "done" || phase === "pending") return null;
-
   const shown = ready ? 100 : Math.min(96, progress);
 
+  // Always mounted: the hero next to it gets wrapped by ScrollTrigger's pin
+  // spacer, and inserting a new sibling before it later would break React's
+  // reconciliation. Server-rendered visible, so the page is covered before
+  // hydration; hidden with the attribute once done.
   return (
     <div
       className={`loader ${phase === "exit" ? "loader--exit" : ""}`}
+      hidden={phase === "done"}
       aria-hidden={phase !== "show"}
       onClick={() => phase === "show" && setPhase("exit")}
     >
