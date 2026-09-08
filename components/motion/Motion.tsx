@@ -58,12 +58,18 @@ export function Motion() {
     // opened and closed a row per crossing, and every one of those reflowed
     // the rows below it, so questions jumped out from under the cursor.
     // Hover now only lights the row up (CSS); the geometry changes on intent.
-    document.querySelectorAll<HTMLDetailsElement>("details.faq").forEach((details) => {
+    const faqList = document.querySelector<HTMLElement>("[data-faq-list]");
+    const faqItems = Array.from(document.querySelectorAll<HTMLDetailsElement>("details.faq"));
+    const closers: (() => void)[] = [];
+
+    faqItems.forEach((details) => {
       const summary = details.querySelector("summary");
       const content = details.querySelector<HTMLElement>(".faq__content");
       if (!summary || !content) return;
       const open = () => {
         if (details.open) return;
+        // one answer at a time, so the reserved room below is always enough
+        closers.forEach((fn) => fn());
         details.open = true;
         if (!reduce) gsap.from(content, { height: 0, opacity: 0, duration: 0.6, ease: "expo.out", clearProps: "all", overwrite: true });
       };
@@ -85,6 +91,7 @@ export function Motion() {
           },
         });
       };
+      closers.push(close);
       const onClick = (e: Event) => {
         e.preventDefault();
         if (details.open) close();
@@ -93,6 +100,43 @@ export function Motion() {
       summary.addEventListener("click", onClick);
       cleanups.push(() => summary.removeEventListener("click", onClick));
     });
+
+    // Reserve room for the tallest answer so opening one grows into space the
+    // list already occupies: the CTA and the footer below never move. Measured
+    // by opening each panel and closing it again inside one task, so no frame
+    // is ever painted with them open.
+    if (faqList && faqItems.length) {
+      let raf = 0;
+      const reserve = () => {
+        const wasOpen = faqItems.map((d) => d.open);
+        faqList.style.minHeight = "";
+        faqItems.forEach((d) => (d.open = false));
+        const closedHeight = faqList.offsetHeight;
+        let tallest = 0;
+        faqItems.forEach((d) => {
+          d.open = true;
+          const c = d.querySelector<HTMLElement>(".faq__content");
+          if (c) tallest = Math.max(tallest, c.offsetHeight);
+          d.open = false;
+        });
+        faqItems.forEach((d, i) => (d.open = wasOpen[i]));
+        faqList.style.minHeight = `${Math.round(closedHeight + tallest)}px`;
+        ScrollTrigger.refresh();
+      };
+      document.fonts.ready.then(() => {
+        if (!cancelled) reserve();
+      });
+      const onResize = () => {
+        window.cancelAnimationFrame(raf);
+        raf = window.requestAnimationFrame(reserve);
+      };
+      window.addEventListener("resize", onResize);
+      cleanups.push(() => {
+        window.removeEventListener("resize", onResize);
+        window.cancelAnimationFrame(raf);
+        faqList.style.minHeight = "";
+      });
+    }
 
     if (!fine || reduce) return () => cleanups.forEach((fn) => fn());
 

@@ -109,6 +109,23 @@ what changed is the visual system underneath them.
   Measured with `tools/pw/avenir-hover2.mjs`: every hover target now shifts
   0 elements; the only movement left is the 2px arrow nudge inside the hovered
   button.
+- **The FAQ no longer moves the page.** Opening an answer still pushed the CTA
+  and the footer down by ~73px. `Motion.tsx` now measures the tallest answer
+  once fonts are ready (opening and closing every panel inside one task, so no
+  frame is painted with them open) and sets `min-height` on `[data-faq-list]` to
+  the closed list plus that answer; only one panel opens at a time, so the
+  reserve is always enough. Re-measured on resize. Verified: clicking any of the
+  six rows moves the footer 0px and the page height is identical open or closed.
+- **The favicon was a white square.** `app/icon.png` and `apple-icon.png` were
+  100% opaque and 90% white pixels — a white tile with a navy mark and a drop
+  shadow. `app/icon.svg` is now the primary icon: the `Mark` geometry from
+  `Logo.tsx` verbatim (same axes, hollow diamonds, four-point star), no
+  background, drawn in `--color-mark` blue because the raster logo's navy
+  disappears against dark browser chrome. `tools/pw/avenir-mkicon.mjs`
+  rasterises it to `icon.png` (512, 91.5% transparent), `apple-icon.png` (180,
+  opaque `#02101F` — iOS composites transparency onto black, so that one keeps a
+  ground) and `favicon.ico` (16/32/48, PNG-in-ICO assembled by hand). Checked at
+  16/24/32px against both a light and a dark tab strip.
 - **The search panel had no display type** (owner: "search qismida
   boshqalardagiday kattaroq shriftda yozuv yo'q"). Every other chapter carries a
   large element next to its H2 — a 30px tile title in the bentos, the 72px gold

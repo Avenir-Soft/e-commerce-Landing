@@ -15,7 +15,9 @@ export function Faq({ t }: { t: Dictionary["faq"] }) {
             {t.hint}
           </p>
         </div>
-        <div>
+        {/* Motion.tsx reserves room here for the tallest answer, so opening one
+            never moves the call to action or the footer below. */}
+        <div data-faq-list>
           {t.items.map((item, i) => (
             <details key={item.q} className="faq group border-t border-line last:border-b" data-reveal="slide">
               <summary className="flex items-center gap-5 py-5 text-left">
