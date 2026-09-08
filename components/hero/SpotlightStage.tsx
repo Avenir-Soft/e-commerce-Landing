@@ -31,12 +31,18 @@ const BEATS = STAGE_IDS.length;
  * laptop filled the stage sideways while the phone and the tablet sat in the
  * middle of it at half height — small and lost on a wide screen. Sized per
  * device now: the laptop stays width-limited, the two portrait devices grow
- * into the room they always had.
+ * into the room they always had. 2.7/2.6 overshot — a phone standing taller
+ * than the laptop is wide reads as a prop, not a product — so the portrait
+ * pair sits a notch back from the ceiling with air above and below. Measured
+ * on a 1920×1080 stage (560×904): the phone went from 72% of the stage's
+ * height to 60%, the tablet from 49% to 43%. The tablet reads smaller than its
+ * number suggests because the iPad GLB normalises on a bounding box larger
+ * than its own screen — compare on screen, not in world units.
  */
 const STAGE_SIZE: Record<(typeof STAGE_IDS)[number], number> = {
-  "phone-home": 2.7,
+  "phone-home": 2.25,
   "laptop-dashboard": 1.95,
-  "tablet-editor": 2.6,
+  "tablet-editor": 2.3,
 };
 
 function Turntable({ active }: { active: number }) {

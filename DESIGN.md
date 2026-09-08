@@ -318,10 +318,27 @@ soft shadow into the light ones. Both stages hold 60 fps in the test browser.
   the mixed catalogue (sneakers, espresso machine, scarf), which is what carried
   the "any goods can be sold" message. The devices now say "electronics shop"
   and the search says "anything". One of the two should move.
+- **They are typeset for the size the device is seen at, not the size of the
+  mock** (owner, 2026-09-08: "bosh sahifada noutbukda planshetda yozuvlar
+  yaxshi ko'rinib turishi kerak, faqat yozuv emas boshqa element"). In the hero
+  the focused laptop lands at about 500×330 css px, so a 1600×1000 mock is
+  shown at roughly a third and the old 17px body text arrived as 5px of grey
+  mush: only the page title survived. Body is 28–30px now and headings 52–60,
+  and the element count was halved to pay for it — six sidebar items to four,
+  four KPI cards to three, a six-column order table to three fat columns
+  (product name with `#id · customer · payment` beneath it), a twelve-point
+  sparkline to seven solid bars, and the tablet's variants table dropped for
+  one large photo plus three stat boxes. **Read these mocks at ~33% zoom**;
+  at 100% they look oversized on purpose.
+  Two traps found while doing it: bar heights must be a percentage of the
+  card, not fixed px, or the tallest bar runs off a screen whose height is
+  fixed at 1000; and "Bahor Market" at 34px wrapped onto two lines in the
+  400px sidebar — Unbounded runs about 0.81em per character.
 - `public/screens/*.webp` are captures of those mocks, made with
   `C:\Users\mamut\tools\pw\screens.mjs` against the dev route `/dev/screens`
   (blocked in production), at `deviceScaleFactor: 2` and WebP 0.95. Regenerate
-  them after editing the mocks.
+  them after editing the mocks — **and then `render.mjs` too**, because
+  `public/renders/*.webp` are photographs of the models already wearing them.
 - `DeviceModel` clones each model's display material per instance and puts
   the capture on `map` and `emissiveMap` (`ScreenSpec` in
   `components/hero/DeviceModel.tsx`). Display material names: iPhone
@@ -418,6 +435,15 @@ and had been left behind on all of the above, plus two problems of its own:
   per device now (`STAGE_SIZE`), measured at 1920 and 1440 over three runs:
   they fill 90–97% of the stage width and 73–90% of its height, up from ~50%,
   with no clipping at either width.
+  **That first pass overshot the two portrait devices** (owner, same day:
+  "telefon va planshetni razmerini kichikroq qil, katta bo'lib qolgan"). A
+  phone standing taller than the laptop is wide reads as a prop, not a
+  product. On a 1920 stage (560×904) the phone went 2.7 → 2.25, from 72% of
+  the stage's height to 60%, and the tablet 2.6 → 2.3, from 49% to 43%; the
+  laptop was never the offender and stayed at 1.95. Note the tablet reads
+  smaller than its number suggests, because the iPad GLB normalises on a
+  bounding box larger than its own screen — **compare these on screen, not in
+  world units.**
 - The crossfade was symmetrical, so mid-swap a whole phone sat on the laptop's
   screen — harmless at the old sizes, obvious at these. The outgoing model now
   collapses at rate 11 against the incoming 5.

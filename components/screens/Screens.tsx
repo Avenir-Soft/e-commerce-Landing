@@ -21,6 +21,7 @@ export const SCREEN_SIZES: Record<ScreenId, { w: number; h: number }> = {
 };
 
 const SHOP = "Bahor Market";
+const DISPLAY = { fontFamily: "var(--font-unbounded), Unbounded, sans-serif" };
 
 /*
  * Real goods, taken from the live instance of the platform (fetch-group.uz):
@@ -75,7 +76,7 @@ function Home() {
       <div className="flex items-center justify-between px-8 pt-8">
         <div className="flex items-center gap-3">
           <Mark size={40} className="text-[#0b1c33]" />
-          <span className="text-[30px] font-bold tracking-tight" style={{ fontFamily: "var(--font-unbounded), Unbounded, sans-serif" }}>
+          <span className="text-[30px] font-bold tracking-tight" style={DISPLAY}>
             {SHOP}
           </span>
         </div>
@@ -90,7 +91,7 @@ function Home() {
       <div className="mx-8 mt-6 flex shrink-0 items-center justify-between gap-4 overflow-hidden rounded-3xl bg-[#0b1c33] p-6 text-white">
         <div>
           <p className="text-[16px] uppercase tracking-[0.18em] text-white/60">Bahor chegirmalari</p>
-          <p className="mt-1 text-[28px] font-bold leading-tight" style={{ fontFamily: "var(--font-unbounded), Unbounded, sans-serif" }}>
+          <p className="mt-1 text-[28px] font-bold leading-tight" style={DISPLAY}>
             −20% katalogga
           </p>
         </div>
@@ -132,7 +133,7 @@ function Checkout() {
     <PhoneFrame>
       <div className="px-8 pt-8">
         <p className="text-[19px] text-[#6b7c93]">Buyurtma</p>
-        <p className="text-[34px] font-bold" style={{ fontFamily: "var(--font-unbounded), Unbounded, sans-serif" }}>
+        <p className="text-[34px] font-bold" style={DISPLAY}>
           Rasmiylashtirish
         </p>
       </div>
@@ -168,7 +169,7 @@ function Checkout() {
             <div
               key={p}
               className={`rounded-2xl bg-white p-4 text-center text-[21px] font-bold ${i === 1 ? "border-2 border-[#2563eb]" : "border border-black/10"}`}
-              style={{ fontFamily: "var(--font-unbounded), Unbounded, sans-serif" }}
+              style={DISPLAY}
             >
               {p}
             </div>
@@ -186,35 +187,50 @@ function Checkout() {
   );
 }
 
+/*
+ * Type and density on the two laptop screens and on the tablet are set for the
+ * size the device is actually SEEN at, not for the size of the mock. In the
+ * hero the focused laptop lands at roughly 500×330 css px, so a 1600×1000 mock
+ * is shown at about a third: the old 17px body text arrived as 5px of grey
+ * mush and only the page title survived. Everything below is roughly doubled
+ * — body 28–30px, headings 52–60 — and the element count halved to pay for it:
+ * six sidebar items to four, four KPI cards to three, a six-column order table
+ * to three fat columns, a thin sparkline to seven solid bars. Read these mocks
+ * at ~33% zoom before changing anything; at 100% they look big on purpose.
+ */
 function LaptopFrame({ children, active }: { children: React.ReactNode; active: string }) {
   const s = SCREEN_SIZES.dashboard;
-  const nav = ["Boshqaruv paneli", "Buyurtmalar", "Mahsulotlar", "Kategoriyalar", "Mijozlar", "Sozlamalar"];
+  const nav = ["Boshqaruv paneli", "Buyurtmalar", "Mahsulotlar", "Mijozlar"];
   return (
     <div
       style={{ width: s.w, height: s.h, fontFamily: "var(--font-manrope), Manrope, sans-serif" }}
       className="flex overflow-hidden bg-[#f3f5f9] text-[#0b1c33]"
     >
-      <aside className="flex w-[300px] shrink-0 flex-col bg-white px-6 py-7">
+      <aside className="flex w-[400px] shrink-0 flex-col bg-white px-7 py-10">
+        {/* 34px wrapped "Bahor Market" onto two lines inside a 336px rail;
+            Unbounded runs ~0.81em per character, so the name gets 28. */}
         <div className="flex items-center gap-3">
-          <Mark size={34} className="text-[#0b1c33]" />
-          <span className="text-[22px] font-bold" style={{ fontFamily: "var(--font-unbounded), Unbounded, sans-serif" }}>
+          <Mark size={48} className="shrink-0 text-[#0b1c33]" />
+          <span className="whitespace-nowrap text-[28px] font-bold" style={DISPLAY}>
             {SHOP}
           </span>
         </div>
-        <p className="mt-8 text-[13px] uppercase tracking-[0.18em] text-[#6b7c93]">Savdo</p>
-        <nav className="mt-3 space-y-1.5 text-[18px] font-medium">
+        <p className="mt-10 text-[22px] font-semibold uppercase tracking-[0.16em] text-[#6b7c93]">Savdo</p>
+        <nav className="mt-5 space-y-3 text-[30px] font-semibold">
           {nav.map((n) => (
-            <div key={n} className={`rounded-xl px-4 py-2.5 ${n === active ? "bg-[#0b1c33] text-white" : "text-[#4d5d73]"}`}>
+            <div key={n} className={`rounded-2xl px-6 py-4 ${n === active ? "bg-[#0b1c33] text-white" : "text-[#4d5d73]"}`}>
               {n}
             </div>
           ))}
         </nav>
-        <div className="mt-auto rounded-2xl bg-[#eef2ff] p-4 text-[15px] text-[#4d5d73]">
-          <p className="font-semibold text-[#0b1c33]">Doʼkon ochiq</p>
-          bahor-market.uz · Telegram
+        <div className="mt-auto rounded-3xl bg-[#eef2ff] p-7 text-[26px] leading-snug text-[#4d5d73]">
+          <p className="text-[28px] font-bold text-[#0b1c33]">Doʼkon ochiq</p>
+          bahor-market.uz
         </div>
       </aside>
-      <main className="flex-1 overflow-hidden p-9">{children}</main>
+      <main className="flex h-full flex-col overflow-hidden p-12" style={{ width: s.w - 400 }}>
+        {children}
+      </main>
     </div>
   );
 }
@@ -223,61 +239,76 @@ function Dashboard() {
   const kpis = [
     ["Bugungi buyurtmalar", "24", "+18%"],
     ["Bugungi savdo", "18,4 mln", "+9%"],
-    ["Konversiya", "3,2%", "+0,4"],
     ["Yangi mijozlar", "41", "+12%"],
   ];
-  const pts = [30, 42, 38, 55, 48, 66, 60, 74, 70, 86, 80, 92];
-  const path = pts.map((v, i) => `${i === 0 ? "M" : "L"} ${i * 90} ${200 - v * 1.8}`).join(" ");
+  /* Seven solid bars instead of a twelve-point sparkline: a 5px stroke
+     downscales to 1.5px and vanishes, a 60px bar downscales to 20 and reads. */
+  const week = [
+    { d: "Du", v: 52 },
+    { d: "Se", v: 64 },
+    { d: "Cho", v: 57 },
+    { d: "Pay", v: 79 },
+    { d: "Ju", v: 70 },
+    { d: "Sha", v: 96 },
+    { d: "Yak", v: 83 },
+  ];
+  const orders = [
+    ["Apple Watch Ultra 2", "10 790 000", "Yigʼilmoqda", "#fef3c7", "#b45309"],
+    ["JBL Charge 5", "1 972 000", "Kuryerda", "#dbeafe", "#1d4ed8"],
+    ["SONY WH-1000XM5", "3 520 000", "Yetkazildi", "#dcfce7", "#15803d"],
+  ];
   return (
     <LaptopFrame active="Boshqaruv paneli">
-      <div className="flex items-end justify-between">
+      <div className="flex shrink-0 items-end justify-between">
         <div>
-          <p className="text-[17px] text-[#6b7c93]">Xush kelibsiz, Dilnoza</p>
-          <p className="text-[34px] font-bold" style={{ fontFamily: "var(--font-unbounded), Unbounded, sans-serif" }}>
+          <p className="text-[26px] text-[#6b7c93]">Xush kelibsiz, Dilnoza</p>
+          <p className="mt-1 text-[56px] font-bold leading-none" style={DISPLAY}>
             Boshqaruv paneli
           </p>
         </div>
-        <div className="rounded-full bg-[#2563eb] px-6 py-3 text-[17px] font-semibold text-white">+ Mahsulot qoʼshish</div>
+        <div className="rounded-full bg-[#2563eb] px-8 py-4 text-[26px] font-semibold text-white">+ Mahsulot</div>
       </div>
-      <div className="mt-7 grid grid-cols-4 gap-5">
+      <div className="mt-8 grid shrink-0 grid-cols-3 gap-6">
         {kpis.map(([l, v, d]) => (
-          <div key={l} className="rounded-2xl bg-white p-6 shadow-sm">
-            <p className="text-[15px] text-[#6b7c93]">{l}</p>
-            <p className="mt-2 text-[34px] font-bold tracking-tight">{v}</p>
-            <p className="mt-1 text-[15px] font-semibold text-[#16a34a]">{d}</p>
+          <div key={l} className="rounded-3xl bg-white p-8 shadow-sm">
+            <p className="text-[24px] text-[#6b7c93]">{l}</p>
+            <p className="mt-2 text-[60px] font-bold leading-none tracking-tight">{v}</p>
+            <p className="mt-3 text-[24px] font-bold text-[#16a34a]">{d} bu hafta</p>
           </div>
         ))}
       </div>
-      <div className="mt-6 grid grid-cols-[1.6fr_1fr] gap-5">
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <p className="text-[18px] font-semibold">Savdo, oxirgi 12 kun</p>
-            <p className="text-[15px] text-[#6b7c93]">soʼm</p>
+      <div className="mt-7 grid min-h-0 flex-1 grid-cols-[1fr_470px] gap-7">
+        <div className="flex flex-col rounded-3xl bg-white p-8 shadow-sm">
+          <div className="flex shrink-0 items-baseline justify-between">
+            <p className="text-[30px] font-bold">Haftalik savdo</p>
+            <p className="text-[26px] font-bold text-[#16a34a]">+9%</p>
           </div>
-          <svg viewBox="0 0 990 220" className="mt-4 h-[260px] w-full">
-            <defs>
-              <linearGradient id="g" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0" stopColor="#2563eb" stopOpacity="0.35" />
-                <stop offset="1" stopColor="#2563eb" stopOpacity="0" />
-              </linearGradient>
-            </defs>
-            <path d={`${path} L 990 220 L 0 220 Z`} fill="url(#g)" />
-            <path d={path} fill="none" stroke="#2563eb" strokeWidth="5" strokeLinejoin="round" strokeLinecap="round" />
-          </svg>
+          {/* bar heights are a percentage of whatever the card is left with,
+              not fixed px: with fixed px the tallest bar and its weekday label
+              ran past the bottom of the 1000px screen */}
+          <div className="mt-7 flex min-h-0 flex-1 gap-5">
+            {week.map(({ d, v }) => (
+              <div key={d} className="flex min-w-0 flex-1 flex-col">
+                <div className="flex min-h-0 flex-1 items-end">
+                  <div className="w-full rounded-t-xl bg-[#2563eb]" style={{ height: `${v}%` }} />
+                </div>
+                <span className="mt-4 shrink-0 text-center text-[24px] font-semibold text-[#6b7c93]">{d}</span>
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
-          <p className="text-[18px] font-semibold">Soʼnggi buyurtmalar</p>
-          <div className="mt-4 space-y-3 text-[16px]">
-            {[
-              ["#1042", "JBL Charge 5 kolonkasi", "Kuryerda"],
-              ["#1041", "Apple Watch Ultra 2 soati", "Yigʼilmoqda"],
-              ["#1040", "SONY WH-1000XM5 quloqchini", "Yetkazildi"],
-              ["#1039", "Apple Watch SE 3 soati", "Yangi"],
-            ].map(([n, p, s]) => (
-              <div key={n} className="flex items-center justify-between rounded-xl bg-[#f3f5f9] px-4 py-3">
-                <span className="text-[#6b7c93]">{n}</span>
-                <span className="font-semibold">{p}</span>
-                <span className="rounded-full bg-[#dbeafe] px-3 py-1 text-[13px] font-semibold text-[#1d4ed8]">{s}</span>
+        <div className="flex flex-col rounded-3xl bg-white p-8 shadow-sm">
+          <p className="shrink-0 text-[30px] font-bold">Soʼnggi buyurtmalar</p>
+          <div className="mt-6 flex min-h-0 flex-1 flex-col gap-5">
+            {orders.map(([p, sum, st, bg, fg]) => (
+              <div key={p} className="flex flex-1 flex-col justify-center rounded-2xl bg-[#f3f5f9] px-6 py-4">
+                <p className="text-[28px] font-bold leading-tight">{p}</p>
+                <div className="mt-3 flex items-center justify-between">
+                  <span className="text-[26px] text-[#6b7c93]">{sum}</span>
+                  <span className="rounded-full px-4 py-1.5 text-[22px] font-bold" style={{ background: bg, color: fg }}>
+                    {st}
+                  </span>
+                </div>
               </div>
             ))}
           </div>
@@ -289,39 +320,41 @@ function Dashboard() {
 
 function Orders() {
   const rows = [
-    ["#1042", "Madina R.", "JBL Charge 5 kolonkasi", "Payme", "1 972 000", "Kuryerda", "#dbeafe", "#1d4ed8"],
-    ["#1041", "Jasur T.", "Apple Watch Ultra 2 soati", "Click", "10 790 000", "Yig'ilmoqda", "#fef3c7", "#b45309"],
-    ["#1040", "Nilufar A.", "SONY WH-1000XM5 quloqchini", "Uzcard", "3 520 000", "Yetkazildi", "#dcfce7", "#15803d"],
-    ["#1039", "Sardor K.", "Apple Watch SE 3 soati", "Humo", "3 780 000", "Yangi", "#ede9fe", "#6d28d9"],
-    ["#1038", "Kamola Y.", "Yandex Station Lite kolonkasi", "Payme", "840 000", "Yetkazildi", "#dcfce7", "#15803d"],
-    ["#1037", "Bekzod M.", "Apple AirPods Max quloqchini", "Click", "6 961 500", "Kuryerda", "#dbeafe", "#1d4ed8"],
+    ["Apple Watch Ultra 2 soati", "#1041 · Jasur T. · Click", "10 790 000", "Yigʼilmoqda", "#fef3c7", "#b45309"],
+    ["JBL Charge 5 kolonkasi", "#1042 · Madina R. · Payme", "1 972 000", "Kuryerda", "#dbeafe", "#1d4ed8"],
+    ["SONY WH-1000XM5 quloqchini", "#1040 · Nilufar A. · Uzcard", "3 520 000", "Yetkazildi", "#dcfce7", "#15803d"],
+    ["Apple Watch SE 3 soati", "#1039 · Sardor K. · Humo", "3 780 000", "Yangi", "#ede9fe", "#6d28d9"],
+    ["Yandex Station Lite", "#1038 · Kamola Y. · Payme", "840 000", "Yetkazildi", "#dcfce7", "#15803d"],
   ];
+  const cols = "grid-cols-[1fr_280px_240px]";
   return (
     <LaptopFrame active="Buyurtmalar">
-      <div className="flex items-end justify-between">
-        <p className="text-[34px] font-bold" style={{ fontFamily: "var(--font-unbounded), Unbounded, sans-serif" }}>
+      <div className="flex shrink-0 items-end justify-between">
+        <p className="text-[56px] font-bold leading-none" style={DISPLAY}>
           Buyurtmalar
         </p>
-        <div className="flex gap-2 text-[16px] font-semibold">
-          {["Hammasi", "Yangi", "Kuryerda", "Yetkazildi"].map((f, i) => (
-            <span key={f} className={`rounded-full px-4 py-2 ${i === 0 ? "bg-[#0b1c33] text-white" : "bg-white text-[#4d5d73]"}`}>
+        <div className="flex gap-3 text-[26px] font-semibold">
+          {["Hammasi", "Yangi", "Kuryerda"].map((f, i) => (
+            <span key={f} className={`rounded-full px-6 py-3 ${i === 0 ? "bg-[#0b1c33] text-white" : "bg-white text-[#4d5d73]"}`}>
               {f}
             </span>
           ))}
         </div>
       </div>
-      <div className="mt-7 overflow-hidden rounded-2xl bg-white shadow-sm">
-        <div className="grid grid-cols-[100px_1.1fr_1.6fr_110px_150px_140px] gap-4 border-b border-black/5 px-6 py-4 text-[14px] uppercase tracking-[0.12em] text-[#6b7c93]">
-          <span>Raqam</span><span>Mijoz</span><span>Mahsulot</span><span>Toʼlov</span><span>Summa</span><span>Holat</span>
+      <div className="mt-8 min-h-0 flex-1 overflow-hidden rounded-3xl bg-white shadow-sm">
+        <div className={`grid ${cols} gap-7 border-b border-black/5 px-8 py-5 text-[22px] font-semibold uppercase tracking-[0.12em] text-[#6b7c93]`}>
+          <span>Mahsulot</span>
+          <span>Summa</span>
+          <span>Holat</span>
         </div>
-        {rows.map(([n, c, p, pay, sum, st, bg, fg]) => (
-          <div key={n} className="grid grid-cols-[100px_1.1fr_1.6fr_110px_150px_140px] items-center gap-4 border-b border-black/5 px-6 py-5 text-[17px]">
-            <span className="text-[#6b7c93]">{n}</span>
-            <span className="font-semibold">{c}</span>
-            <span>{p}</span>
-            <span className="font-semibold">{pay}</span>
-            <span className="font-semibold">{sum}</span>
-            <span className="justify-self-start rounded-full px-3 py-1 text-[14px] font-semibold" style={{ background: bg, color: fg }}>
+        {rows.map(([p, meta, sum, st, bg, fg]) => (
+          <div key={meta} className={`grid ${cols} items-center gap-7 border-b border-black/5 px-8 py-8`}>
+            <div className="min-w-0">
+              <p className="truncate text-[30px] font-bold leading-tight">{p}</p>
+              <p className="mt-1 text-[24px] text-[#6b7c93]">{meta}</p>
+            </div>
+            <span className="text-[30px] font-bold">{sum}</span>
+            <span className="justify-self-start rounded-full px-5 py-2 text-[24px] font-bold" style={{ background: bg, color: fg }}>
               {st}
             </span>
           </div>
@@ -331,78 +364,84 @@ function Orders() {
   );
 }
 
+/*
+ * The tablet is seen at roughly 350×470 css px in the hero — a 1024×1366 mock
+ * at ~34%. Same rule as the laptop: body 28–32px, one big photo instead of a
+ * thumbnail grid, and the variants table dropped so that what is left can
+ * actually be read rather than five stacked cards of grey lines.
+ */
 function Editor() {
   const s = SCREEN_SIZES.editor;
+  const stats = [
+    ["Narx", "1 972 000", "#0b1c33"],
+    ["Omborda", "12 dona", "#0b1c33"],
+    ["Holat", "Sotuvda", "#15803d"],
+  ];
   return (
     <div
       style={{ width: s.w, height: s.h, fontFamily: "var(--font-manrope), Manrope, sans-serif" }}
-      className="flex flex-col overflow-hidden bg-[#f3f5f9] p-10 text-[#0b1c33]"
+      className="flex flex-col gap-6 overflow-hidden bg-[#f3f5f9] p-10 text-[#0b1c33]"
     >
-      <div className="flex items-center justify-between">
+      <div className="flex shrink-0 items-end justify-between">
         <div>
-          <p className="text-[17px] text-[#6b7c93]">Mahsulotlar · tahrirlash</p>
-          <p className="text-[34px] font-bold" style={{ fontFamily: "var(--font-unbounded), Unbounded, sans-serif" }}>
-            JBL Charge 5 kolonkasi
+          <p className="text-[26px] text-[#6b7c93]">Mahsulotlar · tahrirlash</p>
+          <p className="mt-1 text-[52px] font-bold leading-none" style={DISPLAY}>
+            JBL Charge 5
           </p>
         </div>
-        <div className="rounded-full bg-[#2563eb] px-6 py-3 text-[17px] font-semibold text-white">Saqlash</div>
+        <div className="rounded-full bg-[#2563eb] px-8 py-4 text-[28px] font-semibold text-white">Saqlash</div>
       </div>
-      <div className="mt-7 grid grid-cols-[1fr_1fr] gap-5">
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <p className="text-[16px] font-semibold text-[#6b7c93]">Nomi (RU)</p>
+
+      <div className="grid shrink-0 grid-cols-[360px_1fr] gap-7 rounded-3xl bg-white p-8 shadow-sm">
+        {/* one real shot: the shop ships a single photo per product, and
+            inventing a second angle would be inventing data */}
+        <Shot src="/shop/kolonka-jbl-charge-5.webp" className="aspect-square w-full ring-1 ring-black/5" />
+        <div className="flex flex-col justify-center">
+          <p className="text-[24px] font-semibold text-[#6b7c93]">Nomi (RU)</p>
+          <p className="mt-3 rounded-2xl bg-[#f3f5f9] px-6 py-4 text-[32px]">Колонка JBL Charge 5</p>
+          <div className="mt-7 flex items-center justify-between">
+            <p className="text-[24px] font-semibold text-[#6b7c93]">Nomi (UZ)</p>
+            <span className="rounded-full bg-[#ede9fe] px-4 py-1.5 text-[22px] font-bold text-[#6d28d9]">AI tarjima</span>
           </div>
-          <p className="mt-2 rounded-xl bg-[#f3f5f9] px-4 py-3 text-[19px]">Колонка JBL Charge 5</p>
-          <div className="mt-5 flex items-center justify-between">
-            <p className="text-[16px] font-semibold text-[#6b7c93]">Nomi (UZ)</p>
-            <span className="rounded-full bg-[#ede9fe] px-3 py-1 text-[14px] font-semibold text-[#6d28d9]">AI tarjima</span>
-          </div>
-          <p className="mt-2 rounded-xl bg-[#f3f5f9] px-4 py-3 text-[19px]">JBL Charge 5 kolonkasi</p>
-        </div>
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
-          <p className="text-[16px] font-semibold text-[#6b7c93]">Rasmlar</p>
-          {/* one real shot and an empty slot: the shop ships one photo per
-              product, and inventing a second angle would be inventing data */}
-          <div className="mt-3 grid grid-cols-3 gap-3">
-            <Shot src="/shop/kolonka-jbl-charge-5.webp" className="aspect-square w-full ring-1 ring-black/5" />
-            <div className="grid aspect-square place-items-center rounded-xl border-2 border-dashed border-black/15 text-[30px] text-[#6b7c93]">+</div>
-          </div>
+          <p className="mt-3 rounded-2xl bg-[#f3f5f9] px-6 py-4 text-[32px]">JBL Charge 5 kolonkasi</p>
         </div>
       </div>
-      <div className="mt-5 rounded-2xl bg-white p-6 shadow-sm">
-        <div className="flex items-center justify-between">
-          <p className="text-[16px] font-semibold text-[#6b7c93]">Tavsif va SEO</p>
-          <span className="rounded-full bg-[#ede9fe] px-3 py-1 text-[14px] font-semibold text-[#6d28d9]">SEO yaratish</span>
+
+      <div className="grid shrink-0 grid-cols-3 gap-6">
+        {stats.map(([l, v, c]) => (
+          <div key={l} className="rounded-3xl bg-white p-7 shadow-sm">
+            <p className="text-[24px] text-[#6b7c93]">{l}</p>
+            <p className="mt-2 text-[44px] font-bold leading-none tracking-tight" style={{ color: c }}>
+              {v}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex min-h-0 flex-1 flex-col rounded-3xl bg-white p-8 shadow-sm">
+        <div className="flex shrink-0 items-center justify-between">
+          <p className="text-[28px] font-bold">Tavsif va SEO</p>
+          <span className="rounded-full bg-[#ede9fe] px-4 py-1.5 text-[22px] font-bold text-[#6d28d9]">SEO yaratish</span>
         </div>
-        <p className="mt-3 text-[18px] leading-relaxed text-[#4d5d73]">
-          40 W quvvat, 20 soatgacha ishlash, IP67 suv va changdan himoya, powerbank rejimi. Kafolat 12 oy, yetkazib berish butun Oʼzbekiston boʼylab.
+        <p className="mt-4 text-[30px] leading-relaxed text-[#4d5d73]">
+          40 W quvvat, 20 soatgacha ishlash, IP67 suv va changdan himoya. Kafolat 12 oy, yetkazib berish butun Oʼzbekiston boʼylab.
         </p>
+        <div className="mt-auto border-t border-black/5 pt-6">
+          <p className="text-[24px] font-semibold text-[#6b7c93]">SEO sarlavha</p>
+          <p className="mt-2 text-[28px] font-semibold">JBL Charge 5 kolonkasi — narxi va yetkazib berish</p>
+        </div>
       </div>
-      <div className="mt-5 rounded-2xl bg-white p-6 shadow-sm">
-        <p className="text-[16px] font-semibold text-[#6b7c93]">Atributlar</p>
-        <div className="mt-3 flex flex-wrap gap-2 text-[17px]">
-          {["Quvvat: 40 W", "Ishlash: 20 soat", "Himoya: IP67", "Bluetooth: 5.1", "Rang: Qora"].map((a) => (
-            <span key={a} className="rounded-full bg-[#f3f5f9] px-4 py-2">
+
+      <div className="shrink-0 rounded-3xl bg-white p-8 shadow-sm">
+        <p className="text-[28px] font-bold">Atributlar</p>
+        <div className="mt-4 flex flex-wrap gap-3 text-[28px] font-semibold">
+          {["40 W", "20 soat", "IP67", "Bluetooth 5.1"].map((a) => (
+            <span key={a} className="rounded-full bg-[#f3f5f9] px-6 py-3">
               {a}
             </span>
           ))}
-          <span className="rounded-full border border-dashed border-black/20 px-4 py-2 text-[#6b7c93]">+ AI aniqlash</span>
+          <span className="rounded-full border-2 border-dashed border-black/20 px-6 py-3 text-[#6b7c93]">+ AI aniqlash</span>
         </div>
-      </div>
-      <div className="mt-5 flex-1 rounded-2xl bg-white p-6 shadow-sm">
-        <p className="text-[16px] font-semibold text-[#6b7c93]">Variantlar</p>
-        <div className="mt-3 grid grid-cols-[1.4fr_1fr_1fr_1fr] gap-4 text-[16px] uppercase tracking-[0.1em] text-[#6b7c93]">
-          <span>Variant</span><span>Narx</span><span>Ombor</span><span>Holat</span>
-        </div>
-        {[
-          ["Kumush · 1,5 l", "3 490 000", "12", "Sotuvda"],
-          ["Qora · 1,5 l", "3 490 000", "4", "Sotuvda"],
-          ["Kumush · 2 l", "3 890 000", "0", "Tugagan"],
-        ].map(([v, p, q, st]) => (
-          <div key={v} className="mt-3 grid grid-cols-[1.4fr_1fr_1fr_1fr] gap-4 rounded-xl bg-[#f3f5f9] px-4 py-3 text-[18px]">
-            <span className="font-semibold">{v}</span><span>{p}</span><span>{q}</span><span className={st === "Tugagan" ? "text-[#b91c1c]" : "text-[#15803d]"}>{st}</span>
-          </div>
-        ))}
       </div>
     </div>
   );
