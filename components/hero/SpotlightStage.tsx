@@ -16,9 +16,28 @@ import { BlobShadow, Dust, Studio } from "./Studio";
  */
 
 const STAGE_IDS = ["phone-home", "laptop-dashboard", "tablet-editor"] as const;
-const DPR_MAX = 1.25;
+/* The stage only ever mounts from lg, so it takes the desktop cap straight: a
+   flat 1.25 drew it at 700x1130 and stretched that over a 1120x1808 slot. */
+const DPR_MAX = 2;
 
 const BEATS = STAGE_IDS.length;
+
+/*
+ * Target size on the stage, per device, in world units.
+ *
+ * It used to be a flat 1.9 for all three, applied to each model's LARGEST
+ * dimension. That makes them equal in the wrong axis: the laptop's largest
+ * dimension is its width, the phone's and the tablet's is their height. So the
+ * laptop filled the stage sideways while the phone and the tablet sat in the
+ * middle of it at half height — small and lost on a wide screen. Sized per
+ * device now: the laptop stays width-limited, the two portrait devices grow
+ * into the room they always had.
+ */
+const STAGE_SIZE: Record<(typeof STAGE_IDS)[number], number> = {
+  "phone-home": 2.7,
+  "laptop-dashboard": 1.95,
+  "tablet-editor": 2.6,
+};
 
 function Turntable({ active }: { active: number }) {
   const groups = useRef<(THREE.Group | null)[]>([]);
@@ -29,13 +48,24 @@ function Turntable({ active }: { active: number }) {
       spotState.spin += spotState.spinVelocity * dt;
       spotState.spinVelocity *= Math.exp(-2.2 * dt);
     }
-    // each product sweeps about ±80° around its front face while its own beat scrolls by
+    /*
+     * Each product turns around its front face while its own beat scrolls by.
+     * The sweep was 0.7π — ±63°, and the comment above it claimed ±80°. A phone
+     * survives that; a tablet and a laptop do not. At 63° a flat screen is
+     * almost edge-on, and this is the one chapter whose whole job is to let you
+     * read the platform's UI. ±29° still reads as a turntable and keeps the
+     * screen legible at both ends of the sweep. Dragging can still spin it
+     * right round — that is the visitor's choice, not the default state.
+     */
     const local = Math.min(1, Math.max(0, spotState.progress * BEATS - active));
-    const turn = (local - 0.5) * Math.PI * 0.7 + spotState.spin;
+    const turn = (local - 0.5) * Math.PI * 0.32 + spotState.spin;
     groups.current.forEach((g, i) => {
       if (!g) return;
       const on = i === active;
-      const s = damp(g.scale.x, on ? 1 : 0.001, 5, dt);
+      // the one leaving collapses about twice as fast as the one arriving grows:
+      // both sit at the same point on the turntable, and at these sizes a slow
+      // symmetrical crossfade puts a whole phone on top of the laptop's screen
+      const s = damp(g.scale.x, on ? 1 : 0.001, on ? 5 : 11, dt);
       g.scale.setScalar(s);
       g.visible = s > 0.01;
       g.rotation.y = damp(g.rotation.y, turn + Math.sin(t * 0.5 + i) * 0.08, spotState.dragging ? 12 : 4, dt);
@@ -55,7 +85,7 @@ function Turntable({ active }: { active: number }) {
             }}
             scale={i === 0 ? 1 : 0.001}
           >
-            <group scale={1.9 / spec.size}>
+            <group scale={STAGE_SIZE[id] / spec.size}>
               <Suspense fallback={null}>
                 <DeviceModel spec={spec} />
               </Suspense>
@@ -126,8 +156,10 @@ export function SpotlightStage({ active }: { active: number }) {
           alpha: true,
           stencil: false,
           powerPreference: "high-performance",
-          toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: 1.1,
+          // the same Khronos PBR Neutral curve the hero uses; this canvas kept
+          // ACES, which is why the showcase laptop read grey next to the hero's
+          toneMapping: THREE.NeutralToneMapping,
+          toneMappingExposure: 1.15,
         }}
         frameloop={visible ? "always" : "never"}
         onCreated={({ gl }) => gl.setClearColor(0x000000, 0)}

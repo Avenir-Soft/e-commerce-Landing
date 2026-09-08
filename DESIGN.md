@@ -400,6 +400,28 @@ The display material also lost some of the room: `emissiveIntensity` 1.25/1.05 �
 diffuse only add the studio's grey to a surface that should be showing its own
 picture.
 
+**The showcase stage was a separate case** (owner, same day: "laptop bilan ipad
+katta ekranlarda yaxshi ko'rinmayapti"). `SpotlightStage.tsx` is its own canvas
+and had been left behind on all of the above, plus two problems of its own:
+
+- It still ran **ACES and DPR 1.25** while the hero had moved on — which is
+  exactly why its laptop read grey next to the hero's. Both now match.
+- **The turntable swept ±63°** (`Math.PI * 0.7`; the comment above it claimed
+  ±80°, so it had drifted from its own documentation). A phone survives that
+  angle. A tablet does not: at 63° a flat screen is nearly edge-on, and this is
+  the one chapter whose whole job is to let you read the platform's UI. It is
+  ±29° now, and dragging still spins the model right round.
+- **One size fitted all three.** `1.9 / spec.size` normalises each model's
+  LARGEST dimension, which is the laptop's width but the phone's and the
+  tablet's height — so the laptop filled the stage sideways while the two
+  portrait devices sat at half height, small and lost on a wide screen. Sized
+  per device now (`STAGE_SIZE`), measured at 1920 and 1440 over three runs:
+  they fill 90–97% of the stage width and 73–90% of its height, up from ~50%,
+  with no clipping at either width.
+- The crossfade was symmetrical, so mid-swap a whole phone sat on the laptop's
+  screen — harmless at the old sizes, obvious at these. The outgoing model now
+  collapses at rate 11 against the incoming 5.
+
 ## Page order
 
 1. Loading screen (only while the models download), then the hero with the
