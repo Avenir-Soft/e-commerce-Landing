@@ -9,8 +9,14 @@
 # against locally; Netlify's default has moved before and a silent bump is not
 # something a 3D landing page should discover in production.
 
+# Webpack, not Turbopack, and only here. Next 16 builds with Turbopack by
+# default, and Netlify's runtime wraps the proxy in an edge function by
+# importing the built middleware — which then dies on
+# "Cannot find module './chunks/[turbopack]_runtime.js'", because that bundler
+# emits chunks the edge bundler cannot follow. `npm run build` stays on
+# Turbopack for the local loop; only the deploy takes the slower path.
 [build]
-  command = "npm run build"
+  command = "npx next build --webpack"
   publish = ".next"
 
 [build.environment]
