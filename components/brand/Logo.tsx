@@ -1,22 +1,45 @@
 /*
- * The Avenir lockup exactly as avenir.uz draws it (components/v2/header.tsx
- * there): a four-point star on a reticle whose horizontal axis runs on under
- * the wordmark to a hollow diamond, "AVENIR" set above the axis in tracked
- * capitals. Owner decision, 2026-09-08: the landing carries the company
- * logo, not a derived "AVENIR / STORE" lockup.
+ * The Avenir lockup, drawn to the proportions of the company's raster logo
+ * (avenir.uz/public/Avenir-logo.png, 1027x590): a four-point star on a
+ * reticle whose horizontal axis runs on under the wordmark to a hollow
+ * diamond, "AVENIR" set above the axis in bold tracked capitals. Measured
+ * against the half-axis (tip to centre = 50 units here): star radius 0.57,
+ * right tip at 2.58, cap height 0.33, baseline 0.29 above the axis.
+ *
+ * Static on purpose (owner, 2026-09-08): no hover rotation, no colour play.
  */
 
-export function Logo({ className = "" }: { className?: string }) {
+const C = 60;
+const HALF = 50;
+const STAR_R = 28.5;
+const RIGHT_TIP = C + HALF * 2.58;
+const TIP = 2.6;
+
+function Diamond({ x, y, className }: { x: number; y: number; className: string }) {
   return (
-    <svg className={`brand ${className}`} viewBox="0 0 210 120" fill="none" role="img" aria-label="Avenir Store">
-      <line className="brand__axis" x1="60" y1="10" x2="60" y2="110" />
-      <line className="brand__axis" x1="10" y1="60" x2="200" y2="60" />
-      <rect className="brand__tip" x="57" y="7" width="6" height="6" transform="rotate(45 60 10)" />
-      <rect className="brand__tip" x="57" y="107" width="6" height="6" transform="rotate(45 60 110)" />
-      <rect className="brand__tip" x="7" y="57" width="6" height="6" transform="rotate(45 10 60)" />
-      <rect className="brand__tip" x="197" y="57" width="6" height="6" transform="rotate(45 200 60)" />
-      <path className="brand__star" d="M60 28 Q60 60 82.7 60 Q60 60 60 92 Q60 60 37.3 60 Q60 60 60 28 Z" />
-      <text className="brand__word" x="72" y="46">
+    <rect
+      className={className}
+      x={x - TIP}
+      y={y - TIP}
+      width={TIP * 2}
+      height={TIP * 2}
+      transform={`rotate(45 ${x} ${y})`}
+    />
+  );
+}
+
+export function Logo({ className = "" }: { className?: string }) {
+  const star = `M${C} ${C - STAR_R} Q${C} ${C} ${C + STAR_R} ${C} Q${C} ${C} ${C} ${C + STAR_R} Q${C} ${C} ${C - STAR_R} ${C} Q${C} ${C} ${C} ${C - STAR_R} Z`;
+  return (
+    <svg className={`brand ${className}`} viewBox="0 0 200 120" fill="none" role="img" aria-label="Avenir Store">
+      <line className="brand__axis" x1={C} y1={C - HALF} x2={C} y2={C + HALF} />
+      <line className="brand__axis" x1={C - HALF} y1={C} x2={RIGHT_TIP} y2={C} />
+      <Diamond className="brand__tip" x={C} y={C - HALF} />
+      <Diamond className="brand__tip" x={C} y={C + HALF} />
+      <Diamond className="brand__tip" x={C - HALF} y={C} />
+      <Diamond className="brand__tip" x={RIGHT_TIP} y={C} />
+      <path className="brand__star" d={star} />
+      <text className="brand__word" x={C + 14} y={C - 14.5} textLength={110} lengthAdjust="spacing">
         AVENIR
       </text>
     </svg>

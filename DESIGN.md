@@ -41,6 +41,12 @@ owner to ask for a demo.
   the "why" tile says **3 languages** (UZ / RU / EN). Note: the E-COMMERCE
   frontend's `lib/i18n.ts` lists `supportedLngs: ['ru', 'uz']` today, so EN
   is a promise the platform still has to keep.
+- Navbar logo, later the same day: the owner wanted it static and closer to
+  the company logo. `Logo.tsx` is now measured against the raster
+  `Avenir-logo.png` (star radius 0.57 of the half-axis, right tip at 2.58,
+  cap height 0.33, baseline 0.29 above the axis, "AVENIR" in Unbounded 600
+  tracked 0.1em) and has no hover rotation or colour change; the diamonds
+  are filled with the room's ground colour so they read as cut-outs.
 - Second round the same day: the favicon set is the avenir.uz one
   (`app/icon.png`, `apple-icon.png`, `favicon.ico`); every section reveals
   with its own verb (`components/motion/reveals.ts`: write / clip / tick /
