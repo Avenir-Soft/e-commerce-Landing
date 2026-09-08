@@ -53,11 +53,16 @@ export function Motion() {
       splits.forEach((s) => s.revert());
     });
 
-    // ---- FAQ panels: click (or Enter) toggles ------------------------------
-    // Opening used to happen on pointerenter. Sweeping down the list then
-    // opened and closed a row per crossing, and every one of those reflowed
-    // the rows below it, so questions jumped out from under the cursor.
-    // Hover now only lights the row up (CSS); the geometry changes on intent.
+    // ---- FAQ panels: hover opens, click and Enter toggle -------------------
+    // Hover-opening is an owner decision, so the jumpiness is fixed instead of
+    // the behaviour. Three things do it: the list reserves room for the tallest
+    // answer (below), so nothing outside it ever moves; only one panel is open
+    // at a time; and the open is scheduled from pointermove, not pointerenter,
+    // after a short pause. That last one matters — when a panel opens the rows
+    // resettle under a stationary cursor, and pointerenter would fire again on
+    // whatever slid beneath it and start an open/close oscillation.
+    const FAQ_OPEN_DELAY = 140;
+    let faqTimer = 0;
     const faqList = document.querySelector<HTMLElement>("[data-faq-list]");
     const faqItems = Array.from(document.querySelectorAll<HTMLDetailsElement>("details.faq"));
     const closers: (() => void)[] = [];
@@ -94,12 +99,37 @@ export function Motion() {
       closers.push(close);
       const onClick = (e: Event) => {
         e.preventDefault();
+        window.clearTimeout(faqTimer);
         if (details.open) close();
         else open();
       };
       summary.addEventListener("click", onClick);
       cleanups.push(() => summary.removeEventListener("click", onClick));
+
+      if (fine) {
+        const onMove = () => {
+          if (details.open) return;
+          window.clearTimeout(faqTimer);
+          faqTimer = window.setTimeout(open, FAQ_OPEN_DELAY);
+        };
+        details.addEventListener("pointermove", onMove, { passive: true });
+        cleanups.push(() => details.removeEventListener("pointermove", onMove));
+      }
     });
+
+    // Closing is a property of the list, not of a row: moving from one question
+    // to the next must not close and reopen on the way through the gap.
+    if (fine && faqList) {
+      const onLeave = () => {
+        window.clearTimeout(faqTimer);
+        closers.forEach((fn) => fn());
+      };
+      faqList.addEventListener("pointerleave", onLeave);
+      cleanups.push(() => {
+        faqList.removeEventListener("pointerleave", onLeave);
+        window.clearTimeout(faqTimer);
+      });
+    }
 
     // Reserve room for the tallest answer so opening one grows into space the
     // list already occupies: the CTA and the footer below never move. Measured

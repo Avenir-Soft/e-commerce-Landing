@@ -222,7 +222,7 @@ const uz: Dictionary = {
   faq: {
     eyebrow: "Savollar",
     heading: "Ko'p so'raladigan savollar.",
-    hint: "Javobni ochish uchun savolni bosing",
+    hint: "Savol ustiga olib boring",
     items: [
       {
         q: "Bu tayyor xizmatmi yoki bizga o'rnatiladimi?",
@@ -420,7 +420,7 @@ const ru: Dictionary = {
   faq: {
     eyebrow: "Вопросы",
     heading: "Частые вопросы.",
-    hint: "Нажмите на вопрос, чтобы открыть ответ",
+    hint: "Наведите на вопрос",
     items: [
       {
         q: "Это готовый сервис или устанавливается у нас?",
@@ -618,7 +618,7 @@ const en: Dictionary = {
   faq: {
     eyebrow: "Questions",
     heading: "Frequently asked.",
-    hint: "Select a question to open the answer",
+    hint: "Hover over a question",
     items: [
       {
         q: "Is it a hosted service or installed for us?",

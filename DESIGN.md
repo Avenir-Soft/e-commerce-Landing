@@ -98,24 +98,32 @@ what changed is the visual system underneath them.
   one solid rank, one quiet rank, the same pair inverted for the light rooms.
   The arrow steps forward on hover and that is the whole animation.
 - **Hover changes light, never geometry** (owner, same day: "elementlar hover
-  bo'lgan boshqa elementlarga ta'sir qilib ular qimilab ketyabti"). Four things
+  bo'lgan boshqa elementlarga ta'sir qilib ular qimilab ketyabti"). Three things
   moved under the pointer and had to go: the magnetic pull on `.btn`, the 3D
-  tilt on `[data-tilt]`, the device still that drifted and scaled inside its
-  card, and — the loudest one — the FAQ opening on `pointerenter`, which
-  reflowed every row below it, so sweeping down the list made questions jump out
-  from under the cursor. The FAQ now opens on click or Enter (the `faq.hint`
-  copy changed with it in all three languages) and hovering only lights the row.
-  `[data-tilt]` keeps the pointer-following glow, which moves nothing.
+  tilt on `[data-tilt]`, and the device still that drifted and scaled inside its
+  card. `[data-tilt]` keeps the pointer-following glow, which moves nothing.
   Measured with `tools/pw/avenir-hover2.mjs`: every hover target now shifts
   0 elements; the only movement left is the 2px arrow nudge inside the hovered
-  button.
-- **The FAQ no longer moves the page.** Opening an answer still pushed the CTA
-  and the footer down by ~73px. `Motion.tsx` now measures the tallest answer
-  once fonts are ready (opening and closing every panel inside one task, so no
-  frame is painted with them open) and sets `min-height` on `[data-faq-list]` to
-  the closed list plus that answer; only one panel opens at a time, so the
-  reserve is always enough. Re-measured on resize. Verified: clicking any of the
-  six rows moves the footer 0px and the page height is identical open or closed.
+  button. The FAQ is the exception that proves the rule — it still opens on
+  hover, but into reserved space (next bullet).
+- **The FAQ keeps hover, and no longer moves the page.** Hover-opening is an
+  owner decision ("questionsdan hoverni olib tashlama"), so the jumpiness was
+  fixed rather than the behaviour. Three things do it, all in `Motion.tsx`:
+  1. the list reserves room for the tallest answer — measured once fonts are
+     ready by opening and closing every panel inside one task, so no frame is
+     ever painted with them open — and `min-height` goes on `[data-faq-list]`,
+     re-measured on resize;
+  2. only one panel is open at a time, so that reserve always covers it;
+  3. the open is scheduled from `pointermove` after 140ms, **not** from
+     `pointerenter`. That is the one that matters: when a panel opens the rows
+     resettle under a stationary cursor, and `pointerenter` fires again on
+     whatever slid beneath it, which is what made the list oscillate. Closing is
+     a property of the list, not a row, so crossing the gap between two
+     questions does not close and reopen.
+  Click and Enter still toggle, for touch and for the keyboard. Verified frame
+  by frame (~225 frames per run) over sweeps and jumps across all six rows, in
+  uz and ru at 1440 and 1024: the footer drifts 0px and the list height never
+  changes.
 - **The favicon was a white square.** `app/icon.png` and `apple-icon.png` were
   100% opaque and 90% white pixels — a white tile with a navy mark and a drop
   shadow. `app/icon.svg` is now the primary icon: the `Mark` geometry from
@@ -182,7 +190,7 @@ everything a merchant gets, a dark bento of the five reasons (your brand,
 four payment rails, your own domain, two languages, support after launch), a
 working search sample over a deliberately mixed catalog (a watch, an espresso
 machine, sneakers, a dress…), the light three-steps room with the storefront
-still on a phone, the FAQ (opened by click), and the final call.
+still on a phone, the hover-opened FAQ, and the final call.
 
 Motion: every heading rises line by line out of a mask (GSAP SplitText), every
 block reveals once on scroll, tiles tilt and glow under the pointer, buttons
@@ -276,7 +284,7 @@ screen (`ReadySignal` → `markModelsReady`).
 6. Why Avenir Store (dark bento) — your brand, 4 payment rails, your domain, 2 languages, support.
 7. Search sample (dark) — mixed demo goods, plain-word queries.
 8. Three steps (light) — demo and agreement, catalog load, start selling; the storefront on a phone.
-9. FAQ (dark) — opens on click, numbered in serif; the price question is answered without a number.
+9. FAQ (dark) — opens on hover (click and Enter too), numbered in serif; the price question is answered without a number.
 10. Final call, footer with payment rails, links and model credits.
 
 ## Before launch
