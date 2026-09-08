@@ -516,6 +516,59 @@ and had been left behind on all of the above, plus two problems of its own:
 9. FAQ (dark) — opens on hover (click and Enter too), numbered in serif; the price question is answered without a number.
 10. Final call, footer with payment rails, links and model credits.
 
+## What a phone actually waits for
+
+Audited on the live site 2026-09-09 at **1.6 Mbps / 150 ms RTT / 4x CPU** — an
+ordinary phone on an ordinary Uzbek connection. Harnesses:
+`tools/pw/avenir-audit-full.mjs` (overflow, tap targets, headings, metadata),
+`avenir-perf.mjs` (LCP, CLS, long tasks, transfer), `avenir-lcp.mjs` (which
+element LCP actually is), `avenir-firstpaint.mjs` (when the curtain lifts).
+
+| | before | after (median of 3) |
+| --- | --- | --- |
+| Loading screen up | 17.3 s | **1.5 s** |
+| LCP | 19.8 s | **7.7 s** |
+| TTFB | 1.76 s | 0.56 s |
+| CLS | 0.0009 | 0.0009 |
+
+Three separate causes, each one hiding the next:
+
+1. **The loader's safety timeout was counted from mount**, and mount means
+   hydration. Hydration alone took ~10 s, so a timer meant to bound the wait
+   at 7 s had not started yet. It is a budget for the visit now, measured from
+   navigation, and shorter on a phone (2.5 s) than on a desktop (7 s).
+2. **CSS held the hero copy until JavaScript arrived.**
+   `.hero[data-pending] [data-load] { opacity: 0 }` exists so the intro
+   timeline can set its own start state, but "until JS arrives" is not a
+   bound — LCP was the lead paragraph at 15.2 s, text that had been in the
+   HTML since the first byte. The hold has a 2.4 s deadline now.
+3. **Only React could lift the curtain**, so it waited on 1.6 MB of bundle —
+   most of the wait it was there to hide. An inline script in the layout lifts
+   it on the same budget, and React agrees when it lands.
+
+**Still open, and it is the whole remaining cost.** The page transfers ~6 MB:
+1.64 MB of script and 1.7 MB of GLB models, for a 3D scene. A phone pays all
+of it. `public/renders/*.webp` are the same devices already photographed at
+39–64 KB each. Serving those to phones instead of the canvas would take the
+remaining seconds off, at the price of a hero that no longer turns on a phone
+— an owner's call, raised 2026-09-09.
+
+Also found and fixed: no `og:image` at all (the link had no card anywhere it
+was pasted, and in this market it is pasted into Telegram — `public/og.jpg` is
+a shot of the hero itself, so it cannot drift from the page); no structured
+data; `metadataBase` missing, so absolute URLs fell back to localhost;
+`.btn-sm` at 40px against the 44px a finger needs; the hero label truncated to
+"MIJOZ KO'RADIGAN DO..." at 390px.
+
+Clean in the same audit, at 390 / 768 / 1440 / 1920: no horizontal overflow,
+no console errors, alt text on every image, one `h1`, no heading-level jumps,
+canonical and hreflang on all three languages.
+
+**Not measured, because the page cannot answer it:** there is no analytics of
+any kind (no GA, Metrica, Pixel or Clarity) and no form — all five CTAs leave
+for `avenir.uz/#aloqa` or `fetch-group.uz`. Conversion cannot be reported on
+until one of those changes.
+
 ## Before launch
 
 - `site.contactUrl` — where "Demo so'rash" should land (form, Telegram, phone). Today it points at avenir.uz.
