@@ -135,14 +135,19 @@ what changed is the visual system underneath them.
   changes.
 - **The favicon was a white square.** `app/icon.png` and `apple-icon.png` were
   100% opaque and 90% white pixels — a white tile with a navy mark and a drop
-  shadow. `app/icon.svg` is now the primary icon: the `Mark` geometry from
-  `Logo.tsx` verbatim (same axes, hollow diamonds, four-point star), no
-  background, drawn in `--color-mark` blue because the raster logo's navy
-  disappears against dark browser chrome. `tools/pw/avenir-mkicon.mjs`
-  rasterises it to `icon.png` (512, 91.5% transparent), `apple-icon.png` (180,
-  opaque `#02101F` — iOS composites transparency onto black, so that one keeps a
-  ground) and `favicon.ico` (16/32/48, PNG-in-ICO assembled by hand). Checked at
-  16/24/32px against both a light and a dark tab strip.
+  shadow. The set is now the **AvenirOS ERP mark**
+  (`Avnir_OS/apps/web/app/icon.png`, owner: "faviconni avenir os dagi kabi qilib
+  qo'y"): navy star `#042147`, near-black axes and hollow diamonds `#1e1e1e`, no
+  background. `tools/pw/avenir-mkicon2.mjs` redraws that file into `icon.png`
+  (512, 92.8% transparent), `apple-icon.png` (180 on white with a 12% margin —
+  iOS composites transparency onto black and this mark is dark, so it needs a
+  light ground) and `favicon.ico` (16/32/48, PNG-in-ICO assembled by hand).
+  `icon.svg` was deleted: browsers prefer an SVG over every PNG, so a
+  differently-coloured one would have overridden the whole set.
+  Known trade-off, same as in the ERP itself: a navy mark on a transparent
+  ground is crisp on a light tab strip and faint on a dark one. Fixing that
+  means an `icon.svg` that swaps to a light mark under
+  `prefers-color-scheme: dark`, which would no longer match AvenirOS.
 - **The search panel had no display type** (owner: "search qismida
   boshqalardagiday kattaroq shriftda yozuv yo'q"). Every other chapter carries a
   large element next to its H2 — a 30px tile title in the bentos, the 72px gold
