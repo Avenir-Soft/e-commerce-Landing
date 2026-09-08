@@ -1324,6 +1324,18 @@
   .field input::-webkit-search-cancel-button {
     display: none;
   }
+  /* The search sample's field: the query is what that chapter is about, so it
+     is set at display size and carries the panel the way a tile title carries
+     a bento tile. Clamped so a long query still fits a phone. */
+  .field--lead {
+    padding: 0.95rem 1.05rem;
+  }
+  .field--lead input {
+    font-family: var(--font-display);
+    font-size: clamp(1.125rem, 0.9rem + 0.9vw, 1.5rem);
+    font-weight: 500;
+    letter-spacing: -0.018em;
+  }
 
   @media (prefers-reduced-motion: reduce) {
     .hero[data-pending] [data-load] {

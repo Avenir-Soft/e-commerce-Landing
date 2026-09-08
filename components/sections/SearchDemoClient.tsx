@@ -109,8 +109,8 @@ export function SearchDemoClient({ t, items }: { t: Dictionary["search"]; items:
           style={{ "--gx": "70%", "--gy": "0%" } as React.CSSProperties}
           data-reveal="clip"
         >
-          <label className="field">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="shrink-0 text-ink-3">
+          <label className="field field--lead">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="shrink-0 text-ink-3">
               <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
               <path d="m20 20-3.5-3.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
@@ -167,7 +167,7 @@ export function SearchDemoClient({ t, items }: { t: Dictionary["search"]; items:
                 >
                   <div className="min-w-0">
                     <p className="t-label truncate">{r.category}</p>
-                    <p className="mt-1 truncate font-semibold text-ink">{r.name}</p>
+                    <p className="t-h3 mt-1 truncate text-ink">{r.name}</p>
                     <p className="truncate text-ink-2 t-small">{r.spec}</p>
                   </div>
                   <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-mark/20 text-mark-2" aria-hidden="true">

@@ -109,6 +109,14 @@ what changed is the visual system underneath them.
   Measured with `tools/pw/avenir-hover2.mjs`: every hover target now shifts
   0 elements; the only movement left is the 2px arrow nudge inside the hovered
   button.
+- **The search panel had no display type** (owner: "search qismida
+  boshqalardagiday kattaroq shriftda yozuv yo'q"). Every other chapter carries a
+  large element next to its H2 — a 30px tile title in the bentos, the 72px gold
+  figures in "why", the numerals in "steps" — while the search panel topped out
+  at 16px, so the room read thin. The query is what that chapter is about, so it
+  is now the display element: `.field--lead` sets the input in Inter Tight at
+  `clamp(1.125rem, 0.9rem + 0.9vw, 1.5rem)` (24px at 1440, 18px on a phone, no
+  overflow at any width), and result names stepped up to `.t-h3`.
 - **The search panel reserved too little room.** Its results list had
   `min-h-[13.5rem]` but three rows are ~18rem, so every cycle of the sample
   query resized the panel and pushed everything below it up and down by ~75px
