@@ -182,11 +182,8 @@ export function Loader({ t }: { t: Dictionary["loader"] }) {
             <path className="loader__flash" d={STAR} />
           </svg>
         </div>
-        <p className="loader__count" aria-hidden="true">
-          <span className="loader__num t-num">{Math.round(shown)}</span>
-          <span className="loader__pct">%</span>
-        </p>
-        <p className="loader__text">{t.loading}</p>
+        {/* The serif percentage and the "loading" line are gone (owner). The ring
+            still carries `shown`, so progress is read off the mark itself. */}
       </div>
       <button type="button" className="loader__skip" onClick={() => setPhase("exit")}>
         {t.skip}

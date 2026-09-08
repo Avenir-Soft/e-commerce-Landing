@@ -15,7 +15,7 @@ export interface Dictionary {
     close: string;
     language: string;
   };
-  loader: { loading: string; skip: string };
+  loader: { skip: string };
   hero: {
     tagline: string;
     /** Headline lines, one string per line so every break is controlled. */
@@ -85,7 +85,7 @@ const uz: Dictionary = {
     close: "Yopish",
     language: "Til",
   },
-  loader: { loading: "Yuklanmoqda", skip: "O'tkazib yuborish" },
+  loader: { skip: "O'tkazib yuborish" },
   hero: {
     tagline: "Avenir Soft platformasi",
     title: ["Do'koningiz onlayn bo'lsin.", "Qolganini platforma qiladi."],
@@ -283,7 +283,7 @@ const ru: Dictionary = {
     close: "Закрыть",
     language: "Язык",
   },
-  loader: { loading: "Загрузка", skip: "Пропустить" },
+  loader: { skip: "Пропустить" },
   hero: {
     tagline: "Платформа Avenir Soft",
     title: ["Ваш магазин — онлайн.", "Остальное делает платформа."],
@@ -481,7 +481,7 @@ const en: Dictionary = {
     close: "Close",
     language: "Language",
   },
-  loader: { loading: "Loading", skip: "Skip" },
+  loader: { skip: "Skip" },
   hero: {
     tagline: "A platform by Avenir Soft",
     title: ["Take your shop online.", "The platform does the rest."],
