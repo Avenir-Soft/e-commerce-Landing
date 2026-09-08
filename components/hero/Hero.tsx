@@ -45,14 +45,23 @@ export function Hero({ t, moments }: { t: Dictionary["hero"]; moments: HeroMomen
         el.removeAttribute("data-pending");
         ScrollTrigger.refresh();
         if (reduce) return;
+        // The 3D row arrives on its own clock (Showroom reads introDone); this is the copy side:
+        // the room lights up, a beam sweeps across, the headline rises line by line out of its
+        // mask with a slight tilt, the rest settles in behind it.
         intro = gsap
           .timeline({ defaults: { ease: "expo.out" } })
-          .from(el.querySelector("[data-load='tagline']"), { y: 16, opacity: 0, duration: 0.9 }, 0)
-          .from(el.querySelectorAll(".hero__line > span"), { yPercent: 112, duration: 1.2, stagger: 0.12 }, 0.1)
-          .from(el.querySelector("[data-load='lead']"), { y: 28, opacity: 0, duration: 0.9 }, 0.45)
-          .from(el.querySelectorAll("[data-load='cta'] > *"), { y: 22, opacity: 0, duration: 0.8, stagger: 0.08 }, 0.6)
-          .from(el.querySelector("[data-load='label']"), { y: 30, opacity: 0, duration: 0.9 }, 0.85)
-          .from(el.querySelector("[data-load='hint']"), { opacity: 0, duration: 0.8 }, 1.1);
+          .fromTo(el.querySelector(".hero__aurora"), { opacity: 0 }, { opacity: 1, duration: 2.4, ease: "power2.out" }, 0)
+          .fromTo(el.querySelector(".hero__flare"), { xPercent: -140 }, { xPercent: 140, duration: 2.2, ease: "power2.inOut" }, 0.1)
+          .from(el.querySelector("[data-load='tagline']"), { y: 18, opacity: 0, duration: 1 }, 0.15)
+          .from(
+            el.querySelectorAll(".hero__line > span"),
+            { yPercent: 115, rotate: 4, transformOrigin: "0% 100%", duration: 1.4, stagger: 0.14 },
+            0.25
+          )
+          .from(el.querySelector("[data-load='lead']"), { y: 30, opacity: 0, filter: "blur(10px)", duration: 1.1 }, 0.65)
+          .from(el.querySelectorAll("[data-load='cta'] > *"), { y: 24, opacity: 0, duration: 0.9, stagger: 0.1 }, 0.85)
+          .from(el.querySelector("[data-load='label']"), { y: 34, opacity: 0, duration: 1 }, 1.15)
+          .from(el.querySelector("[data-load='hint']"), { opacity: 0, duration: 0.8 }, 1.5);
       };
       if (showroomState.introDone) play();
       else window.addEventListener(INTRO_DONE_EVENT, play, { once: true });
@@ -122,6 +131,7 @@ export function Hero({ t, moments }: { t: Dictionary["hero"]; moments: HeroMomen
   return (
     <section ref={root} className="hero" data-pending="" aria-labelledby="hero-title">
       <div className="hero__aurora" aria-hidden="true" />
+      <div className="hero__flare" aria-hidden="true" />
       <div className="hero__canvas" aria-hidden="true">
         <Showroom />
       </div>

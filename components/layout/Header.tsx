@@ -18,25 +18,12 @@ const sections = [
 
 export function Header({ lang, nav }: { lang: Lang; nav: Dictionary["nav"] }) {
   const [scrolled, setScrolled] = useState(false);
-  const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
 
-  // the bar slips away while reading downwards and comes back on the first scroll up
+  // the bar stays put; it only gains a backdrop once the page has scrolled
+  // (owner correction, 2026-09-08: the previous hide-on-scroll made it "disappear")
   useEffect(() => {
-    let last = window.scrollY;
-    const onScroll = () => {
-      const y = window.scrollY;
-      setScrolled(y > 24);
-      setHidden((prev) => {
-        const down = y > last + 4;
-        const up = y < last - 4;
-        if (y < 120) return false;
-        if (down) return true;
-        if (up) return false;
-        return prev;
-      });
-      last = y;
-    };
+    const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -51,11 +38,11 @@ export function Header({ lang, nav }: { lang: Lang; nav: Dictionary["nav"] }) {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 h-(--header-h) transition-[background-color,box-shadow,backdrop-filter,transform] duration-500 ease-[var(--ease-out-expo)] ${
+      className={`fixed inset-x-0 top-0 z-50 h-(--header-h) transition-[background-color,box-shadow,backdrop-filter] duration-500 ease-[var(--ease-out-expo)] ${
         scrolled || open
           ? "bg-night/75 shadow-[0_1px_0_0_var(--color-line)] backdrop-blur-md"
           : "bg-transparent"
-      } ${hidden && !open ? "-translate-y-full" : "translate-y-0"}`}
+      }`}
     >
       <div className="shell flex h-full items-center justify-between gap-6">
         <Link href={`/${lang}`} aria-label={site.name} className="shrink-0">

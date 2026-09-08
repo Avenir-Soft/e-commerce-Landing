@@ -32,6 +32,15 @@ owner to ask for a demo.
   the fictional demo shop "Bahor Market" and are part of the UI mock.
 - No Telegram bot for buying, no custom cursor, dropdown language menu, a
   loading screen that waits for the models (all owner decisions).
+- Owner corrections, 2026-09-08: the header never hides (the old
+  hide-on-scroll-down read as "the navbar disappears"); the logo is the
+  company lockup from avenir.uz (reticle + AVENIR, no "STORE" line); the
+  lit device sits closer to the camera with a brighter, straighter screen so
+  the platform UI on it is readable; the row and the copy arrive only once
+  the loader lifts (before, the entrance played under the loading screen);
+  the "why" tile says **3 languages** (UZ / RU / EN). Note: the E-COMMERCE
+  frontend's `lib/i18n.ts` lists `supportedLngs: ['ru', 'uz']` today, so EN
+  is a promise the platform still has to keep.
 
 ## Concept
 

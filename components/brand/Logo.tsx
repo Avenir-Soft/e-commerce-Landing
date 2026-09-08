@@ -1,39 +1,23 @@
 /*
- * The Avenir mark as used on avenir.uz: a four-point star on a reticle whose
- * horizontal axis runs on under the wordmark to a hollow diamond, "AVENIR"
- * set above the axis in tracked capitals, "STORE" beneath it. Drawn as one
- * SVG so the proportions never drift between header, footer and mocks.
+ * The Avenir lockup exactly as avenir.uz draws it (components/v2/header.tsx
+ * there): a four-point star on a reticle whose horizontal axis runs on under
+ * the wordmark to a hollow diamond, "AVENIR" set above the axis in tracked
+ * capitals. Owner decision, 2026-09-08: the landing carries the company
+ * logo, not a derived "AVENIR / STORE" lockup.
  */
-
-const TIPS: [number, number][] = [
-  [60, 10],
-  [60, 110],
-  [10, 60],
-  [205, 60],
-];
 
 export function Logo({ className = "" }: { className?: string }) {
   return (
-    <svg className={`brand ${className}`} viewBox="0 0 215 120" role="img" aria-label="Avenir Store">
+    <svg className={`brand ${className}`} viewBox="0 0 210 120" fill="none" role="img" aria-label="Avenir Store">
       <line className="brand__axis" x1="60" y1="10" x2="60" y2="110" />
-      <line className="brand__axis" x1="10" y1="60" x2="205" y2="60" />
-      {TIPS.map(([x, y]) => (
-        <rect
-          key={`${x}-${y}`}
-          className="brand__tip"
-          x={x - 3}
-          y={y - 3}
-          width="6"
-          height="6"
-          transform={`rotate(45 ${x} ${y})`}
-        />
-      ))}
+      <line className="brand__axis" x1="10" y1="60" x2="200" y2="60" />
+      <rect className="brand__tip" x="57" y="7" width="6" height="6" transform="rotate(45 60 10)" />
+      <rect className="brand__tip" x="57" y="107" width="6" height="6" transform="rotate(45 60 110)" />
+      <rect className="brand__tip" x="7" y="57" width="6" height="6" transform="rotate(45 10 60)" />
+      <rect className="brand__tip" x="197" y="57" width="6" height="6" transform="rotate(45 200 60)" />
       <path className="brand__star" d="M60 28 Q60 60 82.7 60 Q60 60 60 92 Q60 60 37.3 60 Q60 60 60 28 Z" />
-      <text className="brand__word" x="72" y="49">
+      <text className="brand__word" x="72" y="46">
         AVENIR
-      </text>
-      <text className="brand__sub" x="73" y="92">
-        STORE
       </text>
     </svg>
   );

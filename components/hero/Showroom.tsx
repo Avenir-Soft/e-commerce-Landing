@@ -35,7 +35,7 @@ export const MODELS: ModelSpec[] = [
     id: "laptop-dashboard",
     url: "/models/macbook15.glb",
     size: 2.3,
-    rotation: [0, -0.35, 0],
+    rotation: [0, -0.2, 0],
     screen: { material: "VNZklasZKSWjWUk", url: "/screens/dashboard.webp", emissive: true, flipY: true },
   },
   {
@@ -56,36 +56,54 @@ export const MODELS: ModelSpec[] = [
     id: "laptop-orders",
     url: "/models/macbook15.glb",
     size: 2.3,
-    rotation: [0, -0.35, 0],
+    rotation: [0, -0.2, 0],
     screen: { material: "VNZklasZKSWjWUk", url: "/screens/orders.webp", emissive: true, flipY: true },
   },
 ];
 new Set(MODELS.map((m) => m.url)).forEach((url) => useGLTF.preload(url, false, true));
 
-const SPACING = 3.1;
-const ROW_Y = -0.9;
-const FLOOR_Y = -1.85;
+const SPACING = 2.85;
+const ROW_Y = -0.8;
+const FLOOR_Y = -1.78;
 const DESKTOP_MIN_WIDTH = 1024;
+/** The lit device fills the frame; its neighbours stand back. */
+const FOCUS_SCALE = 1.14;
+const SIDE_SCALE = 0.6;
+/** How far the lit device turns after the pointer, and its idle sway; small so the screen stays readable. */
+const POINTER_TURN = 0.22;
+const IDLE_TURN = 0.07;
 const ENTRANCE_DELAY = 0.15;
-const ENTRANCE_STAGGER = 0.12;
-const ENTRANCE_DURATION = 1.2;
+const ENTRANCE_STAGGER = 0.22;
+const ENTRANCE_DURATION = 2.1;
 const DPR_MAX = 1.25;
 
-const easeOutExpo = (t: number) => (t >= 1 ? 1 : 1 - Math.pow(2, -10 * t));
+/** Gentler than expo: the arrival stays visible for most of its duration instead of snapping in. */
+const easeOutCubic = (t: number) => (t >= 1 ? 1 : 1 - Math.pow(1 - t, 3));
+
+/**
+ * Seconds since the loading screen lifted, on the scene clock. Before that
+ * the scene is covered, so the entrance waits instead of playing unseen
+ * (which is what made the intro look flat: the devices were already standing
+ * there by the time the loader left).
+ */
+function introElapsed(clockTime: number, reduced: boolean) {
+  if (reduced) return Infinity;
+  if (!showroomState.introDone) return -1;
+  if (showroomState.introAt === null) showroomState.introAt = clockTime;
+  return clockTime - showroomState.introAt;
+}
 
 function Carousel() {
   const row = useRef<THREE.Group>(null);
   const items = useRef<(THREE.Group | null)[]>([]);
-  const t0 = useRef<number | null>(null);
 
   useFrame((state, delta) => {
     const dt = Math.min(delta, 0.05);
     const r = row.current;
     if (!r) return;
-    if (t0.current === null) t0.current = state.clock.elapsedTime;
-    const elapsed = state.clock.elapsedTime - t0.current;
     const time = state.clock.elapsedTime;
     const reduced = showroomState.reduced;
+    const elapsed = introElapsed(time, reduced);
 
     // momentum from a drag decays on its own
     if (!showroomState.dragging) {
@@ -103,18 +121,20 @@ function Carousel() {
       if (!g) return;
       const d = Math.min(1, Math.abs(i - current));
       const focus = 1 - d;
-      const enter = reduced
-        ? 1
-        : easeOutExpo(Math.max(0, (elapsed - ENTRANCE_DELAY - i * ENTRANCE_STAGGER) / ENTRANCE_DURATION));
+      // the lit device comes first, its neighbours follow outwards
+      const order = Math.abs(i - Math.round(current));
+      const enter = easeOutCubic(Math.max(0, (elapsed - ENTRANCE_DELAY - order * ENTRANCE_STAGGER) / ENTRANCE_DURATION));
       const bob = reduced ? 0 : Math.sin(time * 0.8 + i * 1.7) * 0.03;
-      g.scale.setScalar((0.6 + 0.4 * focus) * enter);
-      g.position.y = ROW_Y - 0.3 * d - (1 - enter) * 0.9 + bob;
-      g.position.z = -1.1 * d;
-      const idle = reduced ? 0 : Math.sin(time * 0.4 + i * 1.3) * 0.2;
-      const targetY = idle + mx * 0.4 * focus + showroomState.spin * focus;
-      g.rotation.y = damp(g.rotation.y, targetY, showroomState.dragging ? 12 : 3, dt);
-      g.rotation.x = damp(g.rotation.x, -my * 0.12 * focus, 3, dt);
-      g.visible = Math.abs(i - current) < 2.2;
+      g.scale.setScalar((SIDE_SCALE + (FOCUS_SCALE - SIDE_SCALE) * focus) * (0.4 + 0.6 * enter));
+      g.position.y = ROW_Y - 0.3 * d - (1 - enter) * 1.4 + bob;
+      g.position.z = -1.1 * d - (1 - enter) * 3;
+      const idle = reduced ? 0 : Math.sin(time * 0.4 + i * 1.3) * IDLE_TURN;
+      // devices arrive turned away and settle to face the camera
+      const arrive = (1 - enter) * -1.3;
+      const targetY = idle + arrive + mx * POINTER_TURN * focus + showroomState.spin * focus;
+      g.rotation.y = enter < 1 ? targetY : damp(g.rotation.y, targetY, showroomState.dragging ? 12 : 3, dt);
+      g.rotation.x = damp(g.rotation.x, -my * 0.08 * focus, 3, dt);
+      g.visible = enter > 0 && Math.abs(i - current) < 2.2;
     });
   });
 
@@ -139,13 +159,23 @@ function Carousel() {
   );
 }
 
-/** A soft pool of blue light under the lit device. */
+/** A soft pool of blue light under the lit device; it blooms open as the devices arrive. */
 function LightPool() {
   const texture = useRadialTexture("rgba(96,165,250,0.55)", "rgba(37,99,235,0.28)", "rgba(2,16,31,0)");
+  const mesh = useRef<THREE.Mesh>(null);
+  useFrame((state) => {
+    const m = mesh.current;
+    if (!m) return;
+    const elapsed = introElapsed(state.clock.elapsedTime, showroomState.reduced);
+    const open = easeOutCubic(Math.max(0, elapsed / 2.4));
+    m.scale.setScalar(0.2 + 0.8 * open);
+    (m.material as THREE.MeshBasicMaterial).opacity = open;
+    m.visible = open > 0;
+  });
   return (
-    <mesh rotation-x={-Math.PI / 2} position={[0, FLOOR_Y, -0.4]}>
+    <mesh ref={mesh} rotation-x={-Math.PI / 2} position={[0, FLOOR_Y, -0.4]} scale={0.2}>
       <planeGeometry args={[7.5, 4.5]} />
-      <meshBasicMaterial map={texture} transparent depthWrite={false} blending={THREE.AdditiveBlending} />
+      <meshBasicMaterial map={texture} transparent opacity={0} depthWrite={false} blending={THREE.AdditiveBlending} />
     </mesh>
   );
 }
@@ -178,22 +208,26 @@ function CameraRig({ desktop }: { desktop: boolean }) {
   const placed = useRef<boolean | null>(null);
   useFrame((state, delta) => {
     const camera = state.camera;
-    const baseZ = desktop ? 8.4 : 10.5;
+    // closer than before so the lit screen is readable (owner correction, 2026-09-08)
+    const baseZ = desktop ? 7.2 : 9.4;
+    const reduced = showroomState.reduced;
     if (placed.current !== desktop) {
       placed.current = desktop;
-      camera.position.set(0, 1.15, baseZ);
+      // starts pulled back and high; dollies in when the loader lifts
+      camera.position.set(0, reduced ? 1.05 : 2.2, reduced ? baseZ : baseZ + 3.5);
       camera.lookAt(0, 0.05, 0);
     }
-    if (showroomState.reduced) return;
+    if (reduced) return;
     const dt = Math.min(delta, 0.05);
     const t = state.clock.elapsedTime;
+    if (introElapsed(t, reduced) < 0) return;
     // a breathing dolly plus a slight parallax against the pointer
-    const tx = showroomState.mouseX * 0.18 + Math.sin(t * 0.21) * 0.05;
-    const ty = 1.15 - showroomState.mouseY * 0.1 + Math.sin(t * 0.17) * 0.04;
-    const tz = baseZ - showroomState.progress * 0.35;
+    const tx = showroomState.mouseX * 0.16 + Math.sin(t * 0.21) * 0.05;
+    const ty = 1.05 - showroomState.mouseY * 0.08 + Math.sin(t * 0.17) * 0.04;
+    const tz = baseZ - showroomState.progress * 0.3;
     camera.position.x = damp(camera.position.x, tx, 2, dt);
-    camera.position.y = damp(camera.position.y, ty, 2, dt);
-    camera.position.z = damp(camera.position.z, tz, 2, dt);
+    camera.position.y = damp(camera.position.y, ty, 1.3, dt);
+    camera.position.z = damp(camera.position.z, tz, 1.3, dt);
     camera.lookAt(0, 0.05, 0);
   });
   return null;
@@ -212,7 +246,7 @@ function Scene() {
       <fog attach="fog" args={["#02101f", 8, 17]} />
       <Dust />
       {/* on phones the row sits lower and smaller, between the copy and the label */}
-      <group scale={desktop ? 1 : 0.75} position={[0, desktop ? 0 : -0.6, 0]}>
+      <group scale={desktop ? 1 : 0.78} position={[0, desktop ? 0 : -0.7, 0]}>
         <Carousel />
         <LightPool />
       </group>

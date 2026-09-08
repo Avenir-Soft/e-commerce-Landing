@@ -569,6 +569,22 @@
       transform: translate3d(4%, 3%, 0) rotate(3deg);
     }
   }
+  /* one beam of light that sweeps the room as the page opens (driven by GSAP) */
+  .hero__flare {
+    position: absolute;
+    inset: -10% -20%;
+    pointer-events: none;
+    background: linear-gradient(
+      100deg,
+      transparent 38%,
+      rgb(147 197 253 / 0.07) 46%,
+      rgb(219 234 254 / 0.16) 50%,
+      rgb(147 197 253 / 0.07) 54%,
+      transparent 62%
+    );
+    transform: translate3d(-140%, 0, 0);
+    will-change: transform;
+  }
   .hero__canvas {
     position: absolute;
     inset: 0;
@@ -666,10 +682,10 @@
     }
   }
 
-  /* ---------- Brand lockup --------------------------------------------- */
+  /* ---------- Brand lockup (same drawing as avenir.uz) ------------------ */
   .brand {
     display: block;
-    height: 56px;
+    height: 50px;
     width: auto;
     color: var(--color-ink);
     overflow: visible;
@@ -682,6 +698,7 @@
     fill: none;
     stroke: currentColor;
     stroke-width: 1.9;
+    transition: stroke 0.4s var(--ease-out-quart);
   }
   .brand__star {
     fill: currentColor;
@@ -692,25 +709,21 @@
   }
   a:hover .brand__star {
     fill: var(--color-mark-2);
-    transform: rotate(90deg) scale(1.06);
+    transform: rotate(90deg) scale(1.05);
+  }
+  a:hover .brand__tip {
+    stroke: var(--color-mark-2);
   }
   .brand__word {
     fill: currentColor;
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 25px;
-    letter-spacing: 1.6px;
-  }
-  .brand__sub {
-    fill: var(--color-ink-2);
     font-family: var(--font-sans);
-    font-weight: 600;
-    font-size: 16px;
-    letter-spacing: 5.5px;
+    font-weight: 700;
+    font-size: 28px;
+    letter-spacing: 2.6px;
   }
   @media (max-width: 40rem) {
     .brand {
-      height: 44px;
+      height: 42px;
     }
   }
 
@@ -728,6 +741,20 @@
   .loader--exit {
     clip-path: inset(0 0 100% 0);
     pointer-events: none;
+  }
+  /* the mark lifts and dissolves a beat before the curtain follows it */
+  .loader__inner,
+  .loader__skip {
+    transition:
+      transform 0.6s var(--ease-in-out-expo),
+      opacity 0.45s var(--ease-out-quart);
+  }
+  .loader--exit .loader__inner {
+    transform: translate3d(0, -40px, 0) scale(0.92);
+    opacity: 0;
+  }
+  .loader--exit .loader__skip {
+    opacity: 0;
   }
   .loader__inner {
     display: grid;

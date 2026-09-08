@@ -39,7 +39,7 @@ function loadScreen(screen: ScreenSpec) {
   tex.rotation = screen.rotation ?? 0;
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
   tex.repeat.set(screen.flipX ? -1 : 1, screen.flipY ? -1 : 1);
-  tex.anisotropy = 8;
+  tex.anisotropy = 16;
   return tex;
 }
 
@@ -78,10 +78,12 @@ export function DeviceModel({ spec }: { spec: ModelSpec }) {
           own.color = new THREE.Color("#ffffff");
           own.emissive = new THREE.Color("#ffffff");
           own.emissiveMap = screenTexture;
-          own.emissiveIntensity = spec.screen.emissive ? 0.9 : 0.6;
-          own.roughness = 0.55;
+          // the display is a light source of its own: bright enough to read under the studio
+          // lights, matte enough that the orbiting highlight never washes the UI out
+          own.emissiveIntensity = spec.screen.emissive ? 1.25 : 1.05;
+          own.roughness = 0.4;
           own.metalness = 0;
-          own.envMapIntensity = 0.2;
+          own.envMapIntensity = 0.12;
           own.needsUpdate = true;
           if (Array.isArray(mesh.material)) mesh.material[i] = own;
           else mesh.material = own;

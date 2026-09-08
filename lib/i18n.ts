@@ -109,7 +109,7 @@ const uz: Dictionary = {
       "Semantik qidiruv",
       "Yetkazish zonalari",
       "Variantlar va atributlar",
-      "UZ / RU",
+      "UZ / RU / EN",
       "Boshqaruv paneli",
     ],
   },
@@ -128,8 +128,8 @@ const uz: Dictionary = {
     beats: [
       {
         title: "Mijoz ko'radigan do'kon",
-        text: "Tez ochiladi, telefonga mo'ljallangan, ikki tilda. Kategoriyalar, qidiruv, mahsulot sahifasi, savat va checkout.",
-        points: ["UZ / RU", "Telefon-birinchi", "Semantik qidiruv"],
+        text: "Tez ochiladi, telefonga mo'ljallangan, uch tilda. Kategoriyalar, qidiruv, mahsulot sahifasi, savat va checkout.",
+        points: ["UZ / RU / EN", "Telefon-birinchi", "Semantik qidiruv"],
         note: "Sayt va Telegram Mini App",
       },
       {
@@ -172,10 +172,10 @@ const uz: Dictionary = {
       text: "Docker bilan o'rnatiladi, ma'lumotlar sizda qoladi. Xohlasangiz, hostingni biz olib boramiz.",
     },
     languages: {
-      figure: "2",
+      figure: "3",
       unit: "til",
-      title: "O'zbek va rus tili",
-      text: "Interfeys va katalog ikki tilda. Tarjimani AI qiladi, siz tekshirasiz.",
+      title: "O'zbek, rus va ingliz tili",
+      text: "Interfeys va katalog uch tilda. Tarjimani AI qiladi, siz tekshirasiz.",
     },
     support: {
       title: "Ishga tushgandan keyin ham yonimizdamiz",
@@ -307,7 +307,7 @@ const ru: Dictionary = {
       "Семантический поиск",
       "Зоны доставки",
       "Варианты и атрибуты",
-      "UZ / RU",
+      "UZ / RU / EN",
       "Панель управления",
     ],
   },
@@ -326,8 +326,8 @@ const ru: Dictionary = {
     beats: [
       {
         title: "Магазин глазами покупателя",
-        text: "Быстро открывается, сделан под телефон, на двух языках. Категории, поиск, страница товара, корзина и оформление.",
-        points: ["UZ / RU", "Сначала телефон", "Семантический поиск"],
+        text: "Быстро открывается, сделан под телефон, на трёх языках. Категории, поиск, страница товара, корзина и оформление.",
+        points: ["UZ / RU / EN", "Сначала телефон", "Семантический поиск"],
         note: "Сайт и Telegram Mini App",
       },
       {
@@ -370,10 +370,10 @@ const ru: Dictionary = {
       text: "Разворачивается через Docker, данные остаются у вас. Хостинг можем взять на себя.",
     },
     languages: {
-      figure: "2",
+      figure: "3",
       unit: "языка",
-      title: "Узбекский и русский",
-      text: "Интерфейс и каталог на двух языках. Переводит ИИ, вы проверяете.",
+      title: "Узбекский, русский и английский",
+      text: "Интерфейс и каталог на трёх языках. Переводит ИИ, вы проверяете.",
     },
     support: {
       title: "Рядом и после запуска",
@@ -505,7 +505,7 @@ const en: Dictionary = {
       "Semantic search",
       "Delivery zones",
       "Variants and attributes",
-      "UZ / RU",
+      "UZ / RU / EN",
       "Admin panel",
     ],
   },
@@ -524,8 +524,8 @@ const en: Dictionary = {
     beats: [
       {
         title: "The shop your customer sees",
-        text: "Opens fast, built for the phone, in two languages. Categories, search, product page, cart and checkout.",
-        points: ["UZ / RU", "Phone first", "Semantic search"],
+        text: "Opens fast, built for the phone, in three languages. Categories, search, product page, cart and checkout.",
+        points: ["UZ / RU / EN", "Phone first", "Semantic search"],
         note: "Website and Telegram Mini App",
       },
       {
@@ -568,10 +568,10 @@ const en: Dictionary = {
       text: "Deployed with Docker, the data stays with you. We can run the hosting if you prefer.",
     },
     languages: {
-      figure: "2",
+      figure: "3",
       unit: "languages",
-      title: "Uzbek and Russian",
-      text: "Interface and catalog in both. AI translates, you approve.",
+      title: "Uzbek, Russian and English",
+      text: "Interface and catalog in all three. AI translates, you approve.",
     },
     support: {
       title: "Still here after launch",

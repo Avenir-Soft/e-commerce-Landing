@@ -19,6 +19,8 @@ export const showroomState = {
   modelsReady: false,
   /** True once the loading screen has left (or was never shown). */
   introDone: false,
+  /** Scene clock time at which the entrance choreography started; null until the loader lifts. */
+  introAt: null as number | null,
 };
 
 /** Same idea for the showcase chapter: scroll progress and drag through the section. */
