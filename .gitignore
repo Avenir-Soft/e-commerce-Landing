@@ -51,3 +51,4 @@ tunnel.log
 
 # netlify
 .netlify
+deno.lock
