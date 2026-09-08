@@ -12,6 +12,8 @@ const EXIT_MS = 1100;
 /** Radius of the progress ring in the mark's 120-unit viewBox. */
 const RING_R = 66;
 const RING_LEN = 2 * Math.PI * RING_R;
+const VIEW = "0 0 120 120";
+const STAR = "M60 28 Q60 60 92 60 Q60 60 60 92 Q60 60 28 60 Q60 60 60 28 Z";
 
 type Phase = "pending" | "show" | "exit" | "done";
 
@@ -33,6 +35,12 @@ const TIPS: { x: number; y: number; dx: number; dy: number }[] = [
  * axes, the axes draw inward, the star ignites with a flash, and a ring
  * around it fills with the download. On exit the star bursts into the light
  * that becomes the showroom.
+ *
+ * The mark is stacked from separate SVG layers on purpose: the long-running
+ * motion (the star breathing, the orbit turning, the burst) animates the
+ * transform of a whole <svg> element, which the compositor handles even
+ * while the main thread is busy decoding models. Animating elements inside
+ * one SVG would run on the main thread and stutter through the download.
  */
 export function Loader({ t }: { t: Dictionary["loader"] }) {
   const [phase, setPhase] = useState<Phase>("pending");
@@ -106,7 +114,7 @@ export function Loader({ t }: { t: Dictionary["loader"] }) {
       const t = (performance.now() - shownAt.current) / 1000;
       const creep = 92 * (1 - Math.exp(-t / 2.2));
       setPeak((prev) => Math.max(prev, Math.min(96, Math.max(latest.current, creep))));
-    }, 80);
+    }, 120);
     return () => window.clearInterval(id);
   }, [phase]);
   const shown = ready ? 100 : peak;
@@ -124,44 +132,56 @@ export function Loader({ t }: { t: Dictionary["loader"] }) {
     >
       <div className="loader__halo" aria-hidden="true" />
       <div className="loader__inner">
-        <svg className="loader__mark" viewBox="0 0 120 120" fill="none" aria-hidden="true">
-          {/* focus rings: a faint track, a slow dashed orbit, and the progress arc */}
-          <circle className="loader__track" cx="60" cy="60" r={RING_R} />
-          <circle className="loader__orbit" cx="60" cy="60" r={RING_R + 8} />
-          <circle
-            className="loader__ring"
-            cx="60"
-            cy="60"
-            r={RING_R}
-            strokeDasharray={RING_LEN}
-            style={{ strokeDashoffset: RING_LEN * (1 - shown / 100) }}
-          />
-          {/* the axes draw from each tip toward the centre */}
-          <line className="loader__axis" x1="60" y1="10" x2="60" y2="60" />
-          <line className="loader__axis" x1="60" y1="110" x2="60" y2="60" />
-          <line className="loader__axis" x1="10" y1="60" x2="60" y2="60" />
-          <line className="loader__axis" x1="110" y1="60" x2="60" y2="60" />
-          {TIPS.map((tip, i) => (
-            <rect
-              key={`${tip.x}-${tip.y}`}
-              className="loader__tip"
-              x={tip.x - 3.2}
-              y={tip.y - 3.2}
-              width="6.4"
-              height="6.4"
-              style={
-                {
-                  "--dx": `${tip.dx}px`,
-                  "--dy": `${tip.dy}px`,
-                  "--i": i,
-                  transformOrigin: `${tip.x}px ${tip.y}px`,
-                } as React.CSSProperties
-              }
+        <div className="loader__mark" aria-hidden="true">
+          {/* layer 1: the reticle itself, one-shot entry animations */}
+          <svg className="loader__layer" viewBox={VIEW} fill="none">
+            <circle className="loader__track" cx="60" cy="60" r={RING_R} />
+            <line className="loader__axis" x1="60" y1="10" x2="60" y2="60" />
+            <line className="loader__axis" x1="60" y1="110" x2="60" y2="60" />
+            <line className="loader__axis" x1="10" y1="60" x2="60" y2="60" />
+            <line className="loader__axis" x1="110" y1="60" x2="60" y2="60" />
+            {TIPS.map((tip, i) => (
+              <rect
+                key={`${tip.x}-${tip.y}`}
+                className="loader__tip"
+                x={tip.x - 3.2}
+                y={tip.y - 3.2}
+                width="6.4"
+                height="6.4"
+                style={
+                  {
+                    "--dx": `${tip.dx}px`,
+                    "--dy": `${tip.dy}px`,
+                    "--i": i,
+                    transformOrigin: `${tip.x}px ${tip.y}px`,
+                  } as React.CSSProperties
+                }
+              />
+            ))}
+          </svg>
+          {/* layer 2: the gold orbit, turning for as long as the screen is up */}
+          <svg className="loader__layer loader__layer--orbit" viewBox={VIEW} fill="none">
+            <circle className="loader__orbit" cx="60" cy="60" r={RING_R + 8} />
+          </svg>
+          {/* layer 3: the progress ring; only this small layer repaints as the figure moves */}
+          <svg className="loader__layer loader__layer--ring" viewBox={VIEW} fill="none">
+            <circle
+              className="loader__ring"
+              cx="60"
+              cy="60"
+              r={RING_R}
+              strokeDasharray={RING_LEN}
+              style={{ strokeDashoffset: RING_LEN * (1 - shown / 100) }}
             />
-          ))}
-          <path className="loader__star" d="M60 28 Q60 60 92 60 Q60 60 60 92 Q60 60 28 60 Q60 60 60 28 Z" />
-          <path className="loader__flash" d="M60 28 Q60 60 92 60 Q60 60 60 92 Q60 60 28 60 Q60 60 60 28 Z" />
-        </svg>
+          </svg>
+          {/* layer 4: the star, ignition and breathing on the whole layer */}
+          <svg className="loader__layer loader__layer--star" viewBox={VIEW} fill="none">
+            <path className="loader__star" d={STAR} />
+          </svg>
+          <svg className="loader__layer loader__layer--flash" viewBox={VIEW} fill="none">
+            <path className="loader__flash" d={STAR} />
+          </svg>
+        </div>
         <p className="loader__count" aria-hidden="true">
           <span className="loader__num t-num">{Math.round(shown)}</span>
           <span className="loader__pct">%</span>

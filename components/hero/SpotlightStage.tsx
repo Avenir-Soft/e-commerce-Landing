@@ -85,6 +85,10 @@ function Precompile() {
   useEffect(() => {
     const id = window.setTimeout(() => {
       const { gl, scene, camera } = get();
+      if (typeof gl.compileAsync === "function") {
+        gl.compileAsync(scene, camera).catch(() => {});
+        return;
+      }
       try {
         gl.compile(scene, camera);
       } catch {}

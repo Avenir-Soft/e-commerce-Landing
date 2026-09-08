@@ -7,7 +7,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { Dictionary } from "@/lib/i18n";
 import { links } from "@/lib/site";
-import { spotState } from "@/components/hero/store";
+import { INTRO_DONE_EVENT, showroomState, spotState } from "@/components/hero/store";
 import { SectionHead } from "@/components/ui/SectionHead";
 import { ArrowIcon } from "@/components/ui/Icons";
 
@@ -50,9 +50,12 @@ export function Spotlight({ t, ask }: { t: Dictionary["spotlight"]; ask: string 
 
     const desktop = window.matchMedia("(min-width: 64rem)");
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const mount = () => desktop.matches && !reduce && setStage(true);
+    // the stage (a second WebGL context with its own shader compile) waits for the
+    // loading screen to leave, so it never competes with the hero for the main thread
+    const mount = () => desktop.matches && !reduce && showroomState.introDone && setStage(true);
     const id = window.setTimeout(mount, 0);
     desktop.addEventListener("change", mount);
+    window.addEventListener(INTRO_DONE_EVENT, mount, { once: true });
 
     const st = ScrollTrigger.create({
       trigger: section.current,
@@ -66,6 +69,7 @@ export function Spotlight({ t, ask }: { t: Dictionary["spotlight"]; ask: string 
       io.disconnect();
       window.clearTimeout(id);
       desktop.removeEventListener("change", mount);
+      window.removeEventListener(INTRO_DONE_EVENT, mount);
       st.kill();
     };
   }, []);

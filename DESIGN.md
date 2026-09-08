@@ -60,6 +60,16 @@ owner to ask for a demo.
   up; `EXIT_MS` is 1100 so the element hides only after the curtain. Exit
   states are keyframe animations, not transitions, because a transition
   cannot start from a value an entry animation was holding.
+- "The loader stutters" (owner, same day) had three causes, all fixed:
+  `gl.compile` froze the main thread for 4.4 s on ANGLE/Direct3D (now
+  `compileAsync`, KHR_parallel_shader_compile, ~0.3–0.7 s blocking); the
+  showcase stage compiled a second context at the same time (now mounts only
+  after the loader leaves); and the hero canvas drew frames behind the
+  curtain (`frameloop` is "never" until the intro). The mark is also built
+  from stacked `<svg>` layers so its breathing, orbit and burst animate
+  whole elements on the compositor. Measured with a longtask observer: main
+  thread blocked 9.2 s → 3.0 s cold, 1.4 s warm; loader leaves at ~3.5–5 s
+  instead of 13–16 s.
 
 ## Concept
 

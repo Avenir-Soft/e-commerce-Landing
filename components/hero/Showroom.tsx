@@ -4,7 +4,7 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { PerformanceMonitor, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
-import { RING_COUNT, attachDragSpin, damp, markModelsReady, showroomState } from "./store";
+import { INTRO_DONE_EVENT, RING_COUNT, attachDragSpin, damp, markModelsReady, showroomState } from "./store";
 import { DeviceModel, type ModelSpec } from "./DeviceModel";
 import { BlobShadow, Dust, Studio, useRadialTexture } from "./Studio";
 
@@ -193,11 +193,23 @@ function ReadySignal() {
   const get = useThree((s) => s.get);
   useEffect(() => {
     const { gl, scene, camera } = get();
+    // compileAsync lets the driver build the programs off the main thread
+    // (KHR_parallel_shader_compile); the synchronous compile froze the page,
+    // loader included, for 4+ seconds on ANGLE/Direct3D
     const id = window.setTimeout(() => {
-      try {
-        gl.compile(scene, camera);
-      } catch {}
-      markModelsReady();
+      performance.mark("avenir:compile-start");
+      const done = () => {
+        performance.measure("avenir:compile", "avenir:compile-start");
+        markModelsReady();
+      };
+      if (typeof gl.compileAsync === "function") {
+        gl.compileAsync(scene, camera).then(done, done);
+      } else {
+        try {
+          gl.compile(scene, camera);
+        } catch {}
+        done();
+      }
     }, 50);
     return () => window.clearTimeout(id);
   }, [get]);
@@ -267,6 +279,15 @@ function supportsWebGL() {
 export function Showroom() {
   const wrap = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(true);
+  // no frames while the loading screen is up: the main thread belongs to the loader's
+  // animation and the model decode; the scene starts drawing the moment the curtain lifts
+  const [intro, setIntro] = useState(() => showroomState.introDone);
+  useEffect(() => {
+    if (showroomState.introDone) return;
+    const on = () => setIntro(true);
+    window.addEventListener(INTRO_DONE_EVENT, on, { once: true });
+    return () => window.removeEventListener(INTRO_DONE_EVENT, on);
+  }, []);
   const [dpr, setDpr] = useState(() => Math.min(DPR_MAX, typeof window === "undefined" ? 1 : window.devicePixelRatio));
   const [webgl] = useState(supportsWebGL);
 
@@ -301,7 +322,7 @@ export function Showroom() {
           toneMapping: THREE.ACESFilmicToneMapping,
           toneMappingExposure: 1.1,
         }}
-        frameloop={visible ? "always" : "never"}
+        frameloop={visible && intro ? "always" : "never"}
         onCreated={({ gl }) => gl.setClearColor(0x000000, 0)}
       >
         <PerformanceMonitor onDecline={() => setDpr(1)} onIncline={() => setDpr(Math.min(DPR_MAX, window.devicePixelRatio))} />
