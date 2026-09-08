@@ -25,6 +25,8 @@ export interface Dictionary {
     secondary: string;
     scroll: string;
     look: string;
+    /** Reassurance under the buttons: what costs nothing before a contract. */
+    assurance: string[];
     /** Short line under the carousel label, e.g. "3 of 5". */
     counter: string;
   };
@@ -94,6 +96,7 @@ const uz: Dictionary = {
     secondary: "Namuna do'kon",
     scroll: "Aylantiring",
     look: "Ko'rish",
+    assurance: ["Bepul hisob-kitob", "Katalogingizni bepul ko'chiramiz", "Shartnomasiz demo"],
     counter: "{n} / {total}",
   },
   marquee: {
@@ -292,6 +295,7 @@ const ru: Dictionary = {
     secondary: "Демо-магазин",
     scroll: "Листайте",
     look: "Смотреть",
+    assurance: ["Бесплатный расчёт", "Перенесём ваш каталог бесплатно", "Демо без договора"],
     counter: "{n} / {total}",
   },
   marquee: {
@@ -490,6 +494,7 @@ const en: Dictionary = {
     secondary: "Demo store",
     scroll: "Scroll",
     look: "View",
+    assurance: ["Free quote", "We move your catalog for free", "Demo without a contract"],
     counter: "{n} of {total}",
   },
   marquee: {

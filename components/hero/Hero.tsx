@@ -7,7 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import type { Dictionary } from "@/lib/i18n";
 import { links } from "@/lib/site";
-import { ArrowIcon } from "@/components/ui/Icons";
+import { ArrowIcon, CheckIcon } from "@/components/ui/Icons";
 import { INTRO_DONE_EVENT, RING_COUNT, showroomState } from "./store";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -160,6 +160,18 @@ export function Hero({ t, moments }: { t: Dictionary["hero"]; moments: HeroMomen
               {t.secondary}
             </a>
           </div>
+          {/* What costs nothing before anyone signs anything. A shop owner
+              weighing a platform is mostly weighing risk, and the two things
+              that stop the call are "how much" and "who moves my catalog";
+              both are answered here rather than three screens down. */}
+          <ul className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2" data-load="cta">
+            {t.assurance.map((line) => (
+              <li key={line} className="t-label flex items-center gap-2 text-ink-2">
+                <CheckIcon />
+                {line}
+              </li>
+            ))}
+          </ul>
         </div>
 
         {/* row 3 of the hero grid: the scroll hint on the left, the moment caption on the right */}
@@ -175,7 +187,12 @@ export function Hero({ t, moments }: { t: Dictionary["hero"]; moments: HeroMomen
         <div className="hero__label min-w-0" data-load="label">
           <div className="hero__label-card" aria-live="polite">
             <div className="min-w-0">
-              <p className="t-label truncate">
+              {/* Not truncated on phones: the widest note, "MIJOZ KO'RADIGAN
+                  DO'KON", was cut to "MIJOZ KO'RADIGAN DO..." on a 390px
+                  screen, which is where the label matters most. It wraps to a
+                  second line there and truncates again from md, where the card
+                  is wide enough for one. */}
+              <p className="t-label max-md:whitespace-normal md:truncate">
                 <span className="t-num">{counter}</span>
                 <span className="mx-2 opacity-40">·</span>
                 {moment.note}

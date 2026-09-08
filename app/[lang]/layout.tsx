@@ -4,7 +4,8 @@ import { notFound } from "next/navigation";
 import { Cormorant_Garamond, Inter, Inter_Tight, Unbounded } from "next/font/google";
 import { isLang, languages, type Lang } from "@/lib/languages";
 import { getDictionary } from "@/lib/i18n";
-import { site } from "@/lib/site";
+import { site, siteUrl } from "@/lib/site";
+import { included } from "@/lib/product";
 import { SmoothScroll } from "@/components/motion/SmoothScroll";
 import { Cursor } from "@/components/motion/Cursor";
 import { Header } from "@/components/layout/Header";
@@ -54,6 +55,9 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
   const t = getDictionary(lang);
   const alternates = Object.fromEntries(languages.map((l) => [l, `/${l}`]));
   return {
+    // `/og.jpg` and the canonical have to resolve to an absolute URL for a
+    // crawler; without a base, Next falls back to localhost.
+    metadataBase: new URL(siteUrl),
     title: t.meta.title,
     description: t.meta.description,
     applicationName: site.name,
@@ -64,7 +68,13 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
       siteName: site.name,
       locale: lang === "uz" ? "uz_UZ" : lang === "ru" ? "ru_RU" : "en_US",
       type: "website",
+      // Without a card this link is a grey line of text wherever it is pasted,
+      // and in this market it is pasted into Telegram. The image is a shot of
+      // the hero itself (tools/pw/avenir-og.mjs), so it cannot drift from the
+      // page: real headline, real showroom, real buttons.
+      images: [{ url: "/og.jpg", width: 1200, height: 630, alt: t.meta.title }],
     },
+    twitter: { card: "summary_large_image", title: t.meta.title, description: t.meta.description, images: ["/og.jpg"] },
     robots: { index: true, follow: true },
   };
 }
@@ -83,6 +93,33 @@ export default async function LangLayout({ children, params }: LayoutProps<"/[la
       className={`${unbounded.variable} ${inter.variable} ${interTight.variable} ${cormorant.variable}`}
     >
       <body>
+        {/* What this page is, in the form a search engine reads. Without it a
+            crawler sees a marketing page and has to guess that Avenir Store is
+            software a business subscribes to, who publishes it and what it
+            does. No `offers` block: it would have to carry a price, and the
+            price is deliberately not public. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              name: site.name,
+              applicationCategory: "BusinessApplication",
+              operatingSystem: "Web, Telegram Mini App",
+              description: t.meta.description,
+              url: `${siteUrl}/${lang}`,
+              inLanguage: lang,
+              image: `${siteUrl}/og.jpg`,
+              featureList: included[lang],
+              provider: {
+                "@type": "Organization",
+                name: site.developer.name,
+                url: site.developer.url,
+              },
+            }),
+          }}
+        />
         <SmoothScroll />
         <span className="cur" id="cur" aria-hidden="true" />
         <Cursor />

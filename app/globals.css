@@ -362,6 +362,14 @@
     padding-inline: 1.1rem;
     font-size: 0.9375rem;
   }
+  /* 40px is under the 44px a finger needs, and the one .btn-sm on the page —
+     "Ko'rish" in the hero's label card — is the only way out of the hero on a
+     phone. Grown on touch devices only, so the desktop proportions stand. */
+  @media (pointer: coarse) {
+    .btn-sm {
+      height: 2.75rem;
+    }
+  }
   .btn-day {
     background: var(--color-day-ink);
     color: #fff;

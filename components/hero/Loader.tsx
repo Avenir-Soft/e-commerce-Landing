@@ -6,7 +6,36 @@ import type { Dictionary } from "@/lib/i18n";
 import { MODELS_READY_EVENT, finishIntro, showroomState } from "./store";
 
 const MIN_SHOW_MS = 500;
-const MAX_WAIT_MS = 7000;
+/*
+ * The safety timeout is a budget for the WHOLE VISIT, counted from navigation
+ * (`performance.now()` is relative to `timeOrigin`), not from the moment this
+ * component mounts.
+ *
+ * It used to be seven seconds from mount, and mount means hydration. Measured
+ * on 2026-09-08 at 1.6 Mbps / 150 ms RTT / 4x CPU — an ordinary phone on an
+ * ordinary Uzbek connection — hydration landed at ~10 s, so the curtain sat
+ * for 17.3 s and LCP was 19.8 s. The headline is in the DOM at 1.7 s; it was
+ * waiting behind a timer that had not started yet.
+ *
+ * A phone also has less to gain from waiting: it is the same 1.7 MB of models
+ * over a slower pipe, and the showroom can arrive under copy the visitor is
+ * already reading. So the budget is short on a phone and shorter still when
+ * the browser says the connection is poor.
+ */
+const MAX_WAIT_DESKTOP_MS = 7000;
+const MAX_WAIT_MOBILE_MS = 2500;
+const MAX_WAIT_SLOW_MS = 1200;
+/** Below this the visitor is on a phone or a small tablet — see Showroom's DESKTOP_MIN_WIDTH. */
+const DESKTOP_MIN_WIDTH = 1024;
+
+type NetworkInfo = { saveData?: boolean; effectiveType?: string };
+
+/** How long this visit may spend on the loading screen, counted from navigation. */
+function waitBudgetMs(): number {
+  const net = (navigator as Navigator & { connection?: NetworkInfo }).connection;
+  if (net?.saveData || /(^|\W)(slow-)?2g$/.test(net?.effectiveType ?? "")) return MAX_WAIT_SLOW_MS;
+  return window.innerWidth >= DESKTOP_MIN_WIDTH ? MAX_WAIT_DESKTOP_MS : MAX_WAIT_MOBILE_MS;
+}
 /** Burst (0.7 s) + curtain (0.25 s delay + 0.8 s); the element hides only after both. */
 const EXIT_MS = 1100;
 /** Radius of the progress ring in the mark's 120-unit viewBox. */
@@ -48,11 +77,14 @@ export function Loader({ t }: { t: Dictionary["loader"] }) {
   const { progress } = useProgress();
   const shownAt = useRef(0);
 
-  // decide on mount: skip entirely when the models are already in
+  // decide on mount: skip entirely when the models are already in — or when
+  // hydration itself took longer than this visit's budget, which is what
+  // happens on a slow phone. Showing the curtain for a moment after the
+  // visitor has already waited ten seconds only adds to the wait.
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const id = window.setTimeout(() => {
-      if (showroomState.modelsReady || reduce) {
+      if (showroomState.modelsReady || reduce || performance.now() >= waitBudgetMs()) {
         finishIntro();
         setPhase("done");
       } else {
@@ -74,11 +106,12 @@ export function Loader({ t }: { t: Dictionary["loader"] }) {
     return () => window.removeEventListener(MODELS_READY_EVENT, onReady);
   }, []);
 
-  // leave as soon as the models are ready (or after the safety timeout)
+  // leave as soon as the models are ready, or when the visit's budget runs out
   useEffect(() => {
     if (phase !== "show") return;
-    const elapsed = performance.now() - shownAt.current;
-    const wait = Math.max(ready ? MIN_SHOW_MS - elapsed : MAX_WAIT_MS - elapsed, 0);
+    const wait = ready
+      ? Math.max(MIN_SHOW_MS - (performance.now() - shownAt.current), 0)
+      : Math.max(waitBudgetMs() - performance.now(), 0);
     const id = window.setTimeout(() => setPhase("exit"), wait);
     return () => window.clearTimeout(id);
   }, [phase, ready]);

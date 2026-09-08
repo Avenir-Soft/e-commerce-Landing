@@ -29,3 +29,16 @@ export const modelCredits = [
   { title: "MacBook Air 15", author: "akshatmittal", url: "https://sketchfab.com/3d-models/apple-macbook-air-15-space-gray-2023-e8d82e341c794141a2561c2c9d01d79e" },
   { title: "iPad Pro 12.9", author: "Konstantin Koretskyi", url: "https://sketchfab.com/3d-models/ipad-pro-129-2020-f0f7674522124f3bbc2d0f898963457e" },
 ];
+
+/**
+ * Absolute origin, for the things that cannot be relative: the OG image,
+ * canonical URLs and the JSON-LD. Netlify sets `URL` at build time, so a
+ * custom domain starts being used the moment it is attached without a code
+ * change; `NEXT_PUBLIC_SITE_URL` overrides it, and the fallback is today's
+ * temporary host.
+ */
+export const siteUrl = (
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  process.env.URL ??
+  "https://avenir-store.netlify.app"
+).replace(/\/$/, "");
