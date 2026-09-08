@@ -310,7 +310,7 @@ soft shadow into the light ones. Both stages hold 60 fps in the test browser.
   mocks those photographs replaced. They are kept as the fallback for when the
   platform cannot be run, and as the reference for what each screen is meant to
   say; **they no longer ship**. Do not edit them expecting the site to change.
-  They cover the same five screens for the demo shop "Bahor Market": `home`,
+  They cover the same five screens for the demo shop: `home`,
   `checkout` (phone, 590×1278), `dashboard`, `orders` (laptop, 1600×1000),
   `editor` (tablet, 1024×1366), in the landing's own fonts and palette.
 - **The goods in them are real** (owner, 2026-09-08: "devicelardagi rasmlarni
@@ -342,7 +342,7 @@ soft shadow into the light ones. Both stages hold 60 fps in the test browser.
   at 100% they look oversized on purpose.
   Two traps found while doing it: bar heights must be a percentage of the
   card, not fixed px, or the tallest bar runs off a screen whose height is
-  fixed at 1000; and "Bahor Market" at 34px wrapped onto two lines in the
+  fixed at 1000; and the shop name at 34px wrapped onto two lines in the
   400px sidebar — Unbounded runs about 0.81em per character.
 - `public/screens/*.webp` are captures of those mocks, made with
   `C:\Users\mamut\tools\pw\screens.mjs` against the dev route `/dev/screens`
@@ -372,7 +372,9 @@ platform at `localhost:3010`. Bring it up from `D:\AvenirOS\E-COMMERCE`:
   `public/shop/`. It also writes a PAID `PaymentTransaction` per order:
   `_visible_orders_filter` hides an online-payment order until one exists, so
   without them the admin list and the dashboard read zero. The store name is
-  set to "Bahor Market" through `PUT /api/admin/settings` (its `delivery.zones`
+  set to "Avenir Store" through `PUT /api/admin/settings` (owner, 2026-09-08:
+  the demo shop carries the platform's own name, not an invented merchant's;
+  its `delivery.zones`
   are plain strings, not objects).
 - Admin pages need a session. The frontend keeps its JWT in
   `localStorage.token` and falls back to `POST /api/auth/refresh` when there is

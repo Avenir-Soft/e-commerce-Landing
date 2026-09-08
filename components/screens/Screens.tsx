@@ -20,7 +20,7 @@ export const SCREEN_SIZES: Record<ScreenId, { w: number; h: number }> = {
   editor: { w: 1024, h: 1366 },
 };
 
-const SHOP = "Bahor Market";
+const SHOP = "Avenir Store";
 const DISPLAY = { fontFamily: "var(--font-unbounded), Unbounded, sans-serif" };
 
 /*
@@ -207,7 +207,7 @@ function LaptopFrame({ children, active }: { children: React.ReactNode; active: 
       className="flex overflow-hidden bg-[#f3f5f9] text-[#0b1c33]"
     >
       <aside className="flex w-[400px] shrink-0 flex-col bg-white px-7 py-10">
-        {/* 34px wrapped "Bahor Market" onto two lines inside a 336px rail;
+        {/* 34px wrapped the shop name onto two lines inside a 336px rail;
             Unbounded runs ~0.81em per character, so the name gets 28. */}
         <div className="flex items-center gap-3">
           <Mark size={48} className="shrink-0 text-[#0b1c33]" />
@@ -225,7 +225,7 @@ function LaptopFrame({ children, active }: { children: React.ReactNode; active: 
         </nav>
         <div className="mt-auto rounded-3xl bg-[#eef2ff] p-7 text-[26px] leading-snug text-[#4d5d73]">
           <p className="text-[28px] font-bold text-[#0b1c33]">Doʼkon ochiq</p>
-          bahor-market.uz
+          avenir.uz
         </div>
       </aside>
       <main className="flex h-full flex-col overflow-hidden p-12" style={{ width: s.w - 400 }}>
