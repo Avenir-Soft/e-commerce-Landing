@@ -21,8 +21,8 @@ export function Included({ lang, t, ask }: { lang: Lang; t: Dictionary["included
         </div>
         <ul className="grid gap-x-10 sm:grid-cols-2">
           {included[lang].map((item) => (
-            <li key={item} className="flex items-center gap-3 border-t border-day-ink/10 py-3.5" data-reveal>
-              <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-mark/10 text-mark">
+            <li key={item} className="flex items-center gap-3 border-t border-day-ink/10 py-3.5" data-reveal="tick">
+              <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-mark/10 text-mark" data-tick>
                 <CheckIcon />
               </span>
               <span className="font-medium">{item}</span>

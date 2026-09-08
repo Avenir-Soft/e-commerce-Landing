@@ -16,7 +16,7 @@ export function SectionHead({
   return (
     <div className={`${align === "center" ? "mx-auto text-center" : ""} max-w-3xl ${className}`}>
       {eyebrow && (
-        <p className="t-eyebrow" data-reveal>
+        <p className="t-eyebrow" data-reveal="write">
           {eyebrow}
         </p>
       )}

@@ -90,7 +90,7 @@ export function SearchDemoClient({ t, items }: { t: Dictionary["search"]; items:
     <section id="search" className="py-24 md:py-32" aria-labelledby="search-title">
       <div className="shell grid items-center gap-12 lg:grid-cols-[5fr_6fr] lg:gap-20">
         <div>
-          <p className="t-eyebrow" data-reveal>
+          <p className="t-eyebrow" data-reveal="write">
             {t.eyebrow}
           </p>
           <h2 id="search-title" className="t-h2 mt-3" data-split>
@@ -104,7 +104,7 @@ export function SearchDemoClient({ t, items }: { t: Dictionary["search"]; items:
           </p>
         </div>
 
-        <div className="tile beam min-w-0 p-3 sm:p-4" style={{ "--gx": "80%", "--gy": "0%" } as React.CSSProperties} data-reveal>
+        <div className="tile beam min-w-0 p-3 sm:p-4" style={{ "--gx": "80%", "--gy": "0%" } as React.CSSProperties} data-reveal="clip">
           <label className="flex items-center gap-3 rounded-2xl bg-night/70 px-4 py-3.5 ring-1 ring-line focus-within:ring-mark-2">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="shrink-0 text-ink-3">
               <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />

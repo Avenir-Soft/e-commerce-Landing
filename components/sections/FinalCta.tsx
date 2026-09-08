@@ -10,7 +10,7 @@ export function FinalCta({ t }: { t: Dictionary["cta"] }) {
         <div
           className="tile cta relative overflow-hidden px-6 py-16 sm:px-10 md:px-16 md:py-24"
           style={{ "--gx": "85%", "--gy": "50%" } as CSSProperties}
-          data-reveal
+          data-reveal="clip"
         >
           <span className="shine" aria-hidden="true" />
           <div className="cta__orb" aria-hidden="true" />

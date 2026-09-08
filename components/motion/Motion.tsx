@@ -4,13 +4,15 @@ import { useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
+import { setupReveals } from "./reveals";
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
 /**
- * Page-wide motion: masked line reveals for headings, scroll reveals, magnetic
- * buttons, tilting tiles and hover-opened FAQ panels. Everything is disabled
- * under reduced motion; pointer effects only run for fine pointers.
+ * Page-wide motion: masked line reveals for headings, the per-section reveal
+ * vocabulary (see reveals.ts), magnetic buttons, tilting tiles and
+ * hover-opened FAQ panels. Everything is disabled under reduced motion;
+ * pointer effects only run for fine pointers.
  */
 export function Motion() {
   useEffect(() => {
@@ -21,20 +23,7 @@ export function Motion() {
 
     // ---- headings: each line rises out of a mask once the fonts are in ----
     const splits: SplitText[] = [];
-    const ctx = gsap.context(() => {
-      const items = gsap.utils.toArray<HTMLElement>("[data-reveal]");
-      if (reduce) {
-        gsap.set(items, { opacity: 1, y: 0 });
-        return;
-      }
-      gsap.set(items, { opacity: 0, y: 40 });
-      ScrollTrigger.batch(items, {
-        start: "top 90%",
-        once: true,
-        onEnter: (els) =>
-          gsap.to(els, { opacity: 1, y: 0, duration: 1, ease: "expo.out", stagger: 0.07, overwrite: true }),
-      });
-    });
+    const ctx = gsap.context(() => setupReveals(reduce));
     cleanups.push(() => ctx.revert());
 
     document.fonts.ready.then(() => {

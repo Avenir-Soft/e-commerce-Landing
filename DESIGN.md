@@ -41,6 +41,14 @@ owner to ask for a demo.
   the "why" tile says **3 languages** (UZ / RU / EN). Note: the E-COMMERCE
   frontend's `lib/i18n.ts` lists `supportedLngs: ['ru', 'uz']` today, so EN
   is a promise the platform still has to keep.
+- Second round the same day: the favicon set is the avenir.uz one
+  (`app/icon.png`, `apple-icon.png`, `favicon.ico`); every section reveals
+  with its own verb (`components/motion/reveals.ts`: write / clip / tick /
+  rise-3d / slide / float-in, counters, parallax) instead of one fade-up;
+  and the two accents are tied together: blue is the action colour, the sand
+  gold is the editorial voice in BOTH rooms (`--color-sand-3` for eyebrows
+  and figures on the light ground, a warm counter-glow in every tile, the
+  aurora, the day rooms and the showcase, gold marks in the ticker).
 
 ## Concept
 

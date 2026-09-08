@@ -77,7 +77,7 @@ export function Features({ lang, t }: { lang: Lang; t: Dictionary["features"] })
                 key={m.id}
                 className={`tile-day group relative flex flex-col justify-end overflow-hidden p-6 md:p-7 ${place[m.size]}`}
                 style={{ "--gx": glow[m.id][0], "--gy": glow[m.id][1] } as CSSProperties}
-                data-reveal
+                data-reveal="clip"
                 data-tilt
               >
                 {m.render && a && (
@@ -127,7 +127,7 @@ export function Features({ lang, t }: { lang: Lang; t: Dictionary["features"] })
             target="_blank"
             rel="noopener"
             className="tile-cta group relative flex min-h-[12rem] flex-col justify-between gap-6 overflow-hidden p-6 md:col-span-3 md:flex-row md:items-center md:p-8"
-            data-reveal
+            data-reveal="clip"
           >
             <span className="shine" aria-hidden="true" />
             <div className="relative">

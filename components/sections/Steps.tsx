@@ -15,9 +15,11 @@ export function Steps({ t }: { t: Dictionary["steps"] }) {
               <li
                 key={step.title}
                 className="grid grid-cols-[3rem_1fr] gap-4 border-t border-day-ink/10 pt-5"
-                data-reveal
+                data-reveal="slide"
               >
-                <span className="t-figure-sm">{i + 1}</span>
+                <span className="t-figure-sm inline-block origin-left" data-tick>
+                  {i + 1}
+                </span>
                 <div>
                   <h3 className="t-h3">{step.title}</h3>
                   <p className="mt-2 max-w-md text-day-ink-2">{step.text}</p>
@@ -34,8 +36,8 @@ export function Steps({ t }: { t: Dictionary["steps"] }) {
         </div>
 
         {/* The storefront of the demo shop on a phone: the same still the 3D phone wears in the hero. */}
-        <div className="flex justify-center lg:justify-end" aria-hidden="true" data-reveal>
-          <div className="phone">
+        <div className="flex justify-center lg:justify-end" aria-hidden="true" data-reveal="float-in">
+          <div className="phone" data-parallax="-36">
             <div className="phone__screen">
               <Image
                 src="/screens/home.webp"

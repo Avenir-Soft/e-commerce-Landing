@@ -20,7 +20,7 @@ export function WhyUs({ t }: { t: Dictionary["why"] }) {
           <article
             className="tile relative overflow-hidden p-7 md:col-span-4 md:p-9"
             style={{ "--gx": "85%", "--gy": "20%" } as CSSProperties}
-            data-reveal
+            data-reveal="rise-3d"
             data-tilt
           >
             <span className="shine" aria-hidden="true" />
@@ -38,17 +38,17 @@ export function WhyUs({ t }: { t: Dictionary["why"] }) {
           <article
             className="tile beam relative flex flex-col justify-between p-7 md:col-span-2"
             style={{ "--gx": "20%", "--gy": "90%" } as CSSProperties}
-            data-reveal
+            data-reveal="rise-3d"
             data-tilt
           >
             <p className="t-figure">
-              {t.payments.figure}
+              <span data-count={t.payments.figure}>{t.payments.figure}</span>
               <span className="t-figure__unit">{t.payments.unit}</span>
             </p>
             <div className="mt-8">
               <ul className="mb-4 flex flex-wrap gap-2" aria-label={t.payments.title}>
                 {site.payments.map((p) => (
-                  <li key={p} className="pay">
+                  <li key={p} className="pay" data-tick>
                     {p}
                   </li>
                 ))}
@@ -61,7 +61,7 @@ export function WhyUs({ t }: { t: Dictionary["why"] }) {
           <article
             className="tile relative flex flex-col justify-between p-7 md:col-span-2"
             style={{ "--gx": "50%", "--gy": "0%" } as CSSProperties}
-            data-reveal
+            data-reveal="rise-3d"
             data-tilt
           >
             <div>
@@ -89,11 +89,11 @@ export function WhyUs({ t }: { t: Dictionary["why"] }) {
           <article
             className="tile relative flex flex-col justify-between p-7 md:col-span-2"
             style={{ "--gx": "90%", "--gy": "80%" } as CSSProperties}
-            data-reveal
+            data-reveal="rise-3d"
             data-tilt
           >
             <p className="t-figure">
-              {t.languages.figure}
+              <span data-count={t.languages.figure}>{t.languages.figure}</span>
               <span className="t-figure__unit">{t.languages.unit}</span>
             </p>
             <div className="mt-8">
@@ -105,7 +105,7 @@ export function WhyUs({ t }: { t: Dictionary["why"] }) {
           <article
             className="tile relative flex flex-col justify-end p-7 md:col-span-2"
             style={{ "--gx": "50%", "--gy": "50%" } as CSSProperties}
-            data-reveal
+            data-reveal="rise-3d"
             data-tilt
           >
             <h3 className="t-h3">{t.support.title}</h3>

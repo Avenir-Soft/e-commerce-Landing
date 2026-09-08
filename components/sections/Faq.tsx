@@ -5,7 +5,7 @@ export function Faq({ t }: { t: Dictionary["faq"] }) {
     <section id="faq" className="scroll-mt-20 py-24 md:py-32" aria-labelledby="faq-title">
       <div className="shell grid gap-10 lg:grid-cols-[4fr_7fr] lg:gap-20">
         <div>
-          <p className="t-eyebrow" data-reveal>
+          <p className="t-eyebrow" data-reveal="write">
             {t.eyebrow}
           </p>
           <h2 id="faq-title" className="t-h2 mt-3" data-split>
@@ -17,7 +17,7 @@ export function Faq({ t }: { t: Dictionary["faq"] }) {
         </div>
         <div>
           {t.items.map((item, i) => (
-            <details key={item.q} className="faq group border-t border-line last:border-b" data-reveal>
+            <details key={item.q} className="faq group border-t border-line last:border-b" data-reveal="slide">
               <summary className="flex items-center gap-5 py-5 text-left">
                 <span className="t-figure-sm w-8 shrink-0 text-ink-3">{String(i + 1).padStart(2, "0")}</span>
                 <span className="t-h3 flex-1">{item.q}</span>

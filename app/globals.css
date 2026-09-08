@@ -17,6 +17,8 @@
   --color-mark-2: #60a5fa;
   --color-sand: #e8d5b0;
   --color-sand-2: #c9a96e;
+  /* the same gold, deep enough to read on the light rooms (5.1:1 on --color-day) */
+  --color-sand-3: #8a6a2b;
   --color-day: #f4f6fa;
   --color-day-2: #e6ebf3;
   --color-day-ink: #0b1c33;
@@ -347,6 +349,7 @@
     border-radius: var(--radius-tile);
     background:
       radial-gradient(60% 55% at var(--gx) var(--gy), rgb(37 99 235 / 0.24), transparent 70%),
+      radial-gradient(50% 45% at calc(100% - var(--gx)) calc(100% - var(--gy)), rgb(201 169 110 / 0.08), transparent 70%),
       linear-gradient(180deg, rgb(10 47 82 / 0.55), rgb(5 35 63 / 0.35));
     transform-style: preserve-3d;
     transition: box-shadow 0.7s var(--ease-out-expo);
@@ -392,6 +395,7 @@
     border-radius: var(--radius-tile);
     background:
       radial-gradient(70% 60% at var(--gx) var(--gy), rgb(37 99 235 / 0.1), transparent 70%),
+      radial-gradient(50% 45% at calc(100% - var(--gx)) calc(100% - var(--gy)), rgb(201 169 110 / 0.09), transparent 70%),
       #ffffff;
     box-shadow:
       inset 0 0 0 1px rgb(11 28 51 / 0.07),
@@ -556,9 +560,11 @@
     position: absolute;
     inset: -20%;
     pointer-events: none;
+    /* cool blue on the left, a warm sand answer on the right: the two accents of the palette */
     background:
       radial-gradient(30% 32% at 30% 35%, rgb(37 99 235 / 0.22), transparent 72%),
-      radial-gradient(24% 28% at 72% 30%, rgb(96 165 250 / 0.12), transparent 72%);
+      radial-gradient(24% 28% at 72% 30%, rgb(96 165 250 / 0.12), transparent 72%),
+      radial-gradient(26% 30% at 82% 78%, rgb(201 169 110 / 0.11), transparent 72%);
     animation: aurora 18s var(--ease-in-out-expo) infinite alternate;
   }
   @keyframes aurora {
@@ -673,7 +679,7 @@
   .marquee__mark {
     width: 0.8rem;
     height: 0.8rem;
-    color: var(--color-mark);
+    color: var(--color-sand-2);
     margin-left: 0.5rem;
   }
   @keyframes marquee {
@@ -848,6 +854,17 @@
     background: radial-gradient(circle, rgb(96 165 250 / 0.22), rgb(37 99 235 / 0.08) 45%, transparent 70%);
     pointer-events: none;
   }
+  .spot::after {
+    content: "";
+    position: absolute;
+    right: -10%;
+    bottom: 5%;
+    width: 36%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgb(201 169 110 / 0.1), transparent 68%);
+    pointer-events: none;
+  }
   .spot__render {
     opacity: 0;
     transform: scale(0.94) translateY(2%);
@@ -894,7 +911,10 @@
   /* ---------- Day room (light chapters) ------------------------------- */
   .day {
     position: relative;
-    background: var(--color-day);
+    background:
+      radial-gradient(45% 32% at 92% 0%, rgb(201 169 110 / 0.1), transparent 70%),
+      radial-gradient(40% 30% at 5% 100%, rgb(37 99 235 / 0.06), transparent 70%),
+      var(--color-day);
     color: var(--color-day-ink);
     color-scheme: light;
     /* the dark room above casts a soft shadow into the light one */
@@ -907,8 +927,10 @@
   .day .t-lead {
     color: var(--color-day-ink-2);
   }
-  .day .t-eyebrow {
-    color: var(--color-mark);
+  /* the gold editorial voice carries into the light rooms; blue stays the action colour */
+  .day .t-eyebrow,
+  .day .t-figure-sm {
+    color: var(--color-sand-3);
   }
 
   /* ---------- Phone mock ----------------------------------------------- */
