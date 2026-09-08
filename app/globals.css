@@ -1371,6 +1371,78 @@
     }
   }
 
+  /* ---------- Pointer ----------------------------------------------------
+     The dot from avenir.uz. Desktop and a real pointer only, and the gate is
+     the one query Cursor.tsx also reads — if the two ever disagree, a resize
+     hides the real pointer while nothing draws the fake one.
+  --------------------------------------------------------------------- */
+  .cur {
+    display: none;
+  }
+  @media (hover: hover) and (pointer: fine) and (min-width: 64rem) {
+    body {
+      cursor: none;
+    }
+    /* `html` prefix so these outrank the component rules declared later */
+    html a,
+    html button,
+    html summary,
+    html label,
+    html .btn,
+    html .chip--button {
+      cursor: none;
+    }
+    input,
+    textarea {
+      cursor: text;
+    }
+    .cur {
+      display: block;
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 95;
+      pointer-events: none;
+      width: 10px;
+      height: 10px;
+      margin: -5px 0 0 -5px;
+      border-radius: 50%;
+      background: var(--color-ink);
+      box-shadow: 0 0 18px 4px rgb(96 165 250 / 0.55);
+      transform: translate3d(var(--cx, -60px), var(--cy, -60px), 0) scale(var(--cs, 1));
+      transition:
+        transform 0.12s linear,
+        opacity 0.3s var(--ease-out-quart),
+        background-color 0.3s var(--ease-out-quart),
+        box-shadow 0.3s var(--ease-out-quart);
+    }
+    .cur.is-big {
+      --cs: 2.8;
+      background: rgb(96 165 250 / 0.4);
+      box-shadow: 0 0 26px 8px rgb(37 99 235 / 0.35);
+    }
+    /* the light rooms — avenir.uz is dark throughout and never needed this */
+    .cur.is-day {
+      background: var(--color-day-ink);
+      box-shadow: 0 0 16px 3px rgb(37 99 235 / 0.28);
+    }
+    .cur.is-day.is-big {
+      background: rgb(37 99 235 / 0.35);
+      box-shadow: 0 0 24px 7px rgb(37 99 235 / 0.22);
+    }
+    .cur.is-hidden {
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    body {
+      cursor: auto;
+    }
+    .cur {
+      display: none !important;
+    }
+  }
+
   /* ---------- Phones -----------------------------------------------------
      Everything below 40rem only. The desktop layout is not touched by any of
      it: same tokens, same rhythm, same components — this narrows what is worth

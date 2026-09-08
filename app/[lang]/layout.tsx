@@ -6,6 +6,7 @@ import { isLang, languages, type Lang } from "@/lib/languages";
 import { getDictionary } from "@/lib/i18n";
 import { site } from "@/lib/site";
 import { SmoothScroll } from "@/components/motion/SmoothScroll";
+import { Cursor } from "@/components/motion/Cursor";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import "../globals.css";
@@ -83,6 +84,8 @@ export default async function LangLayout({ children, params }: LayoutProps<"/[la
     >
       <body>
         <SmoothScroll />
+        <span className="cur" id="cur" aria-hidden="true" />
+        <Cursor />
         <Header lang={lang} nav={t.nav} />
         {children}
         <Footer lang={lang} t={t.footer} ask={t.hero.primary} />

@@ -30,7 +30,7 @@ owner to ask for a demo.
 - **No prices anywhere** (owner decision). The FAQ answers "Narxi qancha?"
   without a number. The prices visible inside the platform screens belong to
   the fictional demo shop "Bahor Market" and are part of the UI mock.
-- No Telegram bot for buying, no custom cursor, dropdown language menu, a
+- No Telegram bot for buying, dropdown language menu, a
   loading screen that waits for the models (all owner decisions).
 - Owner corrections, 2026-09-08: the header never hides (the old
   hide-on-scroll-down read as "the navbar disappears"); the logo is the
@@ -188,6 +188,33 @@ what changed is the visual system underneath them.
   shop's UI inside the devices still uses those faces. Regenerating them means
   re-running `screens.mjs` and then `render.mjs`; the mismatch is only visible
   if you zoom into a device.
+
+## The pointer (2026-09-08, same branch)
+
+The custom cursor was a "no" early on; the owner reversed it — "kursorni
+avenir.uz dagi kabi qilib qo'y" — so avenir.uz's dot is carried over as-is:
+a 10px light that trails the pointer at 0.24 per frame and swells to 2.8× over
+anything you can act on (`components/motion/Cursor.tsx`, `.cur` in
+`globals.css`). The hero canvas counts as a target, because it can be dragged.
+
+Two things differ from the source, both because this page is not avenir.uz:
+
+- **The light rooms.** avenir.uz is dark throughout, so its dot is always white.
+  Here a white dot vanishes over the features, included and steps rooms, so
+  `mouseover` also toggles `is-day` when the target is inside `.day` and the dot
+  becomes the day ink.
+- The gate is written as `64rem` rather than `1024px`, to match this project's
+  `lg`.
+
+Carried over unchanged, deliberately: **one media query, shared by the CSS and
+the JS, and the JS subscribes to it.** On avenir.uz they disagreed once (JS
+`innerWidth > 900`, CSS `min-width: 1024px`) and a window opened narrow then
+widened past 1024 had no pointer at all — the real one hidden, the fake one
+never started.
+
+Verified: dot at the pointer on the night rooms, `is-big` and blue over a
+button, `is-day` and dark over a light room, and the real cursor restored below
+64rem, on touch, and under reduced motion. No console errors.
 
 ## The phone pass (2026-09-08, same branch)
 
