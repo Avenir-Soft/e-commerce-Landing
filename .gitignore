@@ -46,3 +46,5 @@ tunnel.log
 .env
 .env.*
 !.env.example
+
+.vercel
