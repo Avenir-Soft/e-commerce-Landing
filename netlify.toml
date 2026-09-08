@@ -1,0 +1,45 @@
+# Netlify build for the Avenir Store landing.
+#
+# The site is a Next.js 16 App Router app with a proxy (Next 16's rename of
+# middleware) that redirects "/" to a language prefix, so it cannot be a static
+# export: it needs the Next.js Runtime, which Netlify applies through the
+# plugin below.
+#
+# Node is pinned to 22 because that is what the project is developed and built
+# against locally; Netlify's default has moved before and a silent bump is not
+# something a 3D landing page should discover in production.
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# The GLB models and the WebP device screens are content-hashed by Next only
+# when they are imported; these are fetched by URL from public/, so they get
+# the default one-hour cache. They never change without a redeploy, and a
+# 5 MB model re-downloading every hour is the single most expensive thing a
+# returning visitor could do here.
+[[headers]]
+  for = "/models/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/screens/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/renders/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/shop/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

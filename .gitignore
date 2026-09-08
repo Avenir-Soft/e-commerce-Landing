@@ -48,3 +48,6 @@ tunnel.log
 !.env.example
 
 .vercel
+
+# netlify
+.netlify
