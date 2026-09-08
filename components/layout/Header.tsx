@@ -69,16 +69,22 @@ export function Header({ lang, nav }: { lang: Lang; nav: Dictionary["nav"] }) {
             : "bg-transparent"
         }`}
       >
-        <div className="shell flex h-full items-center justify-between gap-6">
+        {/*
+          Three tracks, not justify-between: the logo and the right-hand pair
+          are different widths, so a flex row left the links 89px off centre at
+          every desktop size. The two 1fr tracks are equal by definition, which
+          puts the nav on the page's centre line whatever the sides weigh.
+        */}
+        <div className="shell grid h-full grid-cols-[auto_1fr_auto] items-center gap-4 lg:grid-cols-[1fr_auto_1fr] lg:gap-6">
           <Link
             href={`/${lang}`}
             aria-label={site.name}
-            className="shrink-0 rounded-md transition-opacity duration-200 hover:opacity-80"
+            className="justify-self-start rounded-md transition-opacity duration-200 hover:opacity-80"
           >
             <Logo />
           </Link>
 
-          <nav className="hidden items-center gap-1 lg:flex" aria-label="Sections">
+          <nav className="hidden items-center justify-center gap-1 lg:flex" aria-label="Sections">
             {sections.map((s, i) => (
               <a
                 key={s.id}
@@ -92,7 +98,7 @@ export function Header({ lang, nav }: { lang: Lang; nav: Dictionary["nav"] }) {
             ))}
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className="col-start-3 flex items-center justify-end gap-2">
             <div className="hidden sm:block">
               <LangMenu lang={lang} label={nav.language} />
             </div>
