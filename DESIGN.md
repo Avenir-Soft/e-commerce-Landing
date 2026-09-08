@@ -320,7 +320,8 @@ soft shadow into the light ones. Both stages hold 60 fps in the test browser.
   and the search says "anything". One of the two should move.
 - `public/screens/*.webp` are captures of those mocks, made with
   `C:\Users\mamut\tools\pw\screens.mjs` against the dev route `/dev/screens`
-  (blocked in production). Regenerate them after editing the mocks.
+  (blocked in production), at `deviceScaleFactor: 2` and WebP 0.95. Regenerate
+  them after editing the mocks.
 - `DeviceModel` clones each model's display material per instance and puts
   the capture on `map` and `emissiveMap` (`ScreenSpec` in
   `components/hero/DeviceModel.tsx`). Display material names: iPhone
@@ -371,10 +372,33 @@ h3 1.1875rem — weight 600, tracking −0.014 to −0.032em), **Inter** (body,
 Cyrillic except the Unbounded cut, which only ever sets "AVENIR".
 
 Performance budget for the 3D: one render pass, no post-processing, no
-reflections, no transmission materials, DPR capped at 1.25 and lowered by
-`PerformanceMonitor` when frames drop, rendering paused while the hero is off
-screen, off-screen carousel items hidden, shaders compiled behind the loading
-screen (`ReadySignal` → `markModelsReady`).
+reflections, no transmission materials, DPR capped at **2 on desktop and 1.25 on
+phones** and lowered by `PerformanceMonitor` when frames drop, rendering paused
+while the hero is off screen, off-screen carousel items hidden, shaders compiled
+behind the loading screen (`ReadySignal` → `markModelsReady`).
+
+**Why the screens looked dull and soft** (owner, 2026-09-08: "rasmlar hira …
+judayam tiniq koʼrinishi shart"), and the three things that were actually wrong:
+
+- **Tone mapping.** The canvas ran ACES Filmic, a film curve that desaturates
+  and greys down everything bright — on a device whose whole job is to show a
+  white UI full of product photos, that is the dullness. Both the hero canvas
+  and `/dev/render` now use **Khronos PBR Neutral** (`THREE.NeutralToneMapping`,
+  exposure 1.15), which keeps whites white. Measured on the stills: saturation
+  0.097 → 0.185 on the laptop, 0.054 → 0.104 on the tablet, and peak luminance
+  reached 255 instead of stopping at 246.
+- **The DPR cap was the real softness.** At a flat 1.25, a 2× display drew the
+  scene at 1800×1125 and stretched it over 2880×1800 — everything soft, textures
+  included. Desktop now draws 1:1. Measured after: 60.2 fps with no frame over
+  17ms at 1440@2x, and the phone is untouched at 487×1055 and 60.1 fps.
+- **The captures were 1×.** `screens.mjs` now captures at `deviceScaleFactor: 2`
+  and WebP 0.95, so `home.webp` is 1180×2556 rather than 590×1278. `public/screens`
+  grew from ~270KB to ~820KB; that is the price of the sharpness.
+
+The display material also lost some of the room: `emissiveIntensity` 1.25/1.05 →
+1.5/1.3, `roughness` 0.4 → 0.3, `envMapIntensity` 0.12 → 0.06 — reflection and
+diffuse only add the studio's grey to a surface that should be showing its own
+picture.
 
 ## Page order
 

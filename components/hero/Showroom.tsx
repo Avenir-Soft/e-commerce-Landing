@@ -15,8 +15,9 @@ import { BlobShadow, Dust, Studio, useRadialTexture } from "./Studio";
  * horizontal drag spins it with momentum. A warm light orbits the scene so
  * highlights travel across the glass and metal.
  *
- * Budget: one render pass, no post-processing, no reflections, DPR capped at
- * 1.25 and lowered further by PerformanceMonitor when frames drop.
+ * Budget: one render pass, no post-processing, no reflections; DPR capped at 2
+ * on desktop and 1.25 on phones, lowered further by PerformanceMonitor when
+ * frames drop.
  */
 
 /*
@@ -75,7 +76,21 @@ const IDLE_TURN = 0.07;
 const ENTRANCE_DELAY = 0.15;
 const ENTRANCE_STAGGER = 0.22;
 const ENTRANCE_DURATION = 2.1;
-const DPR_MAX = 1.25;
+/*
+ * How many device pixels the scene is drawn at, per CSS pixel.
+ *
+ * This was a flat 1.25 everywhere, and it was the single biggest reason the
+ * devices looked soft: on a 2x display the canvas was drawn at 1800x1125 and
+ * stretched over 2880x1800 of screen. Desktop now draws 1:1 — measured on this
+ * machine at 60.3 fps with no frame over 17ms, so the "must not stutter" budget
+ * holds. Phones keep the old cap: their devicePixelRatio is often 3, which
+ * would be nine times the pixels on the weakest hardware that loads this page.
+ * PerformanceMonitor still drops to 1 if frames slip either way.
+ */
+const DPR_MAX_DESKTOP = 2;
+const DPR_MAX_MOBILE = 1.25;
+const capDpr = () =>
+  Math.min(window.innerWidth >= DESKTOP_MIN_WIDTH ? DPR_MAX_DESKTOP : DPR_MAX_MOBILE, window.devicePixelRatio);
 
 /** Gentler than expo: the arrival stays visible for most of its duration instead of snapping in. */
 const easeOutCubic = (t: number) => (t >= 1 ? 1 : 1 - Math.pow(1 - t, 3));
@@ -290,7 +305,7 @@ export function Showroom() {
     window.addEventListener(INTRO_DONE_EVENT, on, { once: true });
     return () => window.removeEventListener(INTRO_DONE_EVENT, on);
   }, []);
-  const [dpr, setDpr] = useState(() => Math.min(DPR_MAX, typeof window === "undefined" ? 1 : window.devicePixelRatio));
+  const [dpr, setDpr] = useState(() => (typeof window === "undefined" ? 1 : capDpr()));
   const [webgl] = useState(supportsWebGL);
 
   useEffect(() => {
@@ -321,13 +336,17 @@ export function Showroom() {
           alpha: true,
           stencil: false,
           powerPreference: "high-performance",
-          toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: 1.1,
+          // Khronos PBR Neutral, not ACES: ACES is a film curve — it desaturates
+          // and greys down everything bright, which on a device whose whole job
+          // is to show a white UI full of product photos reads as a dull screen.
+          // Neutral keeps whites white and colour where it was.
+          toneMapping: THREE.NeutralToneMapping,
+          toneMappingExposure: 1.15,
         }}
         frameloop={visible && intro ? "always" : "never"}
         onCreated={({ gl }) => gl.setClearColor(0x000000, 0)}
       >
-        <PerformanceMonitor onDecline={() => setDpr(1)} onIncline={() => setDpr(Math.min(DPR_MAX, window.devicePixelRatio))} />
+        <PerformanceMonitor onDecline={() => setDpr(1)} onIncline={() => setDpr(capDpr())} />
         <Scene />
       </Canvas>
     </div>

@@ -78,12 +78,16 @@ export function DeviceModel({ spec }: { spec: ModelSpec }) {
           own.color = new THREE.Color("#ffffff");
           own.emissive = new THREE.Color("#ffffff");
           own.emissiveMap = screenTexture;
-          // the display is a light source of its own: bright enough to read under the studio
-          // lights, matte enough that the orbiting highlight never washes the UI out
-          own.emissiveIntensity = spec.screen.emissive ? 1.25 : 1.05;
-          own.roughness = 0.4;
+          // The display is a light source of its own: bright enough to read under
+          // the studio lights, matte enough that the orbiting highlight never
+          // washes the UI out. Raised with the move to Neutral tone mapping,
+          // which no longer compresses the top end the way ACES did.
+          own.emissiveIntensity = spec.screen.emissive ? 1.5 : 1.3;
+          // less diffuse and less reflection on the glass: both only add the
+          // room's grey to a surface that should be showing its own picture
+          own.roughness = 0.3;
           own.metalness = 0;
-          own.envMapIntensity = 0.12;
+          own.envMapIntensity = 0.06;
           own.needsUpdate = true;
           if (Array.isArray(mesh.material)) mesh.material[i] = own;
           else mesh.material = own;

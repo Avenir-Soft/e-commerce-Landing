@@ -46,7 +46,7 @@ export function RenderLab() {
       <Canvas
         dpr={1}
         camera={{ fov: 28, near: 0.1, far: 50 }}
-        gl={{ antialias: true, alpha: true, preserveDrawingBuffer: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.1 }}
+        gl={{ antialias: true, alpha: true, preserveDrawingBuffer: true, toneMapping: THREE.NeutralToneMapping, toneMappingExposure: 1.15 }}
         onCreated={({ gl }) => gl.setClearColor(0x000000, 0)}
       >
         <Rig yaw={yaw} pitch={pitch} dist={dist} />
