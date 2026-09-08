@@ -733,7 +733,10 @@
     }
   }
 
-  /* ---------- Loading screen ------------------------------------------- */
+  /* ---------- Loading screen: the mark locks focus ---------------------
+     Tips fly in from outside and snap onto the axes, the axes draw inward,
+     the star ignites, a ring fills with the download. On exit the star
+     bursts into the light that becomes the showroom. ------------------- */
   .loader {
     position: fixed;
     inset: 0;
@@ -742,77 +745,127 @@
     place-items: center;
     background: var(--color-night);
     clip-path: inset(0 0 0 0);
-    transition: clip-path 0.8s var(--ease-in-out-expo);
+    transition: clip-path 0.8s var(--ease-in-out-expo) 0.25s;
   }
   .loader--exit {
     clip-path: inset(0 0 100% 0);
     pointer-events: none;
   }
-  /* the mark lifts and dissolves a beat before the curtain follows it */
-  .loader__inner,
-  .loader__skip {
+  .loader__halo {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: clamp(320px, 50vw, 640px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgb(37 99 235 / 0.22), rgb(37 99 235 / 0.06) 45%, transparent 70%);
+    transform: translate(-50%, -50%) scale(0.6);
+    opacity: 0;
+    animation: loader-halo 1.4s var(--ease-out-expo) 0.9s forwards;
+    pointer-events: none;
+  }
+  .loader__inner {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 0.6rem;
     transition:
       transform 0.6s var(--ease-in-out-expo),
       opacity 0.45s var(--ease-out-quart);
   }
-  .loader--exit .loader__inner {
-    transform: translate3d(0, -40px, 0) scale(0.92);
-    opacity: 0;
-  }
-  .loader--exit .loader__skip {
-    opacity: 0;
-  }
-  .loader__inner {
-    display: grid;
-    justify-items: center;
-    gap: 1.3rem;
-  }
   .loader__mark {
-    width: clamp(96px, 14vw, 160px);
+    width: clamp(150px, 20vw, 220px);
     height: auto;
     color: var(--color-ink);
     overflow: visible;
   }
-  .loader__axis {
-    stroke: currentColor;
-    stroke-width: 3;
-    stroke-dasharray: 52;
-    stroke-dashoffset: 52;
-    animation: loader-draw 0.8s var(--ease-out-expo) 0.05s forwards;
+  .loader__track {
+    stroke: rgb(243 246 251 / 0.08);
+    stroke-width: 1.2;
+  }
+  .loader__orbit {
+    stroke: rgb(201 169 110 / 0.35);
+    stroke-width: 0.8;
+    stroke-dasharray: 1.5 7;
+    stroke-linecap: round;
+    transform-origin: 60px 60px;
+    opacity: 0;
+    animation:
+      loader-fade 1s var(--ease-out-quart) 0.6s forwards,
+      loader-spin 26s linear infinite;
+  }
+  .loader__ring {
+    stroke: var(--color-mark-2);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    transform: rotate(-90deg);
+    transform-origin: 60px 60px;
+    opacity: 0;
+    filter: drop-shadow(0 0 4px rgb(96 165 250 / 0.7));
+    animation: loader-fade 0.8s var(--ease-out-quart) 0.7s forwards;
+    transition: stroke-dashoffset 0.5s var(--ease-out-expo);
   }
   .loader__tip {
     fill: var(--color-night);
     stroke: currentColor;
-    stroke-width: 2.6;
+    stroke-width: 2.4;
     opacity: 0;
-    animation: loader-pop 0.4s var(--ease-out-expo) 0.7s forwards;
+    transform: translate(var(--dx), var(--dy)) rotate(45deg) scale(1.6);
+    animation: loader-tip 0.9s var(--ease-out-expo) calc(0.08s + var(--i) * 0.07s) forwards;
+  }
+  .loader__axis {
+    stroke: currentColor;
+    stroke-width: 2.6;
+    stroke-linecap: round;
+    stroke-dasharray: 50;
+    stroke-dashoffset: 50;
+    animation: loader-draw 0.75s var(--ease-out-expo) 0.55s forwards;
   }
   .loader__star {
     fill: var(--color-mark);
     transform-origin: 60px 60px;
+    transform: scale(0) rotate(-90deg);
+    filter: drop-shadow(0 0 10px rgb(96 165 250 / 0.75));
+    animation:
+      loader-star 0.9s cubic-bezier(0.34, 1.5, 0.64, 1) 1.05s forwards,
+      loader-breathe 2.8s var(--ease-in-out-expo) 2s infinite alternate;
+  }
+  /* a white flash rides the star's ignition and fades */
+  .loader__flash {
+    fill: #fff;
+    transform-origin: 60px 60px;
     transform: scale(0);
-    animation: loader-star 0.7s var(--ease-out-expo) 0.4s forwards, loader-pulse 2.4s var(--ease-in-out-expo) 1.2s infinite;
+    opacity: 0;
+    animation: loader-flash 0.9s var(--ease-out-expo) 1.1s forwards;
   }
-  @keyframes loader-draw { to { stroke-dashoffset: 0; } }
-  @keyframes loader-pop { to { opacity: 1; } }
-  @keyframes loader-star { to { transform: scale(1); } }
-  @keyframes loader-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08) rotate(12deg); } }
-  .loader__bar {
-    width: clamp(96px, 14vw, 160px);
-    height: 2px;
-    background: rgb(243 246 251 / 0.12);
-    overflow: hidden;
+  .loader__count {
+    display: flex;
+    align-items: baseline;
+    gap: 0.15rem;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--color-sand);
+    opacity: 0;
+    animation: loader-fade 0.8s var(--ease-out-quart) 1.2s forwards;
   }
-  .loader__bar > span {
-    display: block;
-    height: 100%;
-    background: var(--color-mark-2);
-    transform-origin: left;
-    transition: transform 0.4s var(--ease-out-expo);
+  .loader__num {
+    font-size: clamp(2.6rem, 4.5vw, 3.6rem);
+    letter-spacing: -0.02em;
+    min-width: 2ch;
+    text-align: right;
+  }
+  .loader__pct {
+    font-size: 1.1rem;
+    color: var(--color-sand-2);
   }
   .loader__text {
     color: var(--color-ink-3);
     font-size: 0.875rem;
+    letter-spacing: 0.02em;
+    opacity: 0;
+    animation: loader-fade 0.8s var(--ease-out-quart) 1.35s forwards;
   }
   .loader__skip {
     position: absolute;
@@ -820,10 +873,141 @@
     bottom: 1.5rem;
     color: var(--color-ink-3);
     font-size: 0.875rem;
-    transition: color 0.3s var(--ease-out-quart);
+    transition:
+      color 0.3s var(--ease-out-quart),
+      opacity 0.45s var(--ease-out-quart);
   }
   .loader__skip:hover {
     color: var(--color-ink);
+  }
+  /* exit: the star bursts, the rings open, the copy lifts, then the curtain follows.
+     Exit states are animations, not transitions: a transition cannot start from a
+     value another animation was holding. */
+  .loader--exit .loader__star {
+    animation: loader-burst 0.7s var(--ease-in-out-expo) forwards;
+  }
+  .loader--exit .loader__flash {
+    animation: loader-burst-flash 0.7s var(--ease-out-quart) forwards;
+  }
+  .loader--exit .loader__ring,
+  .loader--exit .loader__track,
+  .loader--exit .loader__orbit {
+    animation: loader-open 0.7s var(--ease-in-out-expo) forwards;
+  }
+  .loader--exit .loader__count,
+  .loader--exit .loader__text,
+  .loader--exit .loader__skip {
+    animation: loader-lift 0.5s var(--ease-in-out-expo) forwards;
+  }
+  .loader--exit .loader__halo {
+    animation: loader-halo-out 0.9s var(--ease-in-out-expo) forwards;
+  }
+  @keyframes loader-burst {
+    from {
+      opacity: 1;
+      transform: scale(1) rotate(0deg);
+      filter: drop-shadow(0 0 12px rgb(96 165 250 / 0.8));
+    }
+    to {
+      opacity: 0;
+      transform: scale(9) rotate(45deg);
+      filter: drop-shadow(0 0 40px rgb(96 165 250 / 0.9));
+    }
+  }
+  @keyframes loader-burst-flash {
+    from {
+      opacity: 0.7;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(7);
+    }
+  }
+  @keyframes loader-open {
+    from {
+      opacity: 1;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(1.5);
+    }
+  }
+  @keyframes loader-lift {
+    from {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      opacity: 0;
+      transform: translate3d(0, -14px, 0);
+    }
+  }
+  @keyframes loader-halo-out {
+    from {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(2.4);
+    }
+  }
+  @keyframes loader-tip {
+    60% {
+      opacity: 1;
+    }
+    to {
+      opacity: 1;
+      transform: translate(0, 0) rotate(45deg) scale(1);
+    }
+  }
+  @keyframes loader-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes loader-star {
+    to {
+      transform: scale(1) rotate(0deg);
+    }
+  }
+  @keyframes loader-flash {
+    30% {
+      opacity: 0.9;
+      transform: scale(1.15);
+    }
+    to {
+      opacity: 0;
+      transform: scale(1.6);
+    }
+  }
+  @keyframes loader-breathe {
+    from {
+      transform: scale(1) rotate(0deg);
+      filter: drop-shadow(0 0 8px rgb(96 165 250 / 0.55));
+    }
+    to {
+      transform: scale(1.07) rotate(8deg);
+      filter: drop-shadow(0 0 18px rgb(96 165 250 / 0.95));
+    }
+  }
+  @keyframes loader-halo {
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+  @keyframes loader-fade {
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes loader-spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   /* ---------- Language menu -------------------------------------------- */

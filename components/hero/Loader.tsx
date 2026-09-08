@@ -7,15 +7,32 @@ import { MODELS_READY_EVENT, finishIntro, showroomState } from "./store";
 
 const MIN_SHOW_MS = 500;
 const MAX_WAIT_MS = 7000;
-const EXIT_MS = 800;
+/** Burst (0.7 s) + curtain (0.25 s delay + 0.8 s); the element hides only after both. */
+const EXIT_MS = 1100;
+/** Radius of the progress ring in the mark's 120-unit viewBox. */
+const RING_R = 66;
+const RING_LEN = 2 * Math.PI * RING_R;
 
 type Phase = "pending" | "show" | "exit" | "done";
+
+/** The four hollow diamonds of the reticle, with the direction each one arrives from. */
+const TIPS: { x: number; y: number; dx: number; dy: number }[] = [
+  { x: 60, y: 10, dx: 0, dy: -46 },
+  { x: 60, y: 110, dx: 0, dy: 46 },
+  { x: 10, y: 60, dx: -46, dy: 0 },
+  { x: 110, y: 60, dx: 46, dy: 0 },
+];
 
 /**
  * Loading screen: covers the page while the product models download and
  * their shaders compile, so the showroom starts smooth instead of stuttering
  * through its first seconds. It never appears when the models are already
  * cached, and a click or key skips it.
+ *
+ * The mark "locks focus": the four tips fly in from outside and snap to the
+ * axes, the axes draw inward, the star ignites with a flash, and a ring
+ * around it fills with the download. On exit the star bursts into the light
+ * that becomes the showroom.
  */
 export function Loader({ t }: { t: Dictionary["loader"] }) {
   const [phase, setPhase] = useState<Phase>("pending");
@@ -75,7 +92,24 @@ export function Loader({ t }: { t: Dictionary["loader"] }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [phase]);
 
-  const shown = ready ? 100 : Math.min(96, progress);
+  // drei's progress often sits at 0 until the meshopt models land all at once, so the
+  // ring also creeps forward on its own clock (fast at first, slowing toward 92%), and
+  // the figure never runs backwards: drei's ratio drops whenever a new asset joins the queue
+  const [peak, setPeak] = useState(0);
+  const latest = useRef(0);
+  useEffect(() => {
+    latest.current = progress;
+  }, [progress]);
+  useEffect(() => {
+    if (phase !== "show") return;
+    const id = window.setInterval(() => {
+      const t = (performance.now() - shownAt.current) / 1000;
+      const creep = 92 * (1 - Math.exp(-t / 2.2));
+      setPeak((prev) => Math.max(prev, Math.min(96, Math.max(latest.current, creep))));
+    }, 80);
+    return () => window.clearInterval(id);
+  }, [phase]);
+  const shown = ready ? 100 : peak;
 
   // Always mounted: the hero next to it gets wrapped by ScrollTrigger's pin
   // spacer, and inserting a new sibling before it later would break React's
@@ -88,37 +122,51 @@ export function Loader({ t }: { t: Dictionary["loader"] }) {
       aria-hidden={phase !== "show"}
       onClick={() => phase === "show" && setPhase("exit")}
     >
+      <div className="loader__halo" aria-hidden="true" />
       <div className="loader__inner">
         <svg className="loader__mark" viewBox="0 0 120 120" fill="none" aria-hidden="true">
-          <line className="loader__axis" x1="60" y1="60" x2="60" y2="8" />
-          <line className="loader__axis" x1="60" y1="60" x2="60" y2="112" />
-          <line className="loader__axis" x1="60" y1="60" x2="8" y2="60" />
-          <line className="loader__axis" x1="60" y1="60" x2="112" y2="60" />
-          {[
-            [60, 8],
-            [60, 112],
-            [8, 60],
-            [112, 60],
-          ].map(([x, y]) => (
+          {/* focus rings: a faint track, a slow dashed orbit, and the progress arc */}
+          <circle className="loader__track" cx="60" cy="60" r={RING_R} />
+          <circle className="loader__orbit" cx="60" cy="60" r={RING_R + 8} />
+          <circle
+            className="loader__ring"
+            cx="60"
+            cy="60"
+            r={RING_R}
+            strokeDasharray={RING_LEN}
+            style={{ strokeDashoffset: RING_LEN * (1 - shown / 100) }}
+          />
+          {/* the axes draw from each tip toward the centre */}
+          <line className="loader__axis" x1="60" y1="10" x2="60" y2="60" />
+          <line className="loader__axis" x1="60" y1="110" x2="60" y2="60" />
+          <line className="loader__axis" x1="10" y1="60" x2="60" y2="60" />
+          <line className="loader__axis" x1="110" y1="60" x2="60" y2="60" />
+          {TIPS.map((tip, i) => (
             <rect
-              key={`${x}-${y}`}
+              key={`${tip.x}-${tip.y}`}
               className="loader__tip"
-              x={x - 3.2}
-              y={y - 3.2}
+              x={tip.x - 3.2}
+              y={tip.y - 3.2}
               width="6.4"
               height="6.4"
-              transform={`rotate(45 ${x} ${y})`}
+              style={
+                {
+                  "--dx": `${tip.dx}px`,
+                  "--dy": `${tip.dy}px`,
+                  "--i": i,
+                  transformOrigin: `${tip.x}px ${tip.y}px`,
+                } as React.CSSProperties
+              }
             />
           ))}
           <path className="loader__star" d="M60 28 Q60 60 92 60 Q60 60 60 92 Q60 60 28 60 Q60 60 60 28 Z" />
+          <path className="loader__flash" d="M60 28 Q60 60 92 60 Q60 60 60 92 Q60 60 28 60 Q60 60 60 28 Z" />
         </svg>
-        <div className="loader__bar" aria-hidden="true">
-          <span style={{ transform: `scaleX(${Math.max(0.04, shown / 100)})` }} />
-        </div>
-        <p className="loader__text">
-          {t.loading}
-          <span className="t-num ml-2 opacity-60">{Math.round(shown)}%</span>
+        <p className="loader__count" aria-hidden="true">
+          <span className="loader__num t-num">{Math.round(shown)}</span>
+          <span className="loader__pct">%</span>
         </p>
+        <p className="loader__text">{t.loading}</p>
       </div>
       <button type="button" className="loader__skip" onClick={() => setPhase("exit")}>
         {t.skip}

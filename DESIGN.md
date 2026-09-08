@@ -49,6 +49,17 @@ owner to ask for a demo.
   gold is the editorial voice in BOTH rooms (`--color-sand-3` for eyebrows
   and figures on the light ground, a warm counter-glow in every tile, the
   aurora, the day rooms and the showcase, gold marks in the ticker).
+- Loading screen, third round: the mark "locks focus" (`Loader.tsx`): a faint
+  ring and a gold dashed orbit appear, the four diamond tips fly in from
+  outside and snap onto the axes, the axes draw inward, the star ignites
+  under a white flash and breathes, and the ring fills with the download
+  next to a serif percentage. The percentage creeps on its own clock and
+  never runs backwards, because drei's `useProgress` sits at 0 until the
+  meshopt models land and its ratio drops when a new asset joins the queue.
+  Exit: the star bursts (×9), rings open, copy lifts, then the curtain wipes
+  up; `EXIT_MS` is 1100 so the element hides only after the curtain. Exit
+  states are keyframe animations, not transitions, because a transition
+  cannot start from a value an entry animation was holding.
 
 ## Concept
 
