@@ -903,6 +903,13 @@
     clip-path: inset(0 0 100% 0);
     pointer-events: none;
   }
+  /* The curtain lifted by the inline script in the layout, when the bundle
+     that owns this component has not arrived inside the visit's budget. Same
+     wipe as the real exit, so a visitor cannot tell which one ran. */
+  .loader[data-timeout] {
+    clip-path: inset(0 0 100% 0);
+    pointer-events: none;
+  }
   .loader__halo {
     position: absolute;
     left: 50%;

@@ -123,6 +123,31 @@ export default async function LangLayout({ children, params }: LayoutProps<"/[la
             }),
           }}
         />
+        {/*
+          Lifts the loading screen without waiting for React.
+
+          The curtain is a component, so it could only ever leave once the
+          bundle had been fetched, parsed and hydrated — 1.6 MB of it. On a
+          phone that is most of the wait it was supposed to be hiding.
+
+          This runs from the HTML: after the same budget Loader.tsx uses, it
+          marks the curtain and CSS fades it out. When React does arrive it
+          finds the budget already spent, goes straight to "done" and sets
+          `hidden`, which agrees with what the visitor is already looking at.
+          The attribute is one React never writes, so hydration leaves it be.
+
+          Kept in step with waitBudgetMs() in components/hero/Loader.tsx.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{
+var n=navigator.connection||{},
+b=(n.saveData||/(^|\\W)(slow-)?2g$/.test(n.effectiveType||""))?1200:(innerWidth>=1024?7000:2500);
+setTimeout(function(){var l=document.querySelector(".loader");
+if(l&&!l.hasAttribute("hidden"))l.setAttribute("data-timeout","")},Math.max(b-performance.now(),0))
+}catch(e){}})()`,
+          }}
+        />
         <SmoothScroll />
         <span className="cur" id="cur" aria-hidden="true" />
         <Cursor />
