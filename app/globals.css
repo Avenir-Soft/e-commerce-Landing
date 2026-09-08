@@ -765,8 +765,27 @@
     }
   }
   /* copy stays hidden until the client choreography runs */
+  /*
+   * The hero copy is held at zero until the intro timeline can set its own
+   * start state, otherwise it flashes in unanimated and is then yanked back
+   * for the animation.
+   *
+   * But "until JavaScript arrives" is not a bound. Measured on the live page
+   * at 1.6 Mbps / 150 ms RTT / 4x CPU, LCP was this paragraph at 15.2 s: the
+   * text was in the HTML from the first byte and CSS was hiding it while the
+   * phone parsed 1.6 MB of bundle. So the hold has a deadline. If the intro
+   * has not started within 2.4 s the copy fades in on its own; `play()`
+   * removes `data-pending`, which drops this rule and its animation together,
+   * so the two never fight over the same element.
+   */
   .hero[data-pending] [data-load] {
     opacity: 0;
+    animation: hero-hold-release 0.45s var(--ease-out-quart) 2.4s forwards;
+  }
+  @keyframes hero-hold-release {
+    to {
+      opacity: 1;
+    }
   }
   .hero__line {
     display: block;
@@ -1340,6 +1359,7 @@
   @media (prefers-reduced-motion: reduce) {
     .hero[data-pending] [data-load] {
       opacity: 1;
+      animation: none;
     }
     .hero__aurora,
     .cta__orb,

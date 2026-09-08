@@ -83,9 +83,12 @@ export default async function LangLayout({ children, params }: LayoutProps<"/[la
   const { lang } = await params;
   if (!isLang(lang)) notFound();
   const t = getDictionary(lang as Lang);
-  // start the first two showroom models before the 3D bundle is even parsed
-  preload("/models/iphone.glb", { as: "fetch", crossOrigin: "anonymous" });
-  preload("/models/macbook15.glb", { as: "fetch", crossOrigin: "anonymous" });
+  // Start the first two showroom models before the 3D bundle is even parsed —
+  // but behind everything the page needs to be readable. At default priority
+  // 1.5 MB of models raced the 1.6 MB bundle that reveals the copy, on a pipe
+  // that fits neither; the models can afford to wait, the text cannot.
+  preload("/models/iphone.glb", { as: "fetch", crossOrigin: "anonymous", fetchPriority: "low" });
+  preload("/models/macbook15.glb", { as: "fetch", crossOrigin: "anonymous", fetchPriority: "low" });
 
   return (
     <html
