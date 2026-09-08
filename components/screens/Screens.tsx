@@ -6,7 +6,8 @@ import { Mark } from "@/components/brand/Logo";
  * 3D devices wear on their displays and the feature tiles show framed.
  *
  * Phone: 590×1278 (6.7" at half resolution). Laptop: 1600×1000. Tablet: 1024×1366.
- * The demo shop sells a deliberately mixed range, not one brand.
+ * The goods in them are real: photos, names, categories and prices pulled from
+ * the live instance of the platform (fetch-group.uz).
  */
 
 export type ScreenId = "home" | "checkout" | "dashboard" | "orders" | "editor";
@@ -21,17 +22,31 @@ export const SCREEN_SIZES: Record<ScreenId, { w: number; h: number }> = {
 
 const SHOP = "Bahor Market";
 
+/*
+ * Real goods, taken from the live instance of the platform (fetch-group.uz):
+ * its own product photos, names, categories and prices, pulled from
+ * `/api/products`. They used to be CSS gradients with invented names.
+ *
+ * Watches, speakers and headphones on purpose. That shop also sells phones,
+ * laptops and tablets, and those are the very devices these screens are
+ * displayed on — a MacBook selling MacBooks is the "Apple reseller" reading the
+ * owner rejected on 2026-09-07.
+ */
 const goods = [
-  { name: "Sneakers Air Flow", cat: "Poyabzal", price: "689 000", tone: "linear-gradient(135deg,#dbeafe,#bfdbfe)" },
-  { name: "Espresso mashinasi", cat: "Uy texnikasi", price: "3 490 000", tone: "linear-gradient(135deg,#fde68a,#fbbf24)" },
-  { name: "Silk sharf", cat: "Aksessuarlar", price: "245 000", tone: "linear-gradient(135deg,#fbcfe8,#f472b6)" },
-  { name: "Smart soat S9", cat: "Elektronika", price: "1 890 000", tone: "linear-gradient(135deg,#e2e8f0,#94a3b8)" },
-  { name: "Yoga to'plami", cat: "Sport", price: "320 000", tone: "linear-gradient(135deg,#bbf7d0,#4ade80)" },
-  { name: "Parfyum Oud 50 ml", cat: "Go'zallik", price: "560 000", tone: "linear-gradient(135deg,#ddd6fe,#a78bfa)" },
+  { name: "Apple Watch Ultra 2 soati", cat: "Aqlli soatlar", price: "10 790 000", img: "/shop/chasi-apple-watch-ultra-2.webp" },
+  { name: "JBL Charge 5 kolonkasi", cat: "Akustika", price: "1 972 000", img: "/shop/kolonka-jbl-charge-5.webp" },
+  { name: "Apple AirPods Max quloqchini", cat: "Quloqchinlar", price: "6 961 500", img: "/shop/naushniki-apple-airpods-max.webp" },
+  { name: "Apple Watch SE 3 soati", cat: "Aqlli soatlar", price: "3 780 000", img: "/shop/chasi-apple-watch-se-3.webp" },
+  { name: "SONY WH-1000XM5 quloqchini", cat: "Quloqchinlar", price: "3 520 000", img: "/shop/naushniki-sony-wh-1000xm5.webp" },
+  { name: "Yandex Station Lite kolonkasi", cat: "Akustika", price: "840 000", img: "/shop/umnaya-kolonka-yandeks-stantsiya-layt.webp" },
 ];
 
-const Tile = ({ tone, className = "" }: { tone: string; className?: string }) => (
-  <div className={`rounded-xl ${className}`} style={{ background: tone }} />
+/* A plain <img>, not next/image: this route exists only to be photographed by
+   Playwright, and a lazy, srcset-driven image is exactly what a capture can
+   miss. `loading="eager"` for the same reason. */
+const Shot = ({ src, className = "" }: { src: string; className?: string }) => (
+  // eslint-disable-next-line @next/next/no-img-element
+  <img src={src} alt="" loading="eager" decoding="sync" className={`rounded-xl bg-white object-contain ${className}`} />
 );
 
 function PhoneFrame({ children, dark = false }: { children: React.ReactNode; dark?: boolean }) {
@@ -82,7 +97,7 @@ function Home() {
         <span className="shrink-0 rounded-full bg-white px-5 py-2.5 text-[17px] font-semibold text-[#0b1c33]">Koʼrish</span>
       </div>
       <div className="mt-6 flex shrink-0 gap-3 overflow-hidden px-8">
-        {["Hammasi", "Elektronika", "Kiyim", "Go'zallik", "Uy"].map((c, i) => (
+        {["Hammasi", "Aqlli soatlar", "Akustika", "Quloqchinlar", "Planshetlar"].map((c, i) => (
           <span
             key={c}
             className={`shrink-0 rounded-full px-5 py-2.5 text-[18px] font-semibold ${i === 0 ? "bg-[#0b1c33] text-white" : "bg-white text-[#0b1c33]"}`}
@@ -94,7 +109,7 @@ function Home() {
       <div className="mx-8 mt-6 grid min-h-0 flex-1 grid-cols-2 gap-4 overflow-hidden">
         {goods.slice(0, 4).map((g) => (
           <div key={g.name} className="rounded-2xl bg-white p-3 shadow-sm">
-            <Tile tone={g.tone} className="aspect-[5/4]" />
+            <Shot src={g.img} className="aspect-[5/4] w-full" />
             <p className="mt-3 text-[16px] text-[#6b7c93]">{g.cat}</p>
             <p className="text-[20px] font-semibold leading-tight">{g.name}</p>
             <p className="mt-1 text-[19px] font-bold">{g.price} soʼm</p>
@@ -124,7 +139,7 @@ function Checkout() {
       <div className="mx-8 mt-6 space-y-3">
         {goods.slice(0, 2).map((g) => (
           <div key={g.name} className="flex items-center gap-4 rounded-2xl bg-white p-3 shadow-sm">
-            <Tile tone={g.tone} className="h-20 w-20 shrink-0" />
+            <Shot src={g.img} className="h-20 w-20 shrink-0" />
             <div className="min-w-0 flex-1">
               <p className="truncate text-[20px] font-semibold">{g.name}</p>
               <p className="text-[17px] text-[#6b7c93]">1 dona</p>
@@ -254,10 +269,10 @@ function Dashboard() {
           <p className="text-[18px] font-semibold">Soʼnggi buyurtmalar</p>
           <div className="mt-4 space-y-3 text-[16px]">
             {[
-              ["#1042", "Espresso mashinasi", "Kuryerda"],
-              ["#1041", "Sneakers Air Flow", "Yig'ilmoqda"],
-              ["#1040", "Parfyum Oud", "Yetkazildi"],
-              ["#1039", "Smart soat S9", "Yangi"],
+              ["#1042", "JBL Charge 5 kolonkasi", "Kuryerda"],
+              ["#1041", "Apple Watch Ultra 2 soati", "Yigʼilmoqda"],
+              ["#1040", "SONY WH-1000XM5 quloqchini", "Yetkazildi"],
+              ["#1039", "Apple Watch SE 3 soati", "Yangi"],
             ].map(([n, p, s]) => (
               <div key={n} className="flex items-center justify-between rounded-xl bg-[#f3f5f9] px-4 py-3">
                 <span className="text-[#6b7c93]">{n}</span>
@@ -274,12 +289,12 @@ function Dashboard() {
 
 function Orders() {
   const rows = [
-    ["#1042", "Madina R.", "Espresso mashinasi", "Payme", "3 490 000", "Kuryerda", "#dbeafe", "#1d4ed8"],
-    ["#1041", "Jasur T.", "Sneakers Air Flow ×2", "Click", "1 378 000", "Yig'ilmoqda", "#fef3c7", "#b45309"],
-    ["#1040", "Nilufar A.", "Parfyum Oud 50 ml", "Uzcard", "560 000", "Yetkazildi", "#dcfce7", "#15803d"],
-    ["#1039", "Sardor K.", "Smart soat S9", "Humo", "1 890 000", "Yangi", "#ede9fe", "#6d28d9"],
-    ["#1038", "Kamola Y.", "Yoga to'plami", "Payme", "320 000", "Yetkazildi", "#dcfce7", "#15803d"],
-    ["#1037", "Bekzod M.", "Silk sharf ×3", "Click", "735 000", "Kuryerda", "#dbeafe", "#1d4ed8"],
+    ["#1042", "Madina R.", "JBL Charge 5 kolonkasi", "Payme", "1 972 000", "Kuryerda", "#dbeafe", "#1d4ed8"],
+    ["#1041", "Jasur T.", "Apple Watch Ultra 2 soati", "Click", "10 790 000", "Yig'ilmoqda", "#fef3c7", "#b45309"],
+    ["#1040", "Nilufar A.", "SONY WH-1000XM5 quloqchini", "Uzcard", "3 520 000", "Yetkazildi", "#dcfce7", "#15803d"],
+    ["#1039", "Sardor K.", "Apple Watch SE 3 soati", "Humo", "3 780 000", "Yangi", "#ede9fe", "#6d28d9"],
+    ["#1038", "Kamola Y.", "Yandex Station Lite kolonkasi", "Payme", "840 000", "Yetkazildi", "#dcfce7", "#15803d"],
+    ["#1037", "Bekzod M.", "Apple AirPods Max quloqchini", "Click", "6 961 500", "Kuryerda", "#dbeafe", "#1d4ed8"],
   ];
   return (
     <LaptopFrame active="Buyurtmalar">
@@ -327,7 +342,7 @@ function Editor() {
         <div>
           <p className="text-[17px] text-[#6b7c93]">Mahsulotlar · tahrirlash</p>
           <p className="text-[34px] font-bold" style={{ fontFamily: "var(--font-unbounded), Unbounded, sans-serif" }}>
-            Espresso mashinasi
+            JBL Charge 5 kolonkasi
           </p>
         </div>
         <div className="rounded-full bg-[#2563eb] px-6 py-3 text-[17px] font-semibold text-white">Saqlash</div>
@@ -337,18 +352,19 @@ function Editor() {
           <div className="flex items-center justify-between">
             <p className="text-[16px] font-semibold text-[#6b7c93]">Nomi (RU)</p>
           </div>
-          <p className="mt-2 rounded-xl bg-[#f3f5f9] px-4 py-3 text-[19px]">Кофемашина эспрессо Pro</p>
+          <p className="mt-2 rounded-xl bg-[#f3f5f9] px-4 py-3 text-[19px]">Колонка JBL Charge 5</p>
           <div className="mt-5 flex items-center justify-between">
             <p className="text-[16px] font-semibold text-[#6b7c93]">Nomi (UZ)</p>
             <span className="rounded-full bg-[#ede9fe] px-3 py-1 text-[14px] font-semibold text-[#6d28d9]">AI tarjima</span>
           </div>
-          <p className="mt-2 rounded-xl bg-[#f3f5f9] px-4 py-3 text-[19px]">Espresso kofe mashinasi Pro</p>
+          <p className="mt-2 rounded-xl bg-[#f3f5f9] px-4 py-3 text-[19px]">JBL Charge 5 kolonkasi</p>
         </div>
         <div className="rounded-2xl bg-white p-6 shadow-sm">
           <p className="text-[16px] font-semibold text-[#6b7c93]">Rasmlar</p>
+          {/* one real shot and an empty slot: the shop ships one photo per
+              product, and inventing a second angle would be inventing data */}
           <div className="mt-3 grid grid-cols-3 gap-3">
-            <Tile tone="linear-gradient(135deg,#fde68a,#fbbf24)" className="aspect-square" />
-            <Tile tone="linear-gradient(135deg,#fef3c7,#fde68a)" className="aspect-square" />
+            <Shot src="/shop/kolonka-jbl-charge-5.webp" className="aspect-square w-full ring-1 ring-black/5" />
             <div className="grid aspect-square place-items-center rounded-xl border-2 border-dashed border-black/15 text-[30px] text-[#6b7c93]">+</div>
           </div>
         </div>
@@ -359,13 +375,13 @@ function Editor() {
           <span className="rounded-full bg-[#ede9fe] px-3 py-1 text-[14px] font-semibold text-[#6d28d9]">SEO yaratish</span>
         </div>
         <p className="mt-3 text-[18px] leading-relaxed text-[#4d5d73]">
-          19 bar bosim, 1,5 l suv idishi, sut koʼpirtirgich. Uy va kichik ofis uchun. Kafolat 12 oy, yetkazib berish butun Oʼzbekiston boʼylab.
+          40 W quvvat, 20 soatgacha ishlash, IP67 suv va changdan himoya, powerbank rejimi. Kafolat 12 oy, yetkazib berish butun Oʼzbekiston boʼylab.
         </p>
       </div>
       <div className="mt-5 rounded-2xl bg-white p-6 shadow-sm">
         <p className="text-[16px] font-semibold text-[#6b7c93]">Atributlar</p>
         <div className="mt-3 flex flex-wrap gap-2 text-[17px]">
-          {["Bosim: 19 bar", "Hajm: 1,5 l", "Quvvat: 1350 W", "Rang: Kumush", "Kafolat: 12 oy"].map((a) => (
+          {["Quvvat: 40 W", "Ishlash: 20 soat", "Himoya: IP67", "Bluetooth: 5.1", "Rang: Qora"].map((a) => (
             <span key={a} className="rounded-full bg-[#f3f5f9] px-4 py-2">
               {a}
             </span>

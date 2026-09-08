@@ -27,9 +27,10 @@ owner to ask for a demo.
 - Calls to action: **"Demo so'rash"** goes to `links.contact`, **"Namuna
   do'kon"** to `links.demo` (`lib/site.ts`). Both are placeholders until
   Avenir Soft names a demo-request page and a dedicated demo shop.
-- **No prices anywhere** (owner decision). The FAQ answers "Narxi qancha?"
-  without a number. The prices visible inside the platform screens belong to
-  the fictional demo shop "Bahor Market" and are part of the UI mock.
+- **No prices anywhere** (owner decision) — for the *platform*. The FAQ answers
+  "Narxi qancha?" without a number. The prices visible inside the platform
+  screens are goods prices, and since 2026-09-08 they are the real ones from
+  `fetch-group.uz` (see "Screens on the devices").
 - No Telegram bot for buying, dropdown language menu, a
   loading screen that waits for the models (all owner decisions).
 - Owner corrections, 2026-09-08: the header never hides (the old
@@ -302,6 +303,21 @@ soft shadow into the light ones. Both stages hold 60 fps in the test browser.
   for the demo shop "Bahor Market": `home`, `checkout` (phone, 590×1278),
   `dashboard`, `orders` (laptop, 1600×1000), `editor` (tablet, 1024×1366).
   They use the landing's own fonts and palette so they read as one product.
+- **The goods in them are real** (owner, 2026-09-08: "devicelardagi rasmlarni
+  hammasi haqiqiy rasm bo'lishi kerak, saytdan olib qo'y"). Photos, names,
+  categories and prices come from the live instance of the platform,
+  `fetch-group.uz`, via its public `/api/products`; the six photos live in
+  `public/shop/`, redrawn to 560px squares on white by
+  `tools/pw/fg-download.mjs`. They were CSS gradients with invented names.
+  **Watches, speakers and headphones on purpose:** that shop also sells phones,
+  laptops and tablets, and those are the very devices these screens are shown
+  on — a MacBook selling MacBooks is the "Apple reseller" reading the owner
+  rejected on 2026-09-07. The order lists in `dashboard`/`orders` and the
+  product in `editor` (JBL Charge 5, with its real specs) were changed with them.
+  **Still open:** `demoItems` in `lib/product.ts` — the search sample — is still
+  the mixed catalogue (sneakers, espresso machine, scarf), which is what carried
+  the "any goods can be sold" message. The devices now say "electronics shop"
+  and the search says "anything". One of the two should move.
 - `public/screens/*.webp` are captures of those mocks, made with
   `C:\Users\mamut\tools\pw\screens.mjs` against the dev route `/dev/screens`
   (blocked in production). Regenerate them after editing the mocks.
