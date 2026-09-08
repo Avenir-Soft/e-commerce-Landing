@@ -87,13 +87,13 @@ export function SearchDemoClient({ t, items }: { t: Dictionary["search"]; items:
   }, [items, query]);
 
   return (
-    <section id="search" className="py-24 md:py-32" aria-labelledby="search-title">
+    <section id="search" className="section-y" aria-labelledby="search-title">
       <div className="shell grid items-center gap-12 lg:grid-cols-[5fr_6fr] lg:gap-20">
         <div>
           <p className="t-eyebrow" data-reveal="write">
             {t.eyebrow}
           </p>
-          <h2 id="search-title" className="t-h2 mt-3" data-split>
+          <h2 id="search-title" className="t-h2 mt-4" data-split>
             {t.heading}
           </h2>
           <p className="t-lead mt-5" data-reveal>
@@ -104,9 +104,13 @@ export function SearchDemoClient({ t, items }: { t: Dictionary["search"]; items:
           </p>
         </div>
 
-        <div className="tile beam min-w-0 p-3 sm:p-4" style={{ "--gx": "80%", "--gy": "0%" } as React.CSSProperties} data-reveal="clip">
-          <label className="flex items-center gap-3 rounded-2xl bg-night/70 px-4 py-3.5 ring-1 ring-line focus-within:ring-mark-2">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="shrink-0 text-ink-3">
+        <div
+          className="tile min-w-0 p-3 sm:p-4"
+          style={{ "--gx": "70%", "--gy": "0%" } as React.CSSProperties}
+          data-reveal="clip"
+        >
+          <label className="field">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="shrink-0 text-ink-3">
               <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
               <path d="m20 20-3.5-3.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
@@ -123,13 +127,12 @@ export function SearchDemoClient({ t, items }: { t: Dictionary["search"]; items:
               aria-label={t.placeholder}
               autoComplete="off"
               spellCheck={false}
-              className="w-full bg-transparent text-[1.05rem] text-ink placeholder:text-ink-3 focus:outline-none"
             />
-            {!touched && <span className="h-5 w-px animate-pulse bg-mark-2" aria-hidden="true" />}
+            {!touched && <span className="h-5 w-px shrink-0 animate-pulse bg-mark-2" aria-hidden="true" />}
           </label>
 
-          <div className="flex flex-wrap gap-2 px-1 pt-3">
-            {t.examples.slice(0, 4).map((ex) => (
+          <div className="flex flex-wrap gap-1.5 pt-3">
+            {t.examples.slice(0, 3).map((ex) => (
               <button
                 key={ex}
                 type="button"
@@ -147,17 +150,17 @@ export function SearchDemoClient({ t, items }: { t: Dictionary["search"]; items:
 
           <ul className="mt-3 flex min-h-[13.5rem] flex-col gap-1.5" aria-live="polite">
             {results.length === 0 && query.trim().length > 2 && (
-              <li className="px-3 py-4 text-ink-2">{t.empty}</li>
+              <li className="px-3 py-4 text-ink-2 t-small">{t.empty}</li>
             )}
             {results.map((r, i) => (
               <li
                 key={r.id}
-                className="flex items-center justify-between gap-4 rounded-xl bg-white/[0.04] px-4 py-3"
+                className="flex items-center justify-between gap-4 rounded-lg bg-surface-2 px-4 py-3 ring-1 ring-line"
                 style={{ animation: `result-in 0.6s var(--ease-out-expo) both`, animationDelay: `${i * 60}ms` }}
               >
                 <div className="min-w-0">
-                  <p className="text-ink-3 t-small">{r.category}</p>
-                  <p className="truncate font-semibold">{r.name}</p>
+                  <p className="t-label">{r.category}</p>
+                  <p className="mt-1 truncate font-semibold text-ink">{r.name}</p>
                   <p className="text-ink-2 t-small">{r.spec}</p>
                 </div>
                 <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-mark/20 text-mark-2" aria-hidden="true">
@@ -166,7 +169,7 @@ export function SearchDemoClient({ t, items }: { t: Dictionary["search"]; items:
               </li>
             ))}
           </ul>
-          <p className="px-1 pb-1 text-ink-3 t-small">
+          <p className="px-1 pb-1 text-ink-3 t-small" aria-hidden={results.length === 0}>
             {results.length > 0 && `${t.found}: ${results.length}`}
           </p>
         </div>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { preload } from "react-dom";
 import { notFound } from "next/navigation";
-import { Cormorant_Garamond, Manrope, Unbounded } from "next/font/google";
+import { Cormorant_Garamond, Inter, Inter_Tight, Unbounded } from "next/font/google";
 import { isLang, languages, type Lang } from "@/lib/languages";
 import { getDictionary } from "@/lib/i18n";
 import { site } from "@/lib/site";
@@ -10,15 +10,25 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import "../globals.css";
 
+/** The brand lockup only ("AVENIR" is Latin, so no Cyrillic cut is loaded). */
 const unbounded = Unbounded({
-  subsets: ["latin", "cyrillic"],
+  subsets: ["latin"],
+  weight: ["600"],
   variable: "--font-unbounded",
   display: "swap",
 });
 
-const manrope = Manrope({
+/** Interface and body copy. */
+const inter = Inter({
   subsets: ["latin", "cyrillic"],
-  variable: "--font-manrope",
+  variable: "--font-inter",
+  display: "swap",
+});
+
+/** Headings: the same voice as the body, cut tighter for display sizes. */
+const interTight = Inter_Tight({
+  subsets: ["latin", "cyrillic"],
+  variable: "--font-inter-tight",
   display: "swap",
 });
 
@@ -67,7 +77,10 @@ export default async function LangLayout({ children, params }: LayoutProps<"/[la
   preload("/models/macbook15.glb", { as: "fetch", crossOrigin: "anonymous" });
 
   return (
-    <html lang={lang} className={`${unbounded.variable} ${manrope.variable} ${cormorant.variable}`}>
+    <html
+      lang={lang}
+      className={`${unbounded.variable} ${inter.variable} ${interTight.variable} ${cormorant.variable}`}
+    >
       <body>
         <SmoothScroll />
         <Header lang={lang} nav={t.nav} />

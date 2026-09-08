@@ -33,11 +33,11 @@ export function LangMenu({ lang, label }: { lang: Lang; label: string }) {
         aria-label={label}
         onClick={() => setOpen((v) => !v)}
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" />
           <path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18" stroke="currentColor" strokeWidth="1.8" />
         </svg>
-        <span className="text-[0.85rem] uppercase tracking-[0.06em]">{lang}</span>
+        <span className="text-[0.8125rem] font-semibold uppercase tracking-[0.06em]">{lang}</span>
         <svg
           width="12"
           height="8"
@@ -54,7 +54,7 @@ export function LangMenu({ lang, label }: { lang: Lang; label: string }) {
         <ul
           role="listbox"
           aria-label={label}
-          className="lang-menu absolute right-0 top-[calc(100%+0.5rem)] z-50 min-w-[11.5rem] rounded-2xl border border-line bg-night-2/95 p-1.5 shadow-[0_24px_60px_-20px_rgb(0_0_0/0.6)] backdrop-blur-md"
+          className="lang-menu absolute right-0 top-[calc(100%+0.5rem)] z-50 min-w-[11.5rem] rounded-xl border border-line bg-night-2/95 p-1.5 shadow-[0_18px_44px_-18px_rgb(0_0_0/0.7)] backdrop-blur-xl"
         >
           {languages.map((l) => (
             <li key={l} role="option" aria-selected={l === lang}>
@@ -63,12 +63,12 @@ export function LangMenu({ lang, label }: { lang: Lang; label: string }) {
                 hrefLang={l}
                 lang={l}
                 onClick={() => setOpen(false)}
-                className={`flex items-center justify-between gap-4 rounded-xl px-3 py-2 text-[0.95rem] transition-colors duration-200 ${
-                  l === lang ? "bg-white/[0.08] text-ink" : "text-ink-2 hover:bg-white/[0.06] hover:text-ink"
+                className={`flex min-h-9 items-center justify-between gap-4 rounded-lg px-3 py-2 text-[0.9375rem] transition-colors duration-200 ${
+                  l === lang ? "bg-white/[0.07] text-ink" : "text-ink-2 hover:bg-white/[0.05] hover:text-ink"
                 }`}
               >
                 {languageNames[l]}
-                <span className="text-[0.75rem] uppercase tracking-[0.06em] text-ink-3">{l}</span>
+                <span className="text-[0.75rem] font-semibold uppercase tracking-[0.06em] text-ink-3">{l}</span>
               </Link>
             </li>
           ))}

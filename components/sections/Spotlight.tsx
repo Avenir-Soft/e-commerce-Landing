@@ -78,15 +78,15 @@ export function Spotlight({ t, ask }: { t: Dictionary["spotlight"]; ask: string 
     <section
       id="showcase"
       ref={section}
-      className="spot relative scroll-mt-20 overflow-clip py-24 md:py-32"
+      className="spot section-y relative scroll-mt-16 overflow-clip"
       aria-labelledby="spotlight-title"
     >
       <div className="spot__glow" aria-hidden="true" />
       <div className="shell">
         <SectionHead id="spotlight-title" eyebrow={t.eyebrow} heading={t.heading} />
 
-        <div className="mt-12 grid gap-12 lg:grid-cols-2 lg:gap-16">
-          <div className="hidden lg:sticky lg:top-24 lg:block lg:h-[calc(100svh-9rem)]" aria-hidden="true">
+        <div className="after-head grid gap-12 lg:grid-cols-2 lg:gap-16">
+          <div className="hidden lg:sticky lg:top-[7rem] lg:block lg:h-[calc(100svh-11rem)]" aria-hidden="true">
             <div className="spot__stage relative h-full w-full">
               {stage ? (
                 <SpotlightStage active={active} />
@@ -106,14 +106,16 @@ export function Spotlight({ t, ask }: { t: Dictionary["spotlight"]; ask: string 
             </div>
           </div>
 
-          <ol className="grid gap-16 lg:gap-0 lg:pb-[12svh]">
+          <ol className="grid gap-16 lg:gap-0 lg:pb-[10svh]">
             {t.beats.map((beat, i) => (
               <li
                 key={beat.title}
                 ref={(el) => {
                   beats.current[i] = el;
                 }}
-                className={`spot__beat flex flex-col justify-center lg:min-h-[80svh] ${i === active ? "is-active" : ""}`}
+                className={`spot__beat flex flex-col justify-center lg:min-h-[68svh] lg:first:justify-start ${
+                  i === active ? "is-active" : ""
+                }`}
                 data-reveal
               >
                 <Image
@@ -121,14 +123,14 @@ export function Spotlight({ t, ask }: { t: Dictionary["spotlight"]; ask: string 
                   alt=""
                   width={1200}
                   height={1200}
-                  sizes="(max-width: 1024px) 80vw, 0px"
-                  className="mb-6 h-64 w-auto max-w-full self-start object-contain drop-shadow-[0_30px_50px_rgb(0_0_0/0.5)] lg:hidden"
+                  sizes="(max-width: 1024px) 70vw, 0px"
+                  className="mb-6 h-56 w-auto max-w-full self-start object-contain drop-shadow-[0_24px_40px_rgb(0_0_0/0.45)] lg:hidden"
                 />
                 <p className="t-eyebrow">{beat.note}</p>
-                <h3 className="t-display mt-3" data-split>
+                <h3 className="t-h3-lg mt-4" data-split>
                   {beat.title}
                 </h3>
-                <p className="t-lead mt-5">{beat.text}</p>
+                <p className="t-lead mt-4">{beat.text}</p>
                 <ul className="mt-6 flex flex-wrap gap-2">
                   {beat.points.map((p) => (
                     <li key={p} className="chip">
@@ -140,7 +142,7 @@ export function Spotlight({ t, ask }: { t: Dictionary["spotlight"]; ask: string 
                   href={i === 0 ? links.demo : links.contact}
                   target="_blank"
                   rel="noopener"
-                  className="btn btn-quiet mt-8 self-start"
+                  className="btn btn-quiet mt-7 self-start"
                 >
                   {i === 0 ? t.look : ask}
                   <ArrowIcon />

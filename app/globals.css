@@ -3,44 +3,60 @@
 /* ---------- Design tokens ----------------------------------------------
    Palette: the Avenir family palette (deep navy + one electric blue), a warm
    "sand" for the serif accents, and a light room that matches the storefront.
+
+   Surfaces are flat and separated by hairlines, not by gradient washes: one
+   accent (blue) carries every action, the sand carries the editorial voice,
+   and nothing else is coloured. Two neutral ramps — `ink-*` on the night
+   rooms, `day-ink-*` on the light ones — hold the whole text hierarchy.
 ------------------------------------------------------------------------ */
 @theme {
   --color-night: #02101f;
   --color-night-2: #061a31;
-  --color-deep: #05233f;
-  --color-deep-2: #0a2f52;
+  /* raised surfaces on the night rooms (cards, panels, fields) */
+  --color-surface: #071b31;
+  --color-surface-2: #0a2440;
   --color-ink: #f3f6fb;
   --color-ink-2: #a9b8cc;
-  --color-ink-3: #6b7c93;
-  --color-line: rgb(243 246 251 / 0.1);
+  /* 5.4:1 on --color-night: muted, still readable as body text */
+  --color-ink-3: #7f90a8;
+  --color-line: rgb(243 246 251 / 0.09);
+  --color-line-2: rgb(243 246 251 / 0.16);
   --color-mark: #2563eb;
   --color-mark-2: #60a5fa;
   --color-sand: #e8d5b0;
   --color-sand-2: #c9a96e;
   /* the same gold, deep enough to read on the light rooms (5.1:1 on --color-day) */
   --color-sand-3: #8a6a2b;
-  --color-day: #f4f6fa;
-  --color-day-2: #e6ebf3;
+  --color-day: #f6f7f9;
   --color-day-ink: #0b1c33;
   --color-day-ink-2: #4d5d73;
+  --color-day-line: rgb(11 28 51 / 0.09);
+  --color-day-line-2: rgb(11 28 51 / 0.16);
 
-  --font-display: var(--font-unbounded), "Unbounded", "Manrope", system-ui, sans-serif;
-  --font-sans: var(--font-manrope), "Manrope", "Segoe UI", system-ui, sans-serif;
+  /* Unbounded is the brand lockup only; the interface is set in Inter. */
+  --font-brand: var(--font-unbounded), "Unbounded", system-ui, sans-serif;
+  --font-display: var(--font-inter-tight), "Inter Tight", var(--font-inter), "Inter", system-ui, sans-serif;
+  --font-sans: var(--font-inter), "Inter", "Segoe UI", system-ui, sans-serif;
   --font-serif: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
   --ease-in-out-expo: cubic-bezier(0.87, 0, 0.13, 1);
 
-  --radius-tile: 1.5rem;
+  --radius-tile: 0.875rem;
+  --radius-btn: 0.625rem;
+  --radius-field: 0.625rem;
   --radius-pill: 999px;
 }
 
 :root {
   color-scheme: dark;
-  --shell: 76rem; /* 1216px, same shell as avenir.uz */
+  --shell: 74rem; /* 1184px of content, gutters outside it */
   --gutter: clamp(1.25rem, 4vw, 2.5rem);
-  --header-h: 4.5rem;
+  --header-h: 4rem;
+  /* One vertical rhythm for every chapter, and one gap under every section head. */
+  --section-y: clamp(4.5rem, 2.5rem + 6vw, 7.5rem);
+  --head-gap: clamp(2.5rem, 1.6rem + 3vw, 4rem);
 }
 
 /* ---------- Base (layered so utilities can override) ------------------- */
@@ -57,19 +73,25 @@
   body {
     min-height: 100svh;
     overflow-x: clip;
-    font-size: 1.0625rem;
-    line-height: 1.6;
+    font-size: 1rem;
+    line-height: 1.65;
+    font-feature-settings: "cv05" 1; /* single-storey l with a tail: cleaner at small sizes */
   }
 
   ::selection {
     background: var(--color-mark);
-    color: var(--color-ink);
+    color: #fff;
   }
 
+  /* One focus ring everywhere: 2px of the accent plus a 2px gap, so it reads
+     against both the night rooms and the light ones (WCAG 2.2 focus appearance). */
   :focus-visible {
     outline: 2px solid var(--color-mark-2);
-    outline-offset: 3px;
-    border-radius: 4px;
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+  .day :focus-visible {
+    outline-color: var(--color-mark);
   }
 
   a {
@@ -139,274 +161,412 @@
     width: min(100% - 2 * var(--gutter), var(--shell));
     margin-inline: auto;
   }
+  /* Every chapter breathes on the same rhythm, and every section head sits
+     the same distance above its content. */
+  .section-y {
+    padding-block: var(--section-y);
+  }
+  .after-head {
+    margin-top: var(--head-gap);
+  }
 
-  /* Type scale. Display: Unbounded, wide geometric, tight tracking.
-     Body: Manrope, generous leading. Accent: Cormorant Garamond italic. */
+  /* ---------- Type scale ------------------------------------------------
+     One modular ramp (≈1.25) shared by both rooms. Display sizes are set in
+     Inter Tight with optical tracking that tightens as the size grows; body
+     copy is Inter. The italic serif is the editorial accent only — an eyebrow
+     rule and the big figures — and it never competes with a heading again.
+  --------------------------------------------------------------------- */
   .t-display {
     font-family: var(--font-display);
     font-weight: 600;
-    font-size: clamp(2.05rem, 1rem + 3.4vw, 4.3rem);
-    line-height: 1.04;
-    letter-spacing: -0.028em;
+    font-size: clamp(2.125rem, 1.35rem + 2.6vw, 3.5rem);
+    line-height: 1.06;
+    letter-spacing: -0.032em;
     text-wrap: balance;
   }
   .t-h2 {
     font-family: var(--font-display);
     font-weight: 600;
-    font-size: clamp(1.7rem, 0.9rem + 2.4vw, 3rem);
-    line-height: 1.06;
-    letter-spacing: -0.024em;
+    font-size: clamp(1.75rem, 1.25rem + 1.6vw, 2.5rem);
+    line-height: 1.12;
+    letter-spacing: -0.028em;
     text-wrap: balance;
   }
   .t-h3 {
     font-family: var(--font-display);
-    font-weight: 500;
-    font-size: clamp(1.15rem, 0.95rem + 0.6vw, 1.5rem);
-    line-height: 1.15;
-    letter-spacing: -0.015em;
+    font-weight: 600;
+    font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem);
+    line-height: 1.35;
+    letter-spacing: -0.014em;
+  }
+  /* one step up from h3, for the lead card in a bento and the spotlight chapters */
+  .t-h3-lg {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.375rem, 1.1rem + 0.9vw, 1.875rem);
+    line-height: 1.2;
+    letter-spacing: -0.024em;
+    text-wrap: balance;
   }
   .t-lead {
-    font-size: clamp(1.05rem, 0.95rem + 0.4vw, 1.25rem);
-    line-height: 1.55;
+    font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem);
+    line-height: 1.6;
     color: var(--color-ink-2);
     text-wrap: pretty;
-    max-width: 34rem;
+    max-width: 36rem;
   }
   .t-small {
     font-size: 0.875rem;
-    line-height: 1.5;
+    line-height: 1.55;
+  }
+  /* all-caps micro label: nav meta, counters, column headers */
+  .t-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
   }
   .t-num {
     font-variant-numeric: tabular-nums;
     font-feature-settings: "tnum" 1;
     letter-spacing: -0.01em;
   }
+  /* The eyebrow: a short rule, then the italic serif. Small on purpose — it
+     introduces the heading instead of shouting over it. */
   .t-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
     font-family: var(--font-serif);
     font-style: italic;
     font-weight: 500;
-    font-size: clamp(1.2rem, 1rem + 0.5vw, 1.5rem);
-    line-height: 1.2;
+    font-size: 1.0625rem;
+    line-height: 1.3;
     letter-spacing: 0.01em;
-    color: var(--color-sand);
+    color: var(--color-sand-2);
   }
-  .t-eyebrow-day {
-    font-family: var(--font-serif);
-    font-style: italic;
-    font-weight: 500;
-    font-size: 1.2rem;
-    line-height: 1.2;
-    color: var(--color-mark);
+  .t-eyebrow::before {
+    content: "";
+    flex: none;
+    width: 1.75rem;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.6;
+  }
+  .t-eyebrow--center {
+    justify-content: center;
   }
   .t-figure {
     font-family: var(--font-serif);
     font-style: italic;
     font-weight: 500;
-    font-size: clamp(4rem, 3rem + 3vw, 6.5rem);
-    line-height: 0.9;
+    font-size: clamp(3.25rem, 2.5rem + 2.2vw, 4.75rem);
+    line-height: 0.92;
     letter-spacing: -0.02em;
     color: var(--color-sand);
     font-variant-numeric: lining-nums;
   }
   .t-figure__unit {
     display: block;
-    margin-top: 0.5rem;
+    margin-top: 0.55rem;
     font-family: var(--font-sans);
     font-style: normal;
     font-weight: 500;
-    font-size: 0.95rem;
-    letter-spacing: 0;
-    color: var(--color-ink-2);
+    font-size: 0.8125rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
   }
   .t-figure-sm {
     font-family: var(--font-serif);
     font-style: italic;
     font-weight: 600;
-    font-size: 1.75rem;
+    font-size: 1.5rem;
     line-height: 1;
-    color: var(--color-mark);
+    color: var(--color-sand-2);
   }
   .split-line {
     padding-bottom: 0.08em;
     margin-bottom: -0.08em;
   }
 
-  /* Buttons: solid (the one action) and quiet (everything else). */
+  /* ---------- Buttons ---------------------------------------------------
+     Three ranks, one geometry: solid (the single action on a screen), quiet
+     (everything secondary) and day (the same pair inverted for the light
+     rooms). 44px tall so they clear the touch minimum, a 10px radius rather
+     than a pill, and no glow — the weight difference does the work.
+  --------------------------------------------------------------------- */
   .btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.6rem;
-    height: 3.25rem;
-    padding-inline: 1.5rem;
-    border-radius: var(--radius-pill);
+    justify-content: center;
+    gap: 0.5rem;
+    height: 2.75rem;
+    padding-inline: 1.125rem;
+    border-radius: var(--radius-btn);
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.9375rem;
+    letter-spacing: -0.006em;
     white-space: nowrap;
     transition:
-      background-color 0.35s var(--ease-out-quart),
-      box-shadow 0.5s var(--ease-out-expo),
-      color 0.35s var(--ease-out-quart);
-    will-change: transform;
+      background-color 0.2s var(--ease-out-quart),
+      box-shadow 0.2s var(--ease-out-quart),
+      color 0.2s var(--ease-out-quart);
+  }
+  .btn svg {
+    flex: none;
+    transition: transform 0.35s var(--ease-out-expo);
+  }
+  /* the arrow steps forward — the one motion a button makes */
+  .btn:hover svg {
+    transform: translateX(2px);
   }
   .btn-solid {
     background: var(--color-mark);
     color: #fff;
     box-shadow:
-      0 0 0 0 rgb(37 99 235 / 0),
-      0 10px 30px -12px rgb(37 99 235 / 0.7);
+      inset 0 1px 0 0 rgb(255 255 255 / 0.18),
+      0 1px 2px 0 rgb(2 16 31 / 0.4);
   }
   .btn-solid:hover {
-    background: #2f6ff0;
-    box-shadow:
-      0 0 0 6px rgb(37 99 235 / 0.16),
-      0 14px 36px -12px rgb(37 99 235 / 0.9);
+    background: #3b74ee;
   }
-  /* a light passes over the primary button on hover */
-  .btn-solid {
-    position: relative;
-    overflow: hidden;
-    isolation: isolate;
-  }
-  .btn-solid::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.35) 50%, transparent 70%);
-    transform: translateX(-120%);
-    pointer-events: none;
-  }
-  .btn-solid:hover::after {
-    animation: btn-shine 0.9s var(--ease-out-expo) forwards;
-  }
-  @keyframes btn-shine {
-    to {
-      transform: translateX(120%);
-    }
+  .btn-solid:active {
+    background: #1d4fd0;
   }
   .btn-quiet {
-    background: rgb(243 246 251 / 0.06);
+    background: rgb(243 246 251 / 0.04);
     color: var(--color-ink);
-    box-shadow: inset 0 0 0 1px rgb(243 246 251 / 0.14);
+    box-shadow: inset 0 0 0 1px var(--color-line-2);
   }
   .btn-quiet:hover {
-    background: rgb(243 246 251 / 0.11);
+    background: rgb(243 246 251 / 0.09);
   }
   .btn-sm {
-    height: 2.5rem;
-    padding-inline: 1.1rem;
-    font-size: 0.9375rem;
+    height: 2.25rem;
+    padding-inline: 0.875rem;
+    font-size: 0.875rem;
+    border-radius: 0.5rem;
   }
   .btn-day {
     background: var(--color-day-ink);
     color: #fff;
+    box-shadow: 0 1px 2px 0 rgb(11 28 51 / 0.24);
   }
   .btn-day:hover {
-    background: #14294a;
+    background: #16304f;
+  }
+  .btn-day-quiet {
+    background: transparent;
+    color: var(--color-day-ink);
+    box-shadow: inset 0 0 0 1px var(--color-day-line-2);
+  }
+  .btn-day-quiet:hover {
+    background: rgb(11 28 51 / 0.04);
   }
 
-  /* Chips and payment rails */
+  /* Chips: pills on purpose, so a tag never reads as a button. */
   .chip {
     display: inline-flex;
     align-items: center;
     border-radius: var(--radius-pill);
-    padding: 0.4rem 0.85rem;
-    font-size: 0.85rem;
+    padding: 0.3rem 0.7rem;
+    font-size: 0.8125rem;
+    line-height: 1.4;
     color: var(--color-ink-2);
-    background: rgb(243 246 251 / 0.05);
-    box-shadow: inset 0 0 0 1px rgb(243 246 251 / 0.1);
+    background: rgb(243 246 251 / 0.04);
+    box-shadow: inset 0 0 0 1px var(--color-line);
   }
   .chip--button {
+    min-height: 2rem;
     transition:
-      background-color 0.3s var(--ease-out-quart),
-      color 0.3s var(--ease-out-quart);
+      background-color 0.2s var(--ease-out-quart),
+      box-shadow 0.2s var(--ease-out-quart),
+      color 0.2s var(--ease-out-quart);
   }
   .chip--button:hover {
-    background: rgb(243 246 251 / 0.11);
+    background: rgb(243 246 251 / 0.09);
+    box-shadow: inset 0 0 0 1px var(--color-line-2);
     color: var(--color-ink);
   }
+  /* Payment rails: set in the interface font, sized like a caption, not a badge. */
   .pay {
     display: inline-flex;
     align-items: center;
-    height: 2.4rem;
-    padding-inline: 1rem;
-    border-radius: 0.7rem;
-    font-family: var(--font-display);
+    height: 2rem;
+    padding-inline: 0.75rem;
+    border-radius: 0.5rem;
     font-weight: 600;
-    font-size: 0.9rem;
-    letter-spacing: -0.01em;
-    color: var(--color-ink);
-    background: linear-gradient(180deg, rgb(243 246 251 / 0.1), rgb(243 246 251 / 0.04));
-    box-shadow: inset 0 0 0 1px rgb(243 246 251 / 0.12);
+    font-size: 0.8125rem;
+    letter-spacing: -0.006em;
+    color: var(--color-ink-2);
+    background: rgb(243 246 251 / 0.04);
+    box-shadow: inset 0 0 0 1px var(--color-line);
+  }
+  .day .pay {
+    color: var(--color-day-ink-2);
+    background: rgb(11 28 51 / 0.035);
+    box-shadow: inset 0 0 0 1px var(--color-day-line);
   }
 
-  /* Glow tiles: 1px gradient border via mask-composite that lights up on
-     hover. --gx/--gy set the glow origin; JS moves it under the pointer. */
-  .tile {
-    --gx: 20%;
-    --gy: 0%;
+  /* ---------- Navigation ------------------------------------------------
+     Desktop links sit in a row of quiet labels; the chapter being read is the
+     only one at full strength and carries a rule under it. The sheet on small
+     screens is the same list at reading size, one row per hairline.
+  --------------------------------------------------------------------- */
+  .nav-link {
     position: relative;
-    isolation: isolate;
-    border-radius: var(--radius-tile);
-    background:
-      radial-gradient(60% 55% at var(--gx) var(--gy), rgb(37 99 235 / 0.24), transparent 70%),
-      radial-gradient(50% 45% at calc(100% - var(--gx)) calc(100% - var(--gy)), rgb(201 169 110 / 0.08), transparent 70%),
-      linear-gradient(180deg, rgb(10 47 82 / 0.55), rgb(5 35 63 / 0.35));
-    transform-style: preserve-3d;
-    transition: box-shadow 0.7s var(--ease-out-expo);
+    display: inline-flex;
+    align-items: center;
+    height: 2.25rem;
+    padding-inline: 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-ink-3);
+    transition: color 0.2s var(--ease-out-quart);
   }
-  .tile::before {
+  .nav-link:hover {
+    color: var(--color-ink);
+  }
+  .nav-link::after {
     content: "";
     position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(
-      150deg,
-      rgb(96 165 250 / 0.55),
-      rgb(243 246 251 / 0.12) 40%,
-      rgb(243 246 251 / 0.06) 70%,
-      rgb(37 99 235 / 0.35)
-    );
-    -webkit-mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    opacity: 0.7;
-    transition: opacity 0.6s var(--ease-out-expo);
-    pointer-events: none;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0.3rem;
+    height: 1.5px;
+    border-radius: 2px;
+    background: var(--color-mark-2);
+    transform: scaleX(0);
+    transform-origin: 50% 50%;
+    transition:
+      transform 0.35s var(--ease-out-expo),
+      opacity 0.2s var(--ease-out-quart);
+    opacity: 0;
   }
-  .tile:hover {
-    box-shadow: 0 30px 60px -30px rgb(37 99 235 / 0.55);
+  .nav-link[aria-current] {
+    color: var(--color-ink);
   }
-  .tile:hover::before {
+  .nav-link[aria-current]::after {
+    transform: scaleX(1);
     opacity: 1;
   }
 
-  /* Light tiles (catalog and arrivals chapters) */
-  .tile-day {
+  .nav-sheet-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 3.5rem;
+    padding-block: 0.5rem;
+    border-bottom: 1px solid var(--color-line);
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--color-ink-2);
+    transition: color 0.2s var(--ease-out-quart);
+  }
+  .nav-sheet-link:hover,
+  .nav-sheet-link[aria-current] {
+    color: var(--color-ink);
+  }
+
+  .footer-link {
+    font-size: 0.9375rem;
+    color: var(--color-ink-2);
+    transition: color 0.2s var(--ease-out-quart);
+  }
+  .footer-link:hover {
+    color: var(--color-ink);
+  }
+
+  /* Menu button: two bars that cross. 44px of target around a 16px mark. */
+  .nav-toggle {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-right: -0.5rem;
+    border-radius: var(--radius-btn);
+    color: var(--color-ink);
+    transition: background-color 0.2s var(--ease-out-quart);
+  }
+  .nav-toggle:hover {
+    background: rgb(243 246 251 / 0.07);
+  }
+  .nav-toggle__bars {
+    position: relative;
+    display: block;
+    width: 1.125rem;
+    height: 0.75rem;
+  }
+  .nav-toggle__bars > span {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 1.5px;
+    border-radius: 2px;
+    background: currentColor;
+    transition: transform 0.35s var(--ease-out-expo);
+  }
+  .nav-toggle__bars > span:first-child {
+    top: 0;
+  }
+  .nav-toggle__bars > span:last-child {
+    bottom: 0;
+  }
+  .nav-toggle__bars.is-open > span:first-child {
+    transform: translateY(0.375rem) rotate(45deg);
+  }
+  .nav-toggle__bars.is-open > span:last-child {
+    transform: translateY(-0.375rem) rotate(-45deg);
+  }
+
+  /* ---------- Surfaces --------------------------------------------------
+     A card is a flat surface with a hairline, not a gradient. The only light
+     in it is one faint pool that follows the pointer (--gx/--gy, set by
+     Motion.tsx); on hover the hairline brightens. Nothing floats.
+  --------------------------------------------------------------------- */
+  .tile {
     --gx: 50%;
     --gy: 0%;
     position: relative;
     isolation: isolate;
     border-radius: var(--radius-tile);
     background:
-      radial-gradient(70% 60% at var(--gx) var(--gy), rgb(37 99 235 / 0.1), transparent 70%),
-      radial-gradient(50% 45% at calc(100% - var(--gx)) calc(100% - var(--gy)), rgb(201 169 110 / 0.09), transparent 70%),
-      #ffffff;
-    box-shadow:
-      inset 0 0 0 1px rgb(11 28 51 / 0.07),
-      0 30px 60px -45px rgb(11 28 51 / 0.35);
+      radial-gradient(90% 80% at var(--gx) var(--gy), rgb(96 165 250 / 0.07), transparent 62%),
+      var(--color-surface);
+    box-shadow: inset 0 0 0 1px var(--color-line);
     transform-style: preserve-3d;
-    transition: box-shadow 0.7s var(--ease-out-expo);
+    transition: box-shadow 0.35s var(--ease-out-quart);
+  }
+  .tile:hover {
+    box-shadow: inset 0 0 0 1px var(--color-line-2);
+  }
+
+  /* Light tiles: white on the light room's off-white, separated by a hairline
+     and the faintest lift — not by a drop shadow. */
+  .tile-day {
+    --gx: 50%;
+    --gy: 0%;
+    position: relative;
+    isolation: isolate;
+    border-radius: var(--radius-tile);
+    background: #fff;
+    box-shadow:
+      inset 0 0 0 1px var(--color-day-line),
+      0 1px 2px 0 rgb(11 28 51 / 0.04);
+    transform-style: preserve-3d;
+    transition: box-shadow 0.35s var(--ease-out-quart);
   }
   .tile-day:hover {
     box-shadow:
-      inset 0 0 0 1px rgb(37 99 235 / 0.25),
-      0 40px 80px -40px rgb(37 99 235 / 0.35);
+      inset 0 0 0 1px var(--color-day-line-2),
+      0 12px 28px -18px rgb(11 28 51 / 0.28);
   }
   .tile-day__render {
     --tx: 0px;
@@ -423,7 +583,7 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: linear-gradient(115deg, transparent 38%, rgb(255 255 255 / 0.65) 50%, transparent 62%);
+    background: linear-gradient(115deg, transparent 40%, rgb(255 255 255 / 0.32) 50%, transparent 60%);
     background-size: 260% 100%;
     background-position: 120% 0;
     -webkit-mask: var(--mask) center / contain no-repeat;
@@ -464,107 +624,38 @@
   .group:hover .link-day::after {
     transform: scaleX(1);
   }
+  /* The dark door inside a light room: the one place a surface inverts. */
   .tile-cta {
+    position: relative;
     border-radius: var(--radius-tile);
-    background:
-      radial-gradient(80% 70% at 100% 100%, rgb(37 99 235 / 0.35), transparent 70%),
-      linear-gradient(160deg, #0a2f52, #061a31);
+    background: var(--color-night-2);
     color: var(--color-ink);
-    box-shadow: 0 40px 80px -40px rgb(11 28 51 / 0.6);
+    box-shadow: inset 0 0 0 1px rgb(243 246 251 / 0.08);
+    transition: background-color 0.3s var(--ease-out-quart);
+  }
+  .tile-cta:hover {
+    background: #08203c;
   }
 
-  /* Shine border (adapted from Magic UI's shine-border) */
-  .shine {
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1px;
-    background-image: radial-gradient(
-      transparent,
-      transparent,
-      var(--color-mark-2),
-      var(--color-sand),
-      transparent,
-      transparent
-    );
-    background-size: 300% 300%;
-    -webkit-mask:
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
-    mask:
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-    animation: shine 14s linear infinite;
-    opacity: 0.9;
-  }
-  @keyframes shine {
-    0% {
-      background-position: 0% 0%;
-    }
-    50% {
-      background-position: 100% 100%;
-    }
-    100% {
-      background-position: 0% 0%;
-    }
-  }
-
-  /* Border beam (adapted from Magic UI's border-beam): a light runs around the edge */
-  .beam::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1px;
-    -webkit-mask:
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
-    mask:
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    background: conic-gradient(
-      from var(--beam-angle, 0deg),
-      transparent 0 70%,
-      var(--color-mark-2) 85%,
-      var(--color-sand) 92%,
-      transparent 100%
-    );
-    pointer-events: none;
-    animation: beam 7s linear infinite;
-  }
-  @keyframes beam {
-    to {
-      --beam-angle: 360deg;
-    }
-  }
-
-  .rule-top {
-    border-top: 1px solid var(--color-line);
-  }
 
   /* ---------- Hero: copy on top, showroom band below ------------------- */
   .hero {
     position: relative;
     min-height: 100svh;
     overflow: clip;
+    /* one pool of light under the devices, nothing else */
     background:
-      radial-gradient(60% 45% at 50% 100%, rgb(37 99 235 / 0.14), transparent 70%),
+      radial-gradient(55% 40% at 50% 100%, rgb(37 99 235 / 0.13), transparent 72%),
       var(--color-night);
   }
   .hero__aurora {
     position: absolute;
     inset: -20%;
     pointer-events: none;
-    /* cool blue on the left, a warm sand answer on the right: the two accents of the palette */
+    /* a single cool wash behind the copy, and one warm answer far right */
     background:
-      radial-gradient(30% 32% at 30% 35%, rgb(37 99 235 / 0.22), transparent 72%),
-      radial-gradient(24% 28% at 72% 30%, rgb(96 165 250 / 0.12), transparent 72%),
-      radial-gradient(26% 30% at 82% 78%, rgb(201 169 110 / 0.11), transparent 72%);
+      radial-gradient(32% 34% at 26% 32%, rgb(37 99 235 / 0.14), transparent 72%),
+      radial-gradient(26% 30% at 84% 74%, rgb(201 169 110 / 0.06), transparent 72%);
     animation: aurora 18s var(--ease-in-out-expo) infinite alternate;
   }
   @keyframes aurora {
@@ -582,11 +673,11 @@
     pointer-events: none;
     background: linear-gradient(
       100deg,
-      transparent 38%,
-      rgb(147 197 253 / 0.07) 46%,
-      rgb(219 234 254 / 0.16) 50%,
-      rgb(147 197 253 / 0.07) 54%,
-      transparent 62%
+      transparent 40%,
+      rgb(147 197 253 / 0.04) 47%,
+      rgb(219 234 254 / 0.09) 50%,
+      rgb(147 197 253 / 0.04) 53%,
+      transparent 60%
     );
     transform: translate3d(-140%, 0, 0);
     will-change: transform;
@@ -609,21 +700,36 @@
     pointer-events: auto;
   }
   .hero__copy {
-    max-width: 66rem;
+    max-width: 40rem;
   }
   .hero .t-display {
-    font-size: clamp(1.9rem, 0.8rem + 2.7vw, 3.3rem);
+    font-size: clamp(1.875rem, 1.05rem + 2.5vw, 3.25rem);
   }
+  .hero .t-lead {
+    max-width: 32rem;
+  }
+  /* The moment caption. On phones it is a slim bar the width of the shell, so
+     it reads as a caption laid over the showroom instead of colliding with the
+     device; from lg it becomes a card in the corner. */
   .hero__label {
     grid-row: 3;
-    justify-self: start;
+    justify-self: stretch;
   }
-  @media (max-width: 40rem) {
-    .hero__copy .btn {
-      height: 2.75rem;
-      padding-inline: 1.1rem;
-      font-size: 0.95rem;
-    }
+  .hero__hint {
+    grid-row: 3;
+    justify-self: start;
+    padding-bottom: 0.75rem;
+  }
+  .hero__label-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    border-radius: var(--radius-tile);
+    border: 1px solid var(--color-line);
+    background: rgb(2 16 31 / 0.72);
+    padding: 0.75rem 0.875rem 0.75rem 1rem;
+    backdrop-filter: blur(14px);
   }
   @media (min-width: 64rem) {
     .hero__grid {
@@ -632,6 +738,11 @@
     }
     .hero__label {
       justify-self: end;
+      min-width: 23rem;
+    }
+    .hero__label-card {
+      align-items: flex-end;
+      padding: 1rem 1rem 1rem 1.25rem;
     }
   }
   /* copy stays hidden until the client choreography runs */
@@ -652,13 +763,13 @@
   .marquee {
     overflow: hidden;
     border-block: 1px solid var(--color-line);
-    background: rgb(6 26 49 / 0.5);
-    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    background: rgb(6 26 49 / 0.35);
+    mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
   }
   .marquee__track {
     display: flex;
     width: max-content;
-    animation: marquee 48s linear infinite;
+    animation: marquee 60s linear infinite;
   }
   .marquee:hover .marquee__track {
     animation-play-state: paused;
@@ -666,21 +777,25 @@
   .marquee__row {
     display: flex;
     align-items: center;
-    padding-block: 0.9rem;
+    padding-block: 0.8rem;
   }
   .marquee__item {
     display: inline-flex;
     align-items: center;
-    gap: 0.9rem;
-    padding-inline: 1.4rem;
+    gap: 1.25rem;
+    padding-inline: 1.25rem;
     white-space: nowrap;
-    font-size: 0.95rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-ink-2);
   }
+  /* a small dot between entries, not a decorated star */
   .marquee__mark {
-    width: 0.8rem;
-    height: 0.8rem;
-    color: var(--color-sand-2);
-    margin-left: 0.5rem;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--color-sand-2);
+    opacity: 0.75;
   }
   @keyframes marquee {
     to {
@@ -691,7 +806,7 @@
   /* ---------- Brand lockup (the company logo, static) ------------------ */
   .brand {
     display: block;
-    height: 48px;
+    height: 40px;
     width: auto;
     color: var(--color-ink);
     overflow: visible;
@@ -710,9 +825,11 @@
   .brand__star {
     fill: currentColor;
   }
+  /* Unbounded stays here and only here: the wordmark is the brand, the
+     interface around it is set in Inter. */
   .brand__word {
     fill: currentColor;
-    font-family: var(--font-display);
+    font-family: var(--font-brand);
     font-weight: 600;
     font-size: 21px;
     letter-spacing: 0.1em;
@@ -723,7 +840,7 @@
   }
   @media (max-width: 40rem) {
     .brand {
-      height: 40px;
+      height: 34px;
     }
   }
 
@@ -1030,29 +1147,17 @@
 
   /* ---------- Spotlight chapter ---------------------------------------- */
   .spot {
-    background:
-      radial-gradient(50% 40% at 25% 40%, rgb(37 99 235 / 0.16), transparent 70%),
-      var(--color-night);
+    background: var(--color-night);
   }
+  /* one pool of light under the turntable — the room's only light source */
   .spot__glow {
     position: absolute;
-    left: 5%;
-    top: 30%;
-    width: 40%;
+    left: 2%;
+    top: 34%;
+    width: 42%;
     aspect-ratio: 1;
     border-radius: 50%;
-    background: radial-gradient(circle, rgb(96 165 250 / 0.22), rgb(37 99 235 / 0.08) 45%, transparent 70%);
-    pointer-events: none;
-  }
-  .spot::after {
-    content: "";
-    position: absolute;
-    right: -10%;
-    bottom: 5%;
-    width: 36%;
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgb(201 169 110 / 0.1), transparent 68%);
+    background: radial-gradient(circle, rgb(96 165 250 / 0.14), rgb(37 99 235 / 0.05) 45%, transparent 70%);
     pointer-events: none;
   }
   .spot__render {
@@ -1079,12 +1184,12 @@
   /* ---------- Final CTA orb -------------------------------------------- */
   .cta__orb {
     position: absolute;
-    right: -12%;
+    right: -22%;
     top: 50%;
-    width: 48%;
+    width: 70%;
     aspect-ratio: 1;
     border-radius: 50%;
-    background: radial-gradient(circle at 40% 40%, rgb(96 165 250 / 0.4), rgb(37 99 235 / 0.16) 45%, transparent 72%);
+    background: radial-gradient(circle at 45% 45%, rgb(96 165 250 / 0.12), rgb(37 99 235 / 0.05) 40%, transparent 66%);
     transform: translateY(-50%);
     animation: orb 9s var(--ease-in-out-expo) infinite alternate;
     pointer-events: none;
@@ -1101,14 +1206,11 @@
   /* ---------- Day room (light chapters) ------------------------------- */
   .day {
     position: relative;
-    background:
-      radial-gradient(45% 32% at 92% 0%, rgb(201 169 110 / 0.1), transparent 70%),
-      radial-gradient(40% 30% at 5% 100%, rgb(37 99 235 / 0.06), transparent 70%),
-      var(--color-day);
+    background: var(--color-day);
     color: var(--color-day-ink);
     color-scheme: light;
     /* the dark room above casts a soft shadow into the light one */
-    box-shadow: inset 0 70px 90px -70px rgb(2 16 31 / 0.45);
+    box-shadow: inset 0 40px 60px -60px rgb(2 16 31 / 0.4);
   }
   .day ::selection {
     background: var(--color-day-ink);
@@ -1117,24 +1219,36 @@
   .day .t-lead {
     color: var(--color-day-ink-2);
   }
+  .day .t-label {
+    color: var(--color-day-ink-2);
+  }
   /* the gold editorial voice carries into the light rooms; blue stays the action colour */
   .day .t-eyebrow,
+  .day .t-figure,
   .day .t-figure-sm {
     color: var(--color-sand-3);
+  }
+  .day .t-figure__unit {
+    color: var(--color-day-ink-2);
+  }
+  .day .chip {
+    color: var(--color-day-ink-2);
+    background: rgb(11 28 51 / 0.035);
+    box-shadow: inset 0 0 0 1px var(--color-day-line);
   }
 
   /* ---------- Phone mock ----------------------------------------------- */
   .phone {
-    width: min(100%, 19rem);
+    width: min(100%, 17.5rem);
     aspect-ratio: 9 / 18.5;
-    border-radius: 2.6rem;
+    border-radius: 2.4rem;
     background: #05070c;
     box-shadow:
-      inset 0 0 0 1px rgb(255 255 255 / 0.12),
-      0 40px 80px -30px rgb(11 28 51 / 0.55),
-      0 0 0 8px #0b1220,
-      0 0 0 9px rgb(255 255 255 / 0.08);
-    padding: 0.9rem;
+      inset 0 0 0 1px rgb(255 255 255 / 0.1),
+      0 30px 60px -32px rgb(11 28 51 / 0.45),
+      0 0 0 7px #0b1220,
+      0 0 0 8px rgb(255 255 255 / 0.07);
+    padding: 0.8rem;
     color: var(--color-ink);
     color-scheme: dark;
   }
@@ -1155,23 +1269,66 @@
   details.faq > summary::-webkit-details-marker {
     display: none;
   }
+  details.faq {
+    transition: background-color 0.3s var(--ease-out-quart);
+  }
   details.faq .faq__icon {
     transition:
-      transform 0.5s var(--ease-out-expo),
-      background-color 0.4s var(--ease-out-quart);
+      transform 0.4s var(--ease-out-expo),
+      background-color 0.3s var(--ease-out-quart),
+      color 0.3s var(--ease-out-quart);
   }
   details.faq[open] .faq__icon {
     transform: rotate(45deg);
     background: var(--color-mark);
+    color: #fff;
   }
-  details.faq > summary .t-h3 {
-    transition: color 0.4s var(--ease-out-quart);
+  details.faq:hover > summary .faq__n,
+  details.faq[open] > summary .faq__n {
+    color: var(--color-sand-2);
   }
-  details.faq[open] > summary .t-h3 {
-    color: var(--color-sand);
+  details.faq:hover .faq__icon {
+    background: rgb(243 246 251 / 0.1);
+    color: var(--color-ink);
   }
   .faq__content {
     overflow: hidden;
+  }
+
+  /* ---------- Fields ----------------------------------------------------
+     One field style for every input on the page: a flat surface, a hairline
+     that becomes the accent on focus, and a label that stays visible.
+  --------------------------------------------------------------------- */
+  .field {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-radius: var(--radius-field);
+    background: rgb(2 16 31 / 0.6);
+    padding: 0.75rem 0.9rem;
+    box-shadow: inset 0 0 0 1px var(--color-line-2);
+    transition: box-shadow 0.2s var(--ease-out-quart);
+  }
+  .field:focus-within {
+    box-shadow:
+      inset 0 0 0 1px var(--color-mark-2),
+      0 0 0 3px rgb(37 99 235 / 0.22);
+  }
+  .field input {
+    width: 100%;
+    min-width: 0;
+    background: transparent;
+    font-size: 1rem;
+    color: var(--color-ink);
+  }
+  .field input::placeholder {
+    color: var(--color-ink-3);
+  }
+  .field input:focus {
+    outline: none;
+  }
+  .field input::-webkit-search-cancel-button {
+    display: none;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -1180,17 +1337,8 @@
     }
     .hero__aurora,
     .cta__orb,
-    .marquee__track,
-    .shine,
-    .beam::after {
+    .marquee__track {
       animation: none;
     }
   }
-}
-
-/* Registered so the beam angle can animate (must live outside @layer). */
-@property --beam-angle {
-  syntax: "<angle>";
-  inherits: false;
-  initial-value: 0deg;
 }

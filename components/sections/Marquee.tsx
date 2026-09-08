@@ -6,10 +6,8 @@ export function Marquee({ t }: { t: Dictionary["marquee"] }) {
     <>
       {t.items.map((item) => (
         <span key={item} className="marquee__item">
-          <span className="font-display font-medium">{item}</span>
-          <svg className="marquee__mark" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 4 Q12 12 20 12 Q12 12 12 20 Q12 12 4 12 Q12 12 12 4 Z" fill="currentColor" />
-          </svg>
+          {item}
+          <span className="marquee__mark" aria-hidden="true" />
         </span>
       ))}
     </>

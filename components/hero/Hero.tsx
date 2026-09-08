@@ -151,7 +151,7 @@ export function Hero({ t, moments }: { t: Dictionary["hero"]; moments: HeroMomen
           <p className="t-lead mt-5" data-load="lead">
             {t.lead}
           </p>
-          <div className="mt-7 flex flex-wrap items-center gap-3" data-load="cta">
+          <div className="mt-8 flex flex-wrap items-center gap-3" data-load="cta">
             <a href={links.contact} target="_blank" rel="noopener" className="btn btn-solid">
               {t.primary}
               <ArrowIcon />
@@ -162,18 +162,25 @@ export function Hero({ t, moments }: { t: Dictionary["hero"]; moments: HeroMomen
           </div>
         </div>
 
+        {/* row 3 of the hero grid: the scroll hint on the left, the moment caption on the right */}
+        <div
+          data-load="hint"
+          className="t-label hero__hint pointer-events-none hidden items-center gap-3 self-end transition-opacity duration-700 lg:flex"
+          style={{ opacity: started ? 0 : 1 }}
+        >
+          <span className="block h-px w-8 bg-ink-3/50" />
+          {t.scroll}
+        </div>
+
         <div className="hero__label min-w-0" data-load="label">
-          <div
-            className="flex items-end justify-between gap-6 rounded-2xl border border-line bg-night-2/55 px-5 py-4 backdrop-blur-md lg:min-w-[24rem]"
-            aria-live="polite"
-          >
+          <div className="hero__label-card" aria-live="polite">
             <div className="min-w-0">
-              <p className="text-ink-3 t-small">
+              <p className="t-label truncate">
                 <span className="t-num">{counter}</span>
-                <span className="mx-2 opacity-50">·</span>
+                <span className="mx-2 opacity-40">·</span>
                 {moment.note}
               </p>
-              <p className="t-h3 mt-0.5 truncate" key={moment.id}>
+              <p className="t-h3 mt-1 truncate" key={moment.id}>
                 {moment.title}
               </p>
             </div>
@@ -181,27 +188,18 @@ export function Hero({ t, moments }: { t: Dictionary["hero"]; moments: HeroMomen
               {t.look}
             </a>
           </div>
-          <div className="mt-3 flex gap-1.5 px-1" aria-hidden="true">
+          <div className="mt-2.5 flex gap-1.5" aria-hidden="true">
             {moments.map((m, i) => (
               <span
                 key={m.id}
                 className="h-0.5 rounded-full bg-ink transition-[width,opacity] duration-500"
-                style={{ width: i === beat ? "2rem" : "0.75rem", opacity: i === beat ? 1 : 0.3 }}
+                style={{ width: i === beat ? "1.75rem" : "0.625rem", opacity: i === beat ? 1 : 0.28 }}
               />
             ))}
           </div>
         </div>
       </div>
 
-      <div
-        data-load="hint"
-        className="pointer-events-none absolute bottom-6 left-1/2 hidden -translate-x-1/2 items-center gap-3 text-ink-3 t-small transition-opacity duration-700 lg:flex"
-        style={{ opacity: started ? 0 : 1 }}
-      >
-        <span className="block h-px w-10 bg-ink-3/60" />
-        {t.scroll}
-        <span className="block h-px w-10 bg-ink-3/60" />
-      </div>
     </section>
   );
 }

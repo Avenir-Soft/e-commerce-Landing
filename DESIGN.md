@@ -77,6 +77,51 @@ owner to ask for a demo.
   thread blocked 9.2 s → 3.0 s cold, 1.4 s warm; loader leaves at ~3.5–5 s
   instead of 13–16 s.
 
+## The 2026-09-08 redesign (branch `redesign-premium`)
+
+The showroom, the copy, the 3D models, the screens and every link were kept;
+what changed is the visual system underneath them.
+
+- **Type.** Unbounded ran every heading at up to 4.3rem, which read as a
+  display-font template and inverted the hierarchy — a Spotlight chapter title
+  was larger than the H2 above it. Headings are now **Inter Tight**, body copy
+  **Inter**, both a step or two smaller, on one ≈1.25 ramp. Unbounded is kept
+  for the wordmark, so the brand mark is still the brand mark and the interface
+  around it is neutral. The italic serif stayed, but as a small eyebrow behind a
+  rule instead of a 1.5rem line competing with the heading.
+- **Surfaces.** Cards were 24px-radius rectangles carrying two radial washes, a
+  gradient border and an animated `shine` / `beam` edge. They are now flat
+  surfaces at 14px with a hairline (`--color-line`, brightening on hover) and a
+  single faint pool of light that follows the pointer. The `shine` and `beam`
+  effects were removed outright.
+- **Buttons.** Pills 52px tall with a blue glow → 44px, 10px radius, no glow;
+  one solid rank, one quiet rank, the same pair inverted for the light rooms.
+  The arrow steps forward on hover and that is the whole animation. The magnetic
+  pull went from 0.2 to 0.08 of the pointer offset, the tile tilt from 7° to 3°.
+- **Rhythm.** Every chapter now uses `.section-y` and every section head
+  `.after-head`, replacing ad-hoc `py-24 md:py-32` / `mt-12`.
+- **Navigation.** The bar had no active state at all; it now marks the chapter
+  being read (measured against a line 40% down the viewport, because `#why` and
+  `#search` sit between the linked sections and an observer keeps reporting the
+  last one it saw). The mobile menu became a full-height sheet with a proper
+  icon toggle. Note that the sheet is a **sibling** of `<header>`: the bar
+  carries a `backdrop-filter`, which makes it the containing block for any
+  `position: fixed` descendant — inside it the sheet collapsed to 64px.
+- **Decoration.** Two of the hero's three aurora washes, the Spotlight's second
+  glow and most of the CTA orb's opacity are gone; the light rooms lost their
+  two gradient washes entirely.
+- **Fixed on the way.** The Steps phone overflowed the viewport at 390px in its
+  pre-reveal state (`float-in` offset x64 + 5° rotation on a 280px element in a
+  350px column); the bentos dropped to three and six columns at `md`, which is
+  ~235px per column at 768px, so both now switch at `lg` and pair up at `sm`;
+  the decorative mark in the "your brand" tile sat under its own heading on
+  phones.
+- **Left alone deliberately.** `public/screens/*.webp` and `public/renders/*.webp`
+  are captures made when the mocks were set in Manrope/Unbounded, so the demo
+  shop's UI inside the devices still uses those faces. Regenerating them means
+  re-running `screens.mjs` and then `render.mjs`; the mismatch is only visible
+  if you zoom into a device.
+
 ## Concept
 
 **A showroom of the platform, one screen under the light at a time.** The
@@ -150,15 +195,27 @@ soft shadow into the light ones. Both stages hold 60 fps in the test browser.
 | Token | Value | Use |
 | --- | --- | --- |
 | `night` | `#02101F` | page background (Avenir family navy) |
-| `night-2` / `deep` | `#061A31` / `#05233F` | bands, tile bodies |
-| `ink` / `ink-2` / `ink-3` | `#F3F6FB` / `#A9B8CC` / `#6B7C93` | text hierarchy |
-| `mark` / `mark-2` | `#2563EB` / `#60A5FA` | the accent: buttons, glow, light-room eyebrows |
-| `sand` / `sand-2` | `#E8D5B0` / `#C9A96E` | serif accents: eyebrows, figures, open FAQ title |
-| `day` / `day-ink` | `#F4F6FA` / `#0B1C33` | light rooms (features, included, steps) |
+| `night-2` | `#061A31` | bands, the dark door in a light room |
+| `surface` / `surface-2` | `#071B31` / `#0A2440` | raised surfaces on the night rooms: cards, panels, result rows |
+| `ink` / `ink-2` / `ink-3` | `#F3F6FB` / `#A9B8CC` / `#7F90A8` | text hierarchy (ink-3 is 5.4:1 on night) |
+| `line` / `line-2` | white 9% / 16% | hairlines at rest and on hover — how surfaces separate |
+| `mark` / `mark-2` | `#2563EB` / `#60A5FA` | the accent: buttons, focus ring, active nav |
+| `sand` / `sand-2` | `#E8D5B0` / `#C9A96E` | serif accents: eyebrows, figures, FAQ numbers |
+| `day` / `day-ink` | `#F6F7F9` / `#0B1C33` | light rooms (features, included, steps) |
+| `day-line` / `day-line-2` | ink 9% / 16% | the same hairlines in the light rooms |
 
-Type: **Unbounded** (display, 500–600, tracking −0.028em), **Manrope** (body,
-1.0625rem / 1.6) and **Cormorant Garamond italic** (eyebrows, big figures,
-FAQ numbers). All three carry Cyrillic.
+Radii: `--radius-tile` 14px, `--radius-btn` / `--radius-field` 10px, pills only
+for chips and payment rails. Rhythm: `--section-y`
+`clamp(4.5rem, 2.5rem + 6vw, 7.5rem)` on every chapter, `--head-gap`
+`clamp(2.5rem, 1.6rem + 3vw, 4rem)` under every section head, `--shell` 74rem,
+`--header-h` 4rem.
+
+Type: **Inter Tight** (display: h1 up to 3.5rem, h2 2.5rem, h3-lg 1.875rem,
+h3 1.1875rem — weight 600, tracking −0.014 to −0.032em), **Inter** (body,
+1rem / 1.65, plus a 0.75rem uppercase `t-label`), **Cormorant Garamond italic**
+(eyebrows at 1.0625rem behind a short rule, and the big figures) and
+**Unbounded** for the wordmark in `Logo.tsx` and nowhere else. All carry
+Cyrillic except the Unbounded cut, which only ever sets "AVENIR".
 
 Performance budget for the 3D: one render pass, no post-processing, no
 reflections, no transmission materials, DPR capped at 1.25 and lowered by

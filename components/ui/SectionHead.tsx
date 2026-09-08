@@ -13,18 +13,19 @@ export function SectionHead({
   className?: string;
   align?: "left" | "center";
 }) {
+  const centered = align === "center";
   return (
-    <div className={`${align === "center" ? "mx-auto text-center" : ""} max-w-3xl ${className}`}>
+    <div className={`${centered ? "mx-auto text-center" : ""} max-w-2xl ${className}`}>
       {eyebrow && (
-        <p className="t-eyebrow" data-reveal="write">
+        <p className={`t-eyebrow ${centered ? "t-eyebrow--center" : ""}`} data-reveal="write">
           {eyebrow}
         </p>
       )}
-      <h2 id={id} className="t-h2 mt-3" data-split>
+      <h2 id={id} className="t-h2 mt-4" data-split>
         {heading}
       </h2>
       {lead && (
-        <p className={`t-lead mt-4 ${align === "center" ? "mx-auto" : ""}`} data-reveal>
+        <p className={`t-lead mt-4 ${centered ? "mx-auto" : ""}`} data-reveal>
           {lead}
         </p>
       )}

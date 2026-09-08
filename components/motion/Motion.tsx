@@ -100,15 +100,15 @@ export function Motion() {
 
     if (!fine || reduce) return () => cleanups.forEach((fn) => fn());
 
-    // ---- magnetic buttons ----
+    // ---- magnetic buttons: a hint of pull, not a pet that follows the cursor ----
     document.querySelectorAll<HTMLElement>(".btn").forEach((btn) => {
       const onMove = (e: PointerEvent) => {
         const r = btn.getBoundingClientRect();
         const dx = e.clientX - (r.left + r.width / 2);
         const dy = e.clientY - (r.top + r.height / 2);
-        gsap.to(btn, { x: dx * 0.2, y: dy * 0.2, duration: 0.5, ease: "expo.out", overwrite: "auto" });
+        gsap.to(btn, { x: dx * 0.08, y: dy * 0.08, duration: 0.5, ease: "expo.out", overwrite: "auto" });
       };
-      const onLeave = () => gsap.to(btn, { x: 0, y: 0, duration: 0.9, ease: "elastic.out(1, 0.45)", overwrite: "auto" });
+      const onLeave = () => gsap.to(btn, { x: 0, y: 0, duration: 0.6, ease: "expo.out", overwrite: "auto" });
       btn.addEventListener("pointermove", onMove, { passive: true });
       btn.addEventListener("pointerleave", onLeave, { passive: true });
       cleanups.push(() => {
@@ -129,9 +129,9 @@ export function Motion() {
         tile.style.setProperty("--tx", `${((0.5 - px) * 14).toFixed(1)}px`);
         tile.style.setProperty("--ty", `${((0.5 - py) * 10).toFixed(1)}px`);
         gsap.to(tile, {
-          rotateY: (px - 0.5) * 7,
-          rotateX: (0.5 - py) * 7,
-          transformPerspective: 1100,
+          rotateY: (px - 0.5) * 3,
+          rotateX: (0.5 - py) * 3,
+          transformPerspective: 1400,
           duration: 0.6,
           ease: "expo.out",
           overwrite: "auto",

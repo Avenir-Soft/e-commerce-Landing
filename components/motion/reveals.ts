@@ -19,8 +19,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 export type Variant = "rise" | "write" | "clip" | "tick" | "rise-3d" | "slide" | "float-in";
 
-const TILE = "inset(100% 0 0 0 round 1.5rem)";
-const TILE_OPEN = "inset(0% 0 0 0 round 1.5rem)";
+const TILE = "inset(100% 0 0 0 round 0.875rem)";
+const TILE_OPEN = "inset(0% 0 0 0 round 0.875rem)";
 
 const FROM: Record<Variant, gsap.TweenVars> = {
   rise: { opacity: 0, y: 40 },
@@ -29,7 +29,9 @@ const FROM: Record<Variant, gsap.TweenVars> = {
   tick: { opacity: 0, x: -18 },
   "rise-3d": { opacity: 0, y: 50, rotateX: 10, transformPerspective: 900, transformOrigin: "50% 100%" },
   slide: { opacity: 0, x: -36 },
-  "float-in": { opacity: 0, x: 64, rotate: 5, transformOrigin: "50% 100%" },
+  /* keep the offset small: this one runs on the phone mock, which sits inside
+     the shell's gutter on small screens and would otherwise widen the page */
+  "float-in": { opacity: 0, x: 40, rotate: 4, transformOrigin: "50% 100%" },
 };
 
 const TO: Record<Variant, gsap.TweenVars> = {
