@@ -299,10 +299,20 @@ soft shadow into the light ones. Both stages hold 60 fps in the test browser.
 
 ## Screens on the devices
 
-- `components/screens/Screens.tsx` holds HTML mocks of five platform screens
-  for the demo shop "Bahor Market": `home`, `checkout` (phone, 590×1278),
-  `dashboard`, `orders` (laptop, 1600×1000), `editor` (tablet, 1024×1366).
-  They use the landing's own fonts and palette so they read as one product.
+- **`public/screens/*.webp` are photographs of the real platform** (owner,
+  2026-09-08: run the e-commerce locally, put demo data in it, re-shoot the
+  screens). The `AvenirSoftt/E-COMMERCE` stack runs locally under Docker —
+  postgres+pgvector, redis, meilisearch, minio, the FastAPI backend and the
+  Next frontend — seeded with the demo shop the landing advertises, and
+  `C:\Users\mamut\tools\pw\ecom-shots.mjs` shoots the five pages. See
+  **Shooting the real platform** below.
+- `components/screens/Screens.tsx` and the `/dev/screens` route are the HTML
+  mocks those photographs replaced. They are kept as the fallback for when the
+  platform cannot be run, and as the reference for what each screen is meant to
+  say; **they no longer ship**. Do not edit them expecting the site to change.
+  They cover the same five screens for the demo shop "Bahor Market": `home`,
+  `checkout` (phone, 590×1278), `dashboard`, `orders` (laptop, 1600×1000),
+  `editor` (tablet, 1024×1366), in the landing's own fonts and palette.
 - **The goods in them are real** (owner, 2026-09-08: "devicelardagi rasmlarni
   hammasi haqiqiy rasm bo'lishi kerak, saytdan olib qo'y"). Photos, names,
   categories and prices come from the live instance of the platform,
@@ -339,6 +349,48 @@ soft shadow into the light ones. Both stages hold 60 fps in the test browser.
   (blocked in production), at `deviceScaleFactor: 2` and WebP 0.95. Regenerate
   them after editing the mocks — **and then `render.mjs` too**, because
   `public/renders/*.webp` are photographs of the models already wearing them.
+
+### Shooting the real platform
+
+`C:\Users\mamut\tools\pw\ecom-shots.mjs <outDir> <jwt>` photographs the running
+platform at `localhost:3010`. Bring it up from `D:\AvenirOS\E-COMMERCE`:
+
+- `docker network create dokploy-network` once — the committed compose file
+  expects it to exist and publishes no ports of its own (Dokploy puts a reverse
+  proxy in front), so a local `docker-compose.override.yml` maps frontend 3010,
+  API 8000, postgres 5433, MinIO 9000/9001, Meilisearch 7700. **3000 is the ERP
+  and 3002 is this landing.** Both that file and the root `.env` are local only.
+- `NEXT_PUBLIC_API_URL` must stay `/api`. Pointing it at `http://localhost:8000`
+  makes the browser call the API cross-origin and the backend answers
+  "Disallowed CORS origin"; the frontend has its own rewrite proxy for `/api`.
+  It is a build arg, so changing it means rebuilding the frontend image.
+- The demo shop is seeded by `scratchpad/seed_bahor.py`, copied into the
+  container. The repo's own `seed_database.py` fills the catalogue with
+  iPhones, MacBooks and iPads — the "Apple reseller" reading the owner
+  rejected on 2026-09-07 — so this one seeds the same watches, speakers and
+  headphones the landing already shows, priced in UZS, with the photos from
+  `public/shop/`. It also writes a PAID `PaymentTransaction` per order:
+  `_visible_orders_filter` hides an online-payment order until one exists, so
+  without them the admin list and the dashboard read zero. The store name is
+  set to "Bahor Market" through `PUT /api/admin/settings` (its `delivery.zones`
+  are plain strings, not objects).
+- Admin pages need a session. The frontend keeps its JWT in
+  `localStorage.token` and falls back to `POST /api/auth/refresh` when there is
+  no Telegram initdata, so the harness mints an HS256 token
+  (`{sub: "<user id>"}`) with the local `JWT_SECRET_KEY` instead of going
+  through the Telegram login.
+- **The viewports are smaller than the textures they produce** and some shots
+  are scrolled, for the same reason the mocks were typeset large: the admin is
+  a monochrome layout with generous whitespace, and shooting it at 1600px to
+  show it at 500 turns 14px text into grey mush. Only the aspect ratio matters
+  to the 3D material — phone 0.4617, laptop 1.600, tablet 0.750. The admin
+  shell scrolls an inner div, so `window.scrollTo` is a no-op there; the
+  harness finds the tallest scrollable element instead.
+- **Known limit:** even framed this way, the analytics page and the product
+  editor read weakly at hero size — they are low-contrast and low-density. The
+  storefront and the order list survive well. Raised with the owner
+  2026-09-08; the fix that helps both the landing and real users is more
+  density and colour in the admin itself.
 - `DeviceModel` clones each model's display material per instance and puts
   the capture on `map` and `emissiveMap` (`ScreenSpec` in
   `components/hero/DeviceModel.tsx`). Display material names: iPhone
