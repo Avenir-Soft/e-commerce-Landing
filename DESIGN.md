@@ -97,15 +97,24 @@ what changed is the visual system underneath them.
 - **Buttons.** Pills 52px tall with a blue glow → 44px, 10px radius, no glow;
   one solid rank, one quiet rank, the same pair inverted for the light rooms.
   The arrow steps forward on hover and that is the whole animation.
-- **Hover changes light, never geometry** (owner, same day: "elementlar hover
-  bo'lgan boshqa elementlarga ta'sir qilib ular qimilab ketyabti"). Three things
-  moved under the pointer and had to go: the magnetic pull on `.btn`, the 3D
-  tilt on `[data-tilt]`, and the device still that drifted and scaled inside its
-  card. `[data-tilt]` keeps the pointer-following glow, which moves nothing.
-  Measured with `tools/pw/avenir-hover2.mjs`: every hover target now shifts
-  0 elements; the only movement left is the 2px arrow nudge inside the hovered
-  button. The FAQ is the exception that proves the rule — it still opens on
-  hover, but into reserved space (next bullet).
+- **Hover must not move anything the pointer is not on** (owner, same day:
+  "elementlar hover bo'lgan boshqa elementlarga ta'sir qilib ular qimilab
+  ketyabti"). Two effects moved the element under the cursor and had to go: the
+  magnetic pull on `.btn` and the 3D tilt on `[data-tilt]`, which also dragged
+  everything inside a tilted card with it. `[data-tilt]` keeps the
+  pointer-following glow, which moves nothing.
+  The rule is about *reach*, not about motion as such — two hovers still move
+  something, and both are contained:
+  - the feature tiles' device still leans in (`scale(1.045)`, restored after it
+    was removed with the rest; owner: "nega featuresda hover bo'lganda
+    devicelarni yaqinlashishini olib tashlading"). The tile is
+    `overflow: hidden`, so the still grows inside its own card; the `.sheen`
+    carries the same transform or the highlight slides off the silhouette it is
+    masked to. Measured: 2 elements move, both inside the hovered tile, 0
+    outside;
+  - the FAQ still opens on hover, into reserved space (next bullet).
+  Everything else measures 0 with `tools/pw/avenir-hover2.mjs`; the only other
+  movement is the 2px arrow nudge inside the hovered button.
 - **The FAQ keeps hover, and no longer moves the page.** Hover-opening is an
   owner decision ("questionsdan hoverni olib tashlama"), so the jumpiness was
   fixed rather than the behaviour. Three things do it, all in `Motion.tsx`:

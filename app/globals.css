@@ -566,6 +566,18 @@
       inset 0 0 0 1px var(--color-day-line-2),
       0 12px 28px -18px rgb(11 28 51 / 0.28);
   }
+  /* The device leans in when the tile is hovered. This is the one hover that
+     still moves something, and it is safe: the tile is `overflow: hidden`, so
+     the still grows inside its own card and nothing around it can shift. The
+     sheen carries the same transform or the highlight would slide off the
+     silhouette it is masked to. */
+  .tile-day__render {
+    transition: transform 0.7s var(--ease-out-expo);
+    will-change: transform;
+  }
+  .tile-day:hover .tile-day__render {
+    transform: scale(1.045);
+  }
   /* a highlight sweeps across the product on hover, masked to its silhouette */
   .sheen {
     position: absolute;
