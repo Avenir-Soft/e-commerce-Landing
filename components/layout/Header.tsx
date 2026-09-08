@@ -79,7 +79,7 @@ export function Header({ lang, nav }: { lang: Lang; nav: Dictionary["nav"] }) {
           <Link
             href={`/${lang}`}
             aria-label={site.name}
-            className="justify-self-start rounded-md transition-opacity duration-200 hover:opacity-80"
+            className="justify-self-start rounded-md py-2 transition-opacity duration-200 hover:opacity-80 sm:py-0"
           >
             <Logo />
           </Link>

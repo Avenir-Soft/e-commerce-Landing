@@ -8,7 +8,7 @@ export function FinalCta({ t }: { t: Dictionary["cta"] }) {
     <section className="pb-[var(--section-y)]" aria-labelledby="cta-title">
       <div className="shell">
         <div
-          className="tile cta relative overflow-hidden px-6 py-14 sm:px-10 md:px-14 md:py-20"
+          className="tile cta relative overflow-hidden px-6 py-10 sm:px-10 sm:py-14 md:px-14 md:py-20"
           style={{ "--gx": "85%", "--gy": "40%" } as CSSProperties}
           data-reveal="clip"
         >

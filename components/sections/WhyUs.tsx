@@ -42,7 +42,7 @@ export function WhyUs({ t }: { t: Dictionary["why"] }) {
           </article>
 
           <article
-            className="tile relative flex flex-col justify-between gap-8 p-6 lg:col-span-2 md:p-7"
+            className="tile relative flex flex-col justify-between gap-5 p-6 sm:gap-8 lg:col-span-2 md:p-7"
             style={{ "--gx": "25%", "--gy": "85%" } as CSSProperties}
             data-reveal="rise-3d"
             data-tilt
@@ -65,7 +65,7 @@ export function WhyUs({ t }: { t: Dictionary["why"] }) {
           </article>
 
           <article
-            className="tile relative flex flex-col justify-between gap-8 p-6 lg:col-span-2 md:p-7"
+            className="tile relative flex flex-col justify-between gap-5 p-6 sm:gap-8 lg:col-span-2 md:p-7"
             style={{ "--gx": "50%", "--gy": "0%" } as CSSProperties}
             data-reveal="rise-3d"
             data-tilt
@@ -93,7 +93,7 @@ export function WhyUs({ t }: { t: Dictionary["why"] }) {
           </article>
 
           <article
-            className="tile relative flex flex-col justify-between gap-8 p-6 lg:col-span-2 md:p-7"
+            className="tile relative flex flex-col justify-between gap-5 p-6 sm:gap-8 lg:col-span-2 md:p-7"
             style={{ "--gx": "85%", "--gy": "80%" } as CSSProperties}
             data-reveal="rise-3d"
             data-tilt

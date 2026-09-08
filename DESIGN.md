@@ -189,6 +189,45 @@ what changed is the visual system underneath them.
   re-running `screens.mjs` and then `render.mjs`; the mismatch is only visible
   if you zoom into a device.
 
+## The phone pass (2026-09-08, same branch)
+
+Owner: "mobilka uchun logikani ishlatib hamma narsa chatelno tekshirib ko'rib chiq
+va to'g'irla, keraksiz narsani mobilka uchun faqat olib tashla." Everything below
+is behind `max-width: 40rem` or a `max-md:`/`sm:` variant. Proof that desktop was
+not touched: `tools/pw/avenir-baseline.mjs` snapshots the page height and the box
+of fifteen elements at 768, 1024 and 1440 — all three are **identical** before and
+after.
+
+- **The feature tiles' devices sat on their own headings.** The stills were
+  absolute at every width, and on a phone the laptop and the phone landed exactly
+  where the copy starts. Below md the art is now **in the flow** above the copy at
+  a fixed height (`band`), so nothing can slide under it in any language; from md
+  it goes back to bleeding off the card (`box`). Band heights come from the
+  measured fill of each still (`tools/pw/avenir-bbox.mjs`: phones 96% of the
+  square tall, the laptop 62%, the tablet 91%), so the devices land at comparable
+  sizes. The icon tiles do the same with their icon. Cards below md carry no
+  minimum height — with the art in the flow a minimum only opens a gap above it.
+- **Tile minimums are keyed by tile id, not by size.** `place.small` and the
+  telegram override both emitted `md:min-h-*`; same specificity, so the winner was
+  whichever Tailwind wrote last, and moving the sm minimums to md silently made
+  that tile 64px taller at 768. One map, one entry per tile, no element with two.
+- **The showroom was cut in half by its own caption.** The 3D row sat at
+  `y = -0.7` on phones and the caption card covered the bottom of the device.
+  `-0.25` clears the card and still passes under the copy (`Showroom.tsx`).
+- **Taken off phones:** the CTA orb and the hero's light sweep (decoration that
+  costs a full-width paint and reads as a smudge at 390px), and the FAQ's reserved
+  space — that exists so a hovering cursor cannot shove the page, and there is no
+  cursor here, so it was 150px of blank card on a screen that has none to spare.
+  It is gated on `pointer: fine` now.
+- **Thumb targets:** chips 32→44px, footer links 25→44px, the payment rails 38→40,
+  the logo 34→50. What is left under 40px is the search `<input>` (its 66px label
+  is the target) and four links inline in a sentence, which WCAG exempts.
+- **Rhythm:** `--section-y` 4.5→3.75rem and `--head-gap` 2.5→2rem, the lead at
+  16px/1.55, the figure cards' inner gap 32→20px, the final card's padding
+  56→40px.
+- Checked at 390, 360 and 430 in uz and ru: no horizontal overflow, nothing
+  clipped out of its card, no text under 12px, no console errors.
+
 ## Concept
 
 **A showroom of the platform, one screen under the light at a time.** The

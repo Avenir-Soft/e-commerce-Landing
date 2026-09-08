@@ -257,8 +257,10 @@ function Scene() {
       <Studio />
       <fog attach="fog" args={["#02101f", 8, 17]} />
       <Dust />
-      {/* on phones the row sits lower and smaller, between the copy and the label */}
-      <group scale={desktop ? 1 : 0.78} position={[0, desktop ? 0 : -0.7, 0]}>
+      {/* On phones the row is smaller and sits between the copy and the caption.
+          It used to be pushed down to -0.7 and the caption card cut the bottom
+          off the device; -0.25 clears the card and still leaves the copy alone. */}
+      <group scale={desktop ? 1 : 0.78} position={[0, desktop ? 0 : -0.25, 0]}>
         <Carousel />
         <LightPool />
       </group>

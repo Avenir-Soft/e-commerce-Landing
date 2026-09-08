@@ -29,34 +29,45 @@ const icons: Record<string, ReactNode> = {
 };
 
 /**
- * Where the still sits inside each tile. On phones every tile stacks the
- * device above the text; from md the wide tiles put the device on the right
- * and the text on the left. The stills are 1200px squares with the device in
- * the middle, so the boxes are larger than the visible device.
+ * Where the still sits inside each tile.
+ *
+ * From md the device is absolute and bleeds off the card — `box` holds that.
+ * On phones it is NOT: `band` puts it in the flow above the copy, at a fixed
+ * height, so no amount of text in any language can slide under it. It used to
+ * bleed there too, and the headings sat on top of the devices.
+ *
+ * The stills are 1200px squares with a lot of transparent air; measured fill
+ * (see tools/pw/avenir-bbox.mjs): phones 96% of the square tall and 44% wide,
+ * the laptop 62% tall and 92% wide, the tablet 91% tall. The band heights below
+ * are chosen from those so every device lands at a comparable visual size.
  */
-const art: Record<string, { box: string; text: string; sizes: string }> = {
+const art: Record<string, { band: string; box: string; text: string; sizes: string }> = {
   /* At md the tall tile is a full-width row (see `place`), so the device moves
      to the right of the copy; at lg it is the narrow column again and the
      device sits above the copy. */
   storefront: {
-    box: "-right-[6%] top-[1%] w-[82%] max-w-[21rem] md:-right-[2%] md:top-[8%] md:w-[40%] md:max-w-[19rem] lg:-right-[6%] lg:top-[1%] lg:w-[82%] lg:max-w-[21rem]",
-    text: "max-w-[92%] md:max-w-[52%] lg:max-w-[92%]",
-    sizes: "(min-width: 1024px) 30vw, (min-width: 768px) 26vw, 80vw",
+    band: "h-[15rem]",
+    box: "md:-right-[2%] md:top-[8%] md:w-[40%] md:max-w-[19rem] lg:-right-[6%] lg:top-[1%] lg:w-[82%] lg:max-w-[21rem]",
+    text: "md:max-w-[52%] lg:max-w-[92%]",
+    sizes: "(min-width: 1024px) 30vw, (min-width: 768px) 26vw, 240px",
   },
   admin: {
-    box: "-right-[6%] -top-[2%] w-[78%] md:-bottom-[2.5rem] md:-right-[6%] md:top-auto md:w-[46%] md:max-w-[23rem]",
+    band: "h-[11rem]",
+    box: "md:-bottom-[2.5rem] md:-right-[6%] md:top-auto md:w-[46%] md:max-w-[23rem]",
     text: "md:max-w-[50%]",
-    sizes: "(min-width: 768px) 30vw, 80vw",
+    sizes: "(min-width: 768px) 30vw, 180px",
   },
   payments: {
-    box: "-right-[8%] top-[8%] w-[34%] max-w-[8.5rem]",
-    text: "max-w-[74%]",
-    sizes: "(min-width: 768px) 12vw, 40vw",
+    band: "h-[11rem]",
+    box: "md:-right-[8%] md:top-[8%] md:w-[34%] md:max-w-[8.5rem]",
+    text: "md:max-w-[74%]",
+    sizes: "(min-width: 768px) 12vw, 180px",
   },
   ai: {
-    box: "-right-[4%] -top-[4%] w-[58%] md:-bottom-[3rem] md:-right-[4%] md:top-auto md:w-[38%] md:max-w-[20rem]",
+    band: "h-[12rem]",
+    box: "md:-bottom-[3rem] md:-right-[4%] md:top-auto md:w-[38%] md:max-w-[20rem]",
     text: "md:max-w-[54%]",
-    sizes: "(min-width: 768px) 25vw, 60vw",
+    sizes: "(min-width: 768px) 25vw, 200px",
   },
 };
 
@@ -65,15 +76,31 @@ const art: Record<string, { box: string; text: string; sizes: string }> = {
  * every non-small tile taking the full row — at 768px a third of the shell is
  * too narrow for a device and a paragraph side by side.
  */
+/** Where each tile sits in the grid. */
 const place: Record<Module["size"], string> = {
-  tall: "min-h-[24rem] sm:col-span-2 sm:min-h-[19rem] lg:col-span-1 lg:row-span-2 lg:min-h-[30rem]",
-  wide: "min-h-[20rem] sm:col-span-2 sm:min-h-[18rem] lg:min-h-[17rem]",
-  small: "min-h-[15rem]",
+  tall: "sm:col-span-2 lg:col-span-1 lg:row-span-2",
+  wide: "sm:col-span-2",
+  small: "",
 };
 
-/** The last small tile has no partner left in its row, so it takes the row at sm. */
-const spanFix: Record<string, string> = {
-  telegram: "sm:col-span-2 sm:min-h-[11rem] lg:col-span-1 lg:min-h-[15rem]",
+/*
+ * Minimum heights, one entry per tile rather than one per size: two competing
+ * `md:min-h-*` classes on the same element are the same specificity, so the
+ * winner is whichever Tailwind happens to emit last. Keeping them keyed by id
+ * means no tile ever carries two.
+ *
+ * Below md there are none at all: the art is in the flow there (see `art`), so
+ * a minimum would only open a gap above the device.
+ */
+const minHeight: Record<string, string> = {
+  storefront: "md:min-h-[19rem] lg:min-h-[30rem]",
+  admin: "md:min-h-[18rem] lg:min-h-[17rem]",
+  payments: "md:min-h-[15rem]",
+  delivery: "md:min-h-[15rem]",
+  ai: "md:min-h-[18rem] lg:min-h-[17rem]",
+  /* the last small tile has no partner left in its row, so it takes the row at
+     sm and stays shorter than a full small tile until lg gives it a column */
+  telegram: "sm:col-span-2 md:min-h-[11rem] lg:col-span-1 lg:min-h-[15rem]",
 };
 
 export function Features({ lang, t }: { lang: Lang; t: Dictionary["features"] }) {
@@ -89,7 +116,7 @@ export function Features({ lang, t }: { lang: Lang; t: Dictionary["features"] })
               <article
                 key={m.id}
                 className={`tile-day group relative flex flex-col justify-end overflow-hidden p-6 md:p-7 lg:p-8 ${place[m.size]} ${
-                  spanFix[m.id] ?? ""
+                  minHeight[m.id] ?? ""
                 }`}
                 style={{ "--gx": glow[m.id][0], "--gy": glow[m.id][1] } as CSSProperties}
                 data-reveal="clip"
@@ -97,14 +124,18 @@ export function Features({ lang, t }: { lang: Lang; t: Dictionary["features"] })
               >
                 {m.render && a && (
                   <>
-                    <Image
-                      src={m.render}
-                      alt=""
-                      width={1200}
-                      height={1200}
-                      sizes={a.sizes}
-                      className={`tile-day__render pointer-events-none absolute drop-shadow-[0_30px_45px_rgb(11_28_51/0.3)] ${a.box}`}
-                    />
+                    <div
+                      className={`tile-day__render pointer-events-none relative mb-5 md:absolute md:mb-0 md:h-auto ${a.band} ${a.box}`}
+                    >
+                      <Image
+                        src={m.render}
+                        alt=""
+                        width={1200}
+                        height={1200}
+                        sizes={a.sizes}
+                        className="mx-auto h-full w-auto object-contain drop-shadow-[0_30px_45px_rgb(11_28_51/0.3)] md:mx-0 md:h-auto md:w-full"
+                      />
+                    </div>
                     <span
                       className={`sheen tile-day__render absolute hidden aspect-square md:block ${a.box}`}
                       style={{ "--mask": `url(${m.render})` } as CSSProperties}
@@ -112,12 +143,13 @@ export function Features({ lang, t }: { lang: Lang; t: Dictionary["features"] })
                     />
                   </>
                 )}
+                {/* the icon sits in the flow on phones too, for the same reason */}
                 {!m.render && (
-                  <span className="absolute left-6 top-6 grid h-10 w-10 place-items-center rounded-lg bg-mark/10 text-mark md:left-7 md:top-7 lg:left-8 lg:top-8">
+                  <span className="mb-5 grid h-10 w-10 place-items-center rounded-lg bg-mark/10 text-mark md:absolute md:left-7 md:top-7 md:mb-0 lg:left-8 lg:top-8">
                     {icons[m.id]}
                   </span>
                 )}
-                <div className={`relative ${a ? a.text : "max-w-[24rem]"}`}>
+                <div className={`relative ${a ? a.text : "md:max-w-[24rem]"}`}>
                   {m.id === "payments" && (
                     <ul className="mb-5 flex flex-wrap gap-1.5" aria-label={m.title[lang]}>
                       {site.payments.map((p) => (

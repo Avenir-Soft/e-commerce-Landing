@@ -135,7 +135,13 @@ export function Motion() {
     // list already occupies: the CTA and the footer below never move. Measured
     // by opening each panel and closing it again inside one task, so no frame
     // is ever painted with them open.
-    if (faqList && faqItems.length) {
+    //
+    // Only where there is a pointer to hover with. The reserve exists because
+    // sweeping a cursor down the list opens panels the reader did not ask for;
+    // on a touch screen every open is a deliberate tap, the page growing under
+    // it is what anyone expects, and the reserve would just be ~150px of blank
+    // card sitting on a phone screen forever.
+    if (fine && faqList && faqItems.length) {
       let raf = 0;
       const reserve = () => {
         const wasOpen = faqItems.map((d) => d.open);

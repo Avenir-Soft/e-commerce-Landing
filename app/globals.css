@@ -1370,4 +1370,51 @@
       animation: none;
     }
   }
+
+  /* ---------- Phones -----------------------------------------------------
+     Everything below 40rem only. The desktop layout is not touched by any of
+     it: same tokens, same rhythm, same components — this narrows what is worth
+     carrying onto a 390px screen and makes the things you tap big enough.
+  --------------------------------------------------------------------- */
+  @media (max-width: 40rem) {
+    :root {
+      /* the same rhythm, one notch tighter: at this width the desktop gap
+         between two chapters is a third of a screen of nothing */
+      --section-y: 3.75rem;
+      --head-gap: 2rem;
+    }
+
+    /* the lead runs five lines at 17px; 16px and tighter leading gives back a
+       line without shrinking it into caption territory */
+    .t-lead {
+      font-size: 1rem;
+      line-height: 1.55;
+    }
+
+    /* 32px chips and 25px footer links are below any sane thumb target */
+    .chip--button {
+      min-height: 2.75rem;
+      padding-inline: 0.9rem;
+    }
+    .footer-link {
+      display: inline-flex;
+      align-items: center;
+      min-height: 2.75rem;
+    }
+    .pay {
+      height: 2.5rem;
+    }
+
+    /* decoration that costs a paint and reads as a smudge at this size */
+    .cta__orb,
+    .hero__flare {
+      display: none;
+    }
+
+    /* the caption over the showroom: one line of meta, tighter box */
+    .hero__label-card {
+      padding: 0.7rem 0.7rem 0.7rem 0.9rem;
+      border-radius: 0.875rem;
+    }
+  }
 }
