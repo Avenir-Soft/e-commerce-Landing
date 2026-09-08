@@ -53,7 +53,11 @@ export function Motion() {
       splits.forEach((s) => s.revert());
     });
 
-    // ---- FAQ panels: hover opens on fine pointers, tap toggles everywhere ----
+    // ---- FAQ panels: click (or Enter) toggles ------------------------------
+    // Opening used to happen on pointerenter. Sweeping down the list then
+    // opened and closed a row per crossing, and every one of those reflowed
+    // the rows below it, so questions jumped out from under the cursor.
+    // Hover now only lights the row up (CSS); the geometry changes on intent.
     document.querySelectorAll<HTMLDetailsElement>("details.faq").forEach((details) => {
       const summary = details.querySelector("summary");
       const content = details.querySelector<HTMLElement>(".faq__content");
@@ -88,66 +92,23 @@ export function Motion() {
       };
       summary.addEventListener("click", onClick);
       cleanups.push(() => summary.removeEventListener("click", onClick));
-      if (fine) {
-        details.addEventListener("pointerenter", open);
-        details.addEventListener("pointerleave", close);
-        cleanups.push(() => {
-          details.removeEventListener("pointerenter", open);
-          details.removeEventListener("pointerleave", close);
-        });
-      }
     });
 
     if (!fine || reduce) return () => cleanups.forEach((fn) => fn());
 
-    // ---- magnetic buttons: a hint of pull, not a pet that follows the cursor ----
-    document.querySelectorAll<HTMLElement>(".btn").forEach((btn) => {
-      const onMove = (e: PointerEvent) => {
-        const r = btn.getBoundingClientRect();
-        const dx = e.clientX - (r.left + r.width / 2);
-        const dy = e.clientY - (r.top + r.height / 2);
-        gsap.to(btn, { x: dx * 0.08, y: dy * 0.08, duration: 0.5, ease: "expo.out", overwrite: "auto" });
-      };
-      const onLeave = () => gsap.to(btn, { x: 0, y: 0, duration: 0.6, ease: "expo.out", overwrite: "auto" });
-      btn.addEventListener("pointermove", onMove, { passive: true });
-      btn.addEventListener("pointerleave", onLeave, { passive: true });
-      cleanups.push(() => {
-        btn.removeEventListener("pointermove", onMove);
-        btn.removeEventListener("pointerleave", onLeave);
-      });
-    });
-
-    // ---- tilting tiles with a glow that follows the pointer ----
+    // ---- tiles: a pool of light follows the pointer, nothing moves ---------
+    // The tiles used to tilt in 3D and the button under the cursor used to be
+    // pulled toward it. Both meant that pointing at something made it (and, on
+    // a tilted card, everything inside it) shift, which read as the page
+    // wobbling. Hover now changes light only; geometry is left alone.
     document.querySelectorAll<HTMLElement>("[data-tilt]").forEach((tile) => {
       const onMove = (e: PointerEvent) => {
         const r = tile.getBoundingClientRect();
-        const px = (e.clientX - r.left) / r.width;
-        const py = (e.clientY - r.top) / r.height;
-        tile.style.setProperty("--gx", `${(px * 100).toFixed(1)}%`);
-        tile.style.setProperty("--gy", `${(py * 100).toFixed(1)}%`);
-        // the product still drifts against the pointer, as if it sat above the card
-        tile.style.setProperty("--tx", `${((0.5 - px) * 14).toFixed(1)}px`);
-        tile.style.setProperty("--ty", `${((0.5 - py) * 10).toFixed(1)}px`);
-        gsap.to(tile, {
-          rotateY: (px - 0.5) * 3,
-          rotateX: (0.5 - py) * 3,
-          transformPerspective: 1400,
-          duration: 0.6,
-          ease: "expo.out",
-          overwrite: "auto",
-        });
-      };
-      const onLeave = () => {
-        tile.style.setProperty("--tx", "0px");
-        tile.style.setProperty("--ty", "0px");
-        gsap.to(tile, { rotateX: 0, rotateY: 0, duration: 0.9, ease: "expo.out", overwrite: "auto" });
+        tile.style.setProperty("--gx", `${(((e.clientX - r.left) / r.width) * 100).toFixed(1)}%`);
+        tile.style.setProperty("--gy", `${(((e.clientY - r.top) / r.height) * 100).toFixed(1)}%`);
       };
       tile.addEventListener("pointermove", onMove, { passive: true });
-      tile.addEventListener("pointerleave", onLeave, { passive: true });
-      cleanups.push(() => {
-        tile.removeEventListener("pointermove", onMove);
-        tile.removeEventListener("pointerleave", onLeave);
-      });
+      cleanups.push(() => tile.removeEventListener("pointermove", onMove));
     });
 
     return () => cleanups.forEach((fn) => fn());

@@ -148,30 +148,38 @@ export function SearchDemoClient({ t, items }: { t: Dictionary["search"]; items:
             ))}
           </div>
 
-          <ul className="mt-3 flex min-h-[13.5rem] flex-col gap-1.5" aria-live="polite">
-            {results.length === 0 && query.trim().length > 2 && (
-              <li className="px-3 py-4 text-ink-2 t-small">{t.empty}</li>
-            )}
-            {results.map((r, i) => (
-              <li
-                key={r.id}
-                className="flex items-center justify-between gap-4 rounded-lg bg-surface-2 px-4 py-3 ring-1 ring-line"
-                style={{ animation: `result-in 0.6s var(--ease-out-expo) both`, animationDelay: `${i * 60}ms` }}
-              >
-                <div className="min-w-0">
-                  <p className="t-label">{r.category}</p>
-                  <p className="mt-1 truncate font-semibold text-ink">{r.name}</p>
-                  <p className="text-ink-2 t-small">{r.spec}</p>
-                </div>
-                <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-mark/20 text-mark-2" aria-hidden="true">
-                  <CheckIcon />
-                </span>
-              </li>
-            ))}
-          </ul>
-          <p className="px-1 pb-1 text-ink-3 t-small" aria-hidden={results.length === 0}>
-            {results.length > 0 && `${t.found}: ${results.length}`}
-          </p>
+          {/*
+            The results area reserves room for MAX_RESULTS rows plus the count,
+            and every row is a fixed three lines, so the panel keeps one height
+            while the sample query types itself. It used to grow past its
+            min-height and push the rest of the page down by ~75px per cycle.
+          */}
+          <div className="mt-3 min-h-[21rem]">
+            <ul className="flex flex-col gap-1.5" aria-live="polite">
+              {results.length === 0 && query.trim().length > 2 && (
+                <li className="px-3 py-4 text-ink-2 t-small">{t.empty}</li>
+              )}
+              {results.map((r, i) => (
+                <li
+                  key={r.id}
+                  className="flex items-center justify-between gap-4 rounded-lg bg-surface-2 px-4 py-3 ring-1 ring-line"
+                  style={{ animation: `result-in 0.6s var(--ease-out-expo) both`, animationDelay: `${i * 60}ms` }}
+                >
+                  <div className="min-w-0">
+                    <p className="t-label truncate">{r.category}</p>
+                    <p className="mt-1 truncate font-semibold text-ink">{r.name}</p>
+                    <p className="truncate text-ink-2 t-small">{r.spec}</p>
+                  </div>
+                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-mark/20 text-mark-2" aria-hidden="true">
+                    <CheckIcon />
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <p className="px-1 pt-3 text-ink-3 t-small" aria-hidden={results.length === 0}>
+              {results.length > 0 && `${t.found}: ${results.length}`}
+            </p>
+          </div>
         </div>
       </div>
       <style jsx>{`

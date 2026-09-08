@@ -103,10 +103,10 @@ export function Features({ lang, t }: { lang: Lang; t: Dictionary["features"] })
                       width={1200}
                       height={1200}
                       sizes={a.sizes}
-                      className={`tile-day__render pointer-events-none absolute drop-shadow-[0_30px_45px_rgb(11_28_51/0.3)] ${a.box}`}
+                      className={`pointer-events-none absolute drop-shadow-[0_30px_45px_rgb(11_28_51/0.3)] ${a.box}`}
                     />
                     <span
-                      className={`sheen tile-day__render absolute hidden aspect-square md:block ${a.box}`}
+                      className={`sheen absolute hidden aspect-square md:block ${a.box}`}
                       style={{ "--mask": `url(${m.render})` } as CSSProperties}
                       aria-hidden="true"
                     />

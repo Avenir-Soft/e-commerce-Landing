@@ -96,8 +96,25 @@ what changed is the visual system underneath them.
   effects were removed outright.
 - **Buttons.** Pills 52px tall with a blue glow → 44px, 10px radius, no glow;
   one solid rank, one quiet rank, the same pair inverted for the light rooms.
-  The arrow steps forward on hover and that is the whole animation. The magnetic
-  pull went from 0.2 to 0.08 of the pointer offset, the tile tilt from 7° to 3°.
+  The arrow steps forward on hover and that is the whole animation.
+- **Hover changes light, never geometry** (owner, same day: "elementlar hover
+  bo'lgan boshqa elementlarga ta'sir qilib ular qimilab ketyabti"). Four things
+  moved under the pointer and had to go: the magnetic pull on `.btn`, the 3D
+  tilt on `[data-tilt]`, the device still that drifted and scaled inside its
+  card, and — the loudest one — the FAQ opening on `pointerenter`, which
+  reflowed every row below it, so sweeping down the list made questions jump out
+  from under the cursor. The FAQ now opens on click or Enter (the `faq.hint`
+  copy changed with it in all three languages) and hovering only lights the row.
+  `[data-tilt]` keeps the pointer-following glow, which moves nothing.
+  Measured with `tools/pw/avenir-hover2.mjs`: every hover target now shifts
+  0 elements; the only movement left is the 2px arrow nudge inside the hovered
+  button.
+- **The search panel reserved too little room.** Its results list had
+  `min-h-[13.5rem]` but three rows are ~18rem, so every cycle of the sample
+  query resized the panel and pushed everything below it up and down by ~75px
+  — no hover needed. The results area now reserves 21rem and every row is a
+  fixed three lines (`truncate` on all of them). Verified over 15s of typing:
+  `#steps` drifts 0px, was ±75px.
 - **Rhythm.** Every chapter now uses `.section-y` and every section head
   `.after-head`, replacing ad-hoc `py-24 md:py-32` / `mt-12`.
 - **Navigation.** The bar had no active state at all; it now marks the chapter
@@ -140,7 +157,7 @@ everything a merchant gets, a dark bento of the five reasons (your brand,
 four payment rails, your own domain, two languages, support after launch), a
 working search sample over a deliberately mixed catalog (a watch, an espresso
 machine, sneakers, a dress…), the light three-steps room with the storefront
-still on a phone, hover-opened FAQ, and the final call.
+still on a phone, the FAQ (opened by click), and the final call.
 
 Motion: every heading rises line by line out of a mask (GSAP SplitText), every
 block reveals once on scroll, tiles tilt and glow under the pointer, buttons
@@ -234,7 +251,7 @@ screen (`ReadySignal` → `markModelsReady`).
 6. Why Avenir Store (dark bento) — your brand, 4 payment rails, your domain, 2 languages, support.
 7. Search sample (dark) — mixed demo goods, plain-word queries.
 8. Three steps (light) — demo and agreement, catalog load, start selling; the storefront on a phone.
-9. FAQ (dark) — opens on hover, numbered in serif; the price question is answered without a number.
+9. FAQ (dark) — opens on click, numbered in serif; the price question is answered without a number.
 10. Final call, footer with payment rails, links and model credits.
 
 ## Before launch
