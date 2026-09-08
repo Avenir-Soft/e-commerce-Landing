@@ -170,11 +170,30 @@ export function Motion() {
 
     if (!fine || reduce) return () => cleanups.forEach((fn) => fn());
 
+    // ---- magnetic buttons -------------------------------------------------
+    // Restored with the rest of the button (owner: "knopkalarni oz holiga
+    // qaytar"). The button leans toward the pointer and springs back; it moves
+    // only itself, and its own box never changes, so nothing reflows.
+    document.querySelectorAll<HTMLElement>(".btn").forEach((btn) => {
+      const onMove = (e: PointerEvent) => {
+        const r = btn.getBoundingClientRect();
+        const dx = e.clientX - (r.left + r.width / 2);
+        const dy = e.clientY - (r.top + r.height / 2);
+        gsap.to(btn, { x: dx * 0.2, y: dy * 0.2, duration: 0.5, ease: "expo.out", overwrite: "auto" });
+      };
+      const onLeave = () => gsap.to(btn, { x: 0, y: 0, duration: 0.9, ease: "elastic.out(1, 0.45)", overwrite: "auto" });
+      btn.addEventListener("pointermove", onMove, { passive: true });
+      btn.addEventListener("pointerleave", onLeave, { passive: true });
+      cleanups.push(() => {
+        btn.removeEventListener("pointermove", onMove);
+        btn.removeEventListener("pointerleave", onLeave);
+      });
+    });
+
     // ---- tiles: a pool of light follows the pointer, nothing moves ---------
-    // The tiles used to tilt in 3D and the button under the cursor used to be
-    // pulled toward it. Both meant that pointing at something made it (and, on
-    // a tilted card, everything inside it) shift, which read as the page
-    // wobbling. Hover now changes light only; geometry is left alone.
+    // The tiles used to tilt in 3D as well. That one stays off: it dragged
+    // everything inside the card with it, which is what read as the page
+    // wobbling. The glow moves nothing.
     document.querySelectorAll<HTMLElement>("[data-tilt]").forEach((tile) => {
       const onMove = (e: PointerEvent) => {
         const r = tile.getBoundingClientRect();

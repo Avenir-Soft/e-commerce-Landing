@@ -292,79 +292,82 @@
     margin-bottom: -0.08em;
   }
 
-  /* ---------- Buttons ---------------------------------------------------
-     Three ranks, one geometry: solid (the single action on a screen), quiet
-     (everything secondary) and day (the same pair inverted for the light
-     rooms). 44px tall so they clear the touch minimum, a 10px radius rather
-     than a pill, and no glow — the weight difference does the work.
-  --------------------------------------------------------------------- */
+  /* Buttons: solid (the one action) and quiet (everything else).
+     Back to the original pill — height, glow and light pass included (owner:
+     "knopkalarni oz holiga qaytar"). */
   .btn {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    height: 2.75rem;
-    padding-inline: 1.125rem;
-    border-radius: var(--radius-btn);
+    gap: 0.6rem;
+    height: 3.25rem;
+    padding-inline: 1.5rem;
+    border-radius: var(--radius-pill);
     font-weight: 600;
-    font-size: 0.9375rem;
-    letter-spacing: -0.006em;
+    font-size: 1rem;
     white-space: nowrap;
     transition:
-      background-color 0.2s var(--ease-out-quart),
-      box-shadow 0.2s var(--ease-out-quart),
-      color 0.2s var(--ease-out-quart);
+      background-color 0.35s var(--ease-out-quart),
+      box-shadow 0.5s var(--ease-out-expo),
+      color 0.35s var(--ease-out-quart);
+    will-change: transform;
   }
   .btn svg {
     flex: none;
-    transition: transform 0.35s var(--ease-out-expo);
-  }
-  /* the arrow steps forward — the one motion a button makes */
-  .btn:hover svg {
-    transform: translateX(2px);
   }
   .btn-solid {
     background: var(--color-mark);
     color: #fff;
     box-shadow:
-      inset 0 1px 0 0 rgb(255 255 255 / 0.18),
-      0 1px 2px 0 rgb(2 16 31 / 0.4);
+      0 0 0 0 rgb(37 99 235 / 0),
+      0 10px 30px -12px rgb(37 99 235 / 0.7);
   }
   .btn-solid:hover {
-    background: #3b74ee;
+    background: #2f6ff0;
+    box-shadow:
+      0 0 0 6px rgb(37 99 235 / 0.16),
+      0 14px 36px -12px rgb(37 99 235 / 0.9);
   }
-  .btn-solid:active {
-    background: #1d4fd0;
+  /* a light passes over the primary button on hover */
+  .btn-solid {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .btn-solid::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.35) 50%, transparent 70%);
+    transform: translateX(-120%);
+    pointer-events: none;
+  }
+  .btn-solid:hover::after {
+    animation: btn-shine 0.9s var(--ease-out-expo) forwards;
+  }
+  @keyframes btn-shine {
+    to {
+      transform: translateX(120%);
+    }
   }
   .btn-quiet {
-    background: rgb(243 246 251 / 0.04);
+    background: rgb(243 246 251 / 0.06);
     color: var(--color-ink);
-    box-shadow: inset 0 0 0 1px var(--color-line-2);
+    box-shadow: inset 0 0 0 1px rgb(243 246 251 / 0.14);
   }
   .btn-quiet:hover {
-    background: rgb(243 246 251 / 0.09);
+    background: rgb(243 246 251 / 0.11);
   }
   .btn-sm {
-    height: 2.25rem;
-    padding-inline: 0.875rem;
-    font-size: 0.875rem;
-    border-radius: 0.5rem;
+    height: 2.5rem;
+    padding-inline: 1.1rem;
+    font-size: 0.9375rem;
   }
   .btn-day {
     background: var(--color-day-ink);
     color: #fff;
-    box-shadow: 0 1px 2px 0 rgb(11 28 51 / 0.24);
   }
   .btn-day:hover {
-    background: #16304f;
-  }
-  .btn-day-quiet {
-    background: transparent;
-    color: var(--color-day-ink);
-    box-shadow: inset 0 0 0 1px var(--color-day-line-2);
-  }
-  .btn-day-quiet:hover {
-    background: rgb(11 28 51 / 0.04);
+    background: #14294a;
   }
 
   /* Chips: pills on purpose, so a tag never reads as a button. */
@@ -707,6 +710,14 @@
   }
   .hero .t-lead {
     max-width: 32rem;
+  }
+  /* two full-size pills do not fit side by side on a phone */
+  @media (max-width: 40rem) {
+    .hero__copy .btn {
+      height: 2.75rem;
+      padding-inline: 1.1rem;
+      font-size: 0.95rem;
+    }
   }
   /* The moment caption. On phones it is a slim bar the width of the shell, so
      it reads as a caption laid over the showroom instead of colliding with the

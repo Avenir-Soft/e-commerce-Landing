@@ -94,15 +94,18 @@ what changed is the visual system underneath them.
   surfaces at 14px with a hairline (`--color-line`, brightening on hover) and a
   single faint pool of light that follows the pointer. The `shine` and `beam`
   effects were removed outright.
-- **Buttons.** Pills 52px tall with a blue glow → 44px, 10px radius, no glow;
-  one solid rank, one quiet rank, the same pair inverted for the light rooms.
-  The arrow steps forward on hover and that is the whole animation.
+- **Buttons: unchanged from before the redesign.** They were briefly reworked to
+  44px at a 10px radius with no glow; the owner asked for them back
+  ("knopkalarni oz holiga qaytar"), so `.btn` is again the 52px pill with the
+  blue glow, the light pass across `.btn-solid` on hover, `.btn-sm` at 40px, the
+  2.75rem hero override below 40rem, and the magnetic pull in `Motion.tsx`.
 - **Hover must not move anything the pointer is not on** (owner, same day:
   "elementlar hover bo'lgan boshqa elementlarga ta'sir qilib ular qimilab
-  ketyabti"). Two effects moved the element under the cursor and had to go: the
-  magnetic pull on `.btn` and the 3D tilt on `[data-tilt]`, which also dragged
-  everything inside a tilted card with it. `[data-tilt]` keeps the
-  pointer-following glow, which moves nothing.
+  ketyabti"). The one effect that had to go is the 3D tilt on `[data-tilt]`: it
+  dragged everything inside a tilted card with it. `[data-tilt]` keeps the
+  pointer-following glow, which moves nothing. The magnetic pull went with it at
+  the time and has since been restored — it moves the button and its own icon,
+  nothing else (measured: 3 elements, all inside the button).
   The rule is about *reach*, not about motion as such — two hovers still move
   something, and both are contained:
   - the feature tiles' device still leans in (`scale(1.045)`, restored after it
